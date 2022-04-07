@@ -45,6 +45,7 @@ public class UptakeController {
 //    BCScaner bcScaner;
     List<Analysis> uptakeByCode = new ArrayList<>();
     List<Analysis> uptakeProof = new ArrayList<>();
+    List<Analysis> uptakeTORCH = new ArrayList<>();
 //    List<Analysis> distinct = uptakeByCode
 //            .stream().distinct().collect(Collectors.toList());
 //    List<Analysis> chekByCode = new ArrayList<>();
@@ -145,6 +146,7 @@ public class UptakeController {
         model.addAttribute("selected", dist);
         model.addAttribute("redir", redirect);
         model.addAttribute("user", getUserName());
+        model.addAttribute("torches", uptakeTORCH.stream().distinct().collect(Collectors.toList()));
         return "byCode";
     }
 
@@ -335,7 +337,8 @@ public class UptakeController {
     public String updateUser(ModelMap model, @RequestParam(value = "codeInt") String codeInt,
                              @RequestParam(value ="redir") String redir,
                              @RequestParam(value="proofCode")String proof,
-                             @RequestParam(value = "done") String done
+                             @RequestParam(value = "done") String done,
+                             @RequestParam(value = "GRPPRM") Integer GRPPRM
     ) throws SQLException {
 //        chek.add(codeInt);
 //        System.out.println(proof);
@@ -343,8 +346,8 @@ public class UptakeController {
             Analysis analysis = new Analysis();
             List<Object[]> data = new ArrayList<>();
             if (proof.equals("")) {
-                data = uptakeService.getData(done, codeInt);
-            } else { data = uptakeService.getData(done, proof);}
+                data = uptakeService.getData(done, codeInt, GRPPRM);
+            } else { data = uptakeService.getData(done, proof, GRPPRM);}
 //        try {
 //            Object[] data1 = data
 //                    .stream()
@@ -417,6 +420,35 @@ public class UptakeController {
                             if (analysis.getSyphIFA() == null)
                                 analysis.setSyphIFA("");
                         }
+                        if (data1[9].toString().equals("Rub-G")) {
+                            analysis.setRubG("1");
+                            if (data1[4] != null) {
+                                analysis.setResultRubG(data1[4].toString());
+                            }
+                        } else {
+                            if (analysis.getRubG() == null)
+                                analysis.setRubG("");
+                        }
+
+                        if (data1[9].toString().equals("Rub-M")) {
+                            analysis.setRubM("1");
+                            if (data1[4] != null) {
+                                analysis.setResultRubM(data1[4].toString());
+                            }
+                        } else {
+                            if (analysis.getRubM() == null)
+                                analysis.setRubM("");
+                        }
+
+                        if (data1[9].toString().equals("cHSP60-Ig G(белок тепл.шока и")) {
+                            analysis.setHSP60("1");
+                            if (data1[4] != null) {
+                                analysis.setResultHSP60(data1[4].toString());
+                            }
+                        } else {
+                            if (analysis.getHSP60() == null)
+                                analysis.setHSP60("");
+                        }
 
 
                     } catch (Exception ignored) {
@@ -452,9 +484,15 @@ public class UptakeController {
 //
                 }
 //                uptakeByCode.removeIf(n -> (n.getEmc().equals(analysis.getEmc())&&n.getCode().equals(analysis.getCode())));
-                if (proof.equals("")) {
-                    uptakeByCode.add(analysis);
-                } else {uptakeProof.add(analysis);}
+                if (GRPPRM==1) {
+                    if (proof.equals("")) {
+                        uptakeByCode.add(analysis);
+                    } else {
+                        uptakeProof.add(analysis);
+                    }
+                } else {
+                    uptakeTORCH.add(analysis);
+                }
 //                chekByCode.add(analysis);
 //                chekByCode.add(analysis);
 //        chek.add(analysis.getCode());

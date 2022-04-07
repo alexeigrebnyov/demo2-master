@@ -12,6 +12,11 @@ public class Analysis {
     private String resultatHCV;
     private String resultSyphIfa;
     private String resultMRP;
+    private String resultRubG;
+    private String resultRubM;
+    private String resultHSP60;
+    private String resultClamA;
+    private String resultClamG;
     private String main_org_id;
     private String label;
     private String patdirect_id;
@@ -21,6 +26,11 @@ public class Analysis {
     private String atHCV;
     private String syphIFA;
     private String syphMRP;
+    private String RubG;
+    private String RubM;
+    private String HSP60;
+    private String ClamA;
+    private String ClamG;
     private String code;
     private String sex;
     private String adres;
@@ -28,8 +38,12 @@ public class Analysis {
     public Analysis() {
     }
 
-    public Analysis(String emc, String fio, String kontengent, String motconsu_resp_id, String resultHiv, String resultHbsAg, String resultatHCV, String resultSyphIfa, String resultMRP, String main_org_id, String label,
-                    String patdirect_id, String date_bio, String hiv, String hbsAg, String atHCV, String syphIFA, String syphMRP, String code, String sex, String adres) {
+    public Analysis(String emc, String fio, String kontengent, String motconsu_resp_id, String resultHiv,
+                    String resultHbsAg, String resultatHCV, String resultSyphIfa, String resultMRP, String resultRubG,
+                    String resultRubM,  String resultHSP60, String resultClamA, String resultClamG, String main_org_id,
+                    String label, String patdirect_id, String date_bio, String hiv, String hbsAg, String atHCV,
+                    String syphIFA,String syphMRP, String RubG, String RubM, String HSP60, String code, String sex,
+                    String ClamA, String ClamG, String adres) {
         this.emc = emc;
         this.fio = fio;
         this.kontengent = kontengent;
@@ -39,6 +53,11 @@ public class Analysis {
         this.resultatHCV = resultatHCV;
         this.resultSyphIfa = resultSyphIfa;
         this.resultMRP = resultMRP;
+        this.resultRubG = resultRubG;
+        this.resultRubM = resultRubM;
+        this.resultHSP60 = resultHSP60;
+        this.resultClamA = resultClamA;
+        this.resultClamG = resultClamG;
         this.main_org_id = main_org_id;
         this.label = label;
         this.patdirect_id = patdirect_id;
@@ -48,6 +67,11 @@ public class Analysis {
         this.atHCV = atHCV;
         this.syphIFA = syphIFA;
         this.syphMRP = syphMRP;
+        this.RubG = RubG;
+        this.RubM = RubM;
+        this.HSP60 = HSP60;
+        this.ClamA = ClamA;
+        this.ClamG = ClamG;
         this.code = code;
         this.sex = sex;
         this.adres = adres;
@@ -222,6 +246,86 @@ public class Analysis {
 
     public void setAdres(String adres) {
         this.adres = adres;
+    }
+
+    public String getResultRubG() {
+        return resultRubG;
+    }
+
+    public void setResultRubG(String resultRubG) {
+        this.resultRubG = resultRubG;
+    }
+
+    public String getResultRubM() {
+        return resultRubM;
+    }
+
+    public void setResultRubM(String resultRubM) {
+        this.resultRubM = resultRubM;
+    }
+
+    public String getResultHSP60() {
+        return resultHSP60;
+    }
+
+    public void setResultHSP60(String resultHSP60) {
+        this.resultHSP60 = resultHSP60;
+    }
+
+    public String getResultClamA() {
+        return resultClamA;
+    }
+
+    public void setResultClamA(String resultClamA) {
+        this.resultClamA = resultClamA;
+    }
+
+    public String getResultClamG() {
+        return resultClamG;
+    }
+
+    public void setResultClamG(String resultClamG) {
+        this.resultClamG = resultClamG;
+    }
+
+    public String getRubG() {
+        return RubG;
+    }
+
+    public void setRubG(String rubG) {
+        RubG = rubG;
+    }
+
+    public String getRubM() {
+        return RubM;
+    }
+
+    public void setRubM(String rubM) {
+        RubM = rubM;
+    }
+
+    public String getHSP60() {
+        return HSP60;
+    }
+
+    public void setHSP60(String HSP60) {
+        this.HSP60 = HSP60;
+    }
+
+    public String getClamA() {
+        return ClamA;
+    }
+
+    public void setClamA(String clamA) {
+        ClamA = clamA;
+    }
+
+    public String getClamG() {
+        return ClamG;
+    }
+
+    public void setClamG(String clamG) {
+        ClamG = clamG;
     }
 
     @Override

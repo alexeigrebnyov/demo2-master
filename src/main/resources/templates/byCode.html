@@ -54,6 +54,7 @@
                                     <input type="hidden" name="proofCode" id="proofCode" value="">
                                     <input type="hidden" name="redir" id="redir" th:value="*{redir}">
                                     <input type="hidden" name="done" id="done" value="and PATDIREC.QUANTITY_DONE=0">
+                                    <input type="hidden" name="GRPPRM" id="GRPPRM" value=350>
 <!--                                    <input type="hidden" name="proofCode" id="proofCode" value="">-->
                                     <!--                                        <input type="text" name="codeInt" id="codeInt" >-->
                                     <!--                                         <input type="submit" value="Отправить">-->
@@ -141,6 +142,64 @@
                             <h4>TORCH</h4>
                             <div class="bg-white">
                                 TORCH uptake data
+                                <form name="torchcodeForm" id="torchcodeForm" th:action="@{/code}" method="post">
+                                    <input type="hidden" name="codeInt" id="torchcodeFormcodeInt" th:value="*{data1}">
+                                    <input type="hidden" name="proofCode" id="torchcodeFormproofCode" value="">
+                                    <input type="hidden" name="redir" id="torchcodeFormredir" th:value="*{redir}">
+                                    <input type="hidden" name="done" id="torchcodeFormdone" value="and PATDIREC.QUANTITY_DONE=0">
+                                    <input type="hidden" name="GRPPRM" id="torchcodeFormGRPPRM" value=1>
+                                    <!--                                    <input type="hidden" name="proofCode" id="proofCode" value="">-->
+                                    <!--                                        <input type="text" name="codeInt" id="codeInt" >-->
+                                    <!--                                         <input type="submit" value="Отправить">-->
+                                </form>
+
+                                <table class="table table-striped" border="1">
+                                    <tr>
+                                        <th>№</th>
+                                        <th>ЭМК</th>
+                                        <th>ФИО</th>
+                                        <th>Дата забора</th>
+                                        <th>Код забора</th>
+                                        <th>Rub-G</th>
+                                        <th>Rub-M</th>
+                                        <th>БТШ</th>
+                                        <th>Хлам А</th>
+                                        <th>Хлам G</th>
+                                        <th>Филиал</th>
+                                        <!--                                <th>Статус</th>-->
+                                    </tr>
+
+                                    <th:block th:each = "cont:${torches}">
+                                        <tr>
+                                            <td th:utext="${selected.indexOf(cont)+1}"></td>
+                                            <td th:utext="${cont.emc}"></td>
+                                            <td th:utext="${cont.fio}"></td>
+                                            <td th:utext="${cont.date_bio}"></td>
+                                            <td th:utext="${cont.code}"></td>
+                                            <td th:utext="${cont.rubG}"></td>
+                                            <td th:utext="${cont.rubM}"></td>
+                                            <td th:utext="${cont.HSP60}"></td>
+                                            <td th:utext="${cont.clamA}"></td>
+                                            <td th:utext="${cont.clamG}"></td>
+                                            <td th:utext="${cont.label}"></td>
+<!--                                            <td >-->
+<!--                                                <form name="delForm" id="delForm" th:action="@{/deleteanalysis}" method="post">-->
+<!--                                                    <input type="hidden" name="delete" id="deleteanalysis" th:value="*{selected.indexOf(cont)}">-->
+<!--                                                    <input type="hidden" name="deleteProof" id="deleteProof" value=0>-->
+<!--                                                    &lt;!&ndash;                                        <input type="text" name="codeInt" id="codeInt" >&ndash;&gt;-->
+<!--                                                    <input type="submit" class="btn btn-danger" value="Удалить">-->
+<!--                                                </form>-->
+<!--                                            </td>-->
+                                            <!--                                    <td th:utext="${cont.totalChek()}" class="font-weight-bold text-primary"></td>-->
+
+                                            <!--                                    <td>-->
+                                            <!--                                        <button class="btn btn-danger" type="submit">x</button>-->
+                                            <!--                                    </td>-->
+
+                                    </th:block>
+
+                                    </tr>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -159,6 +218,9 @@
     $( function() {
         if ( $( '#codeInt' ).val() !== '' ) {
             $( '#codeForm' ).submit();
+        }
+        if ($( '#torchcodeFormcodeInt').val()!=='') {
+            $( '#torchcodeForm').submit();
         }
     });
     // let URL = "divRefresh.html"

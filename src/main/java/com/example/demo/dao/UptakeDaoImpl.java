@@ -36,7 +36,7 @@ public class UptakeDaoImpl implements UptakeDao {
     public void setPasswordEncoder(@Lazy PasswordEncoder passwordEncoder) {this.passwordEncoder = passwordEncoder;}
 
 
-    public  List<Object[]> getData(String done, String bio_code) throws SQLException {
+    public  List<Object[]> getData(String done, String bio_code, Integer GRPPRM) throws SQLException {
         List<Object[]> objects = new ArrayList<>();
         Connection connection = database.getConnection();
         Statement statement = connection.createStatement();
@@ -75,6 +75,16 @@ public class UptakeDaoImpl implements UptakeDao {
                 " (select DISTINCT SIPHILIS_TPHA_TEST from DIR_ANSW DA inner join DATA_W693_VICH_SIFIL_GEPAT ON DA.MOTCONSU_RESP_ID=DATA_W693_VICH_SIFIL_GEPAT.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
                 " when LAB_METHODS.CODE='Сифилис МРП' then \n" +
                 " (select DISTINCT SIPHILIS_MR from DIR_ANSW DA inner join DATA_W693_VICH_SIFIL_GEPAT ON DA.MOTCONSU_RESP_ID=DATA_W693_VICH_SIFIL_GEPAT.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
+                "when LAB_METHODS.CODE='Rub-G' then\n" +
+                "(select DISTINCT DATA_W693_VUI.DYN_72840_72913 from DIR_ANSW DA inner join DATA_W693_VUI ON DA.MOTCONSU_RESP_ID=DATA_W693_VUI.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
+                "when LAB_METHODS.CODE='Rub- M' then\n" +
+                "(select DISTINCT DATA_W693_VUI.DYN_72840_72914 from DIR_ANSW DA inner join DATA_W693_VUI ON DA.MOTCONSU_RESP_ID=DATA_W693_VUI.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
+                "when LAB_METHODS.CODE='cHSP60-Ig G(белок тепл.шока и' then\n" +
+                "(select DISTINCT DATA_W693_VUI.DYN_72840_72917 from DIR_ANSW DA inner join DATA_W693_VUI ON DA.MOTCONSU_RESP_ID=DATA_W693_VUI.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
+                "when LAB_METHODS.CODE='Clam-A' then\n" +
+                "(select DISTINCT DATA_W693_VUI.DYN_72840_72916 from DIR_ANSW DA inner join DATA_W693_VUI ON DA.MOTCONSU_RESP_ID=DATA_W693_VUI.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
+                "when LAB_METHODS.CODE='Chlam-G' then\n" +
+                "(select DISTINCT DATA_W693_VUI.DYN_72840_72915 from DIR_ANSW DA inner join DATA_W693_VUI ON DA.MOTCONSU_RESP_ID=DATA_W693_VUI.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )" +
                 " end)\n" +
                 ",FM_DEP.MAIN_ORG_ID,\n" +
                 "FM_ORG.LABEL,\n" +
@@ -100,7 +110,7 @@ public class UptakeDaoImpl implements UptakeDao {
                 " LEFT OUTER JOIN VIEW_GRPPRM VIEW_GRPPRM WITH(NOLOCK)  ON DS_PARAMS.DS_PARAMS_ID = VIEW_GRPPRM.DS_PARAMS_ID \n" +
                 "--DS_PARAMS \n" +
                 "where \n" +
-                "VIEW_GRPPRM.GRPPRM_ID = 350 --рабочий журнал по вичам\n" +
+                "VIEW_GRPPRM.GRPPRM_ID ="+ GRPPRM+" --рабочий журнал по вичам\n" +
                 done +
                 "and  PATDIREC.BIO_CODE= -- код забора\n" + bio_code+
                 "and PATDIREC.DATE_BIO >dateadd(day,-PL_EXAM.VAL_PERIOD,getdate()) --\n" +
