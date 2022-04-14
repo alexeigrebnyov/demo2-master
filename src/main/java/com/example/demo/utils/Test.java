@@ -1,5 +1,6 @@
 package com.example.demo.utils;
 
+import com.example.demo.controller.UpdateController;
 import com.example.demo.controller.UptakeController;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
@@ -18,14 +19,16 @@ public class Test {
     public  static String data1;
     private static SerialPort serialPort = new SerialPort("COM4");
     private static UptakeController uptakeController;
+    private static UpdateController updateController;
     public static void flushSerialPort() throws SerialPortException {
         serialPort.purgePort(SerialPort.PURGE_RXCLEAR);
         serialPort.purgePort(SerialPort.PURGE_TXCLEAR);
         serialPort.closePort();
     }
     @Autowired
-    public void setUptakeController(UptakeController uptakeController) {
+    public void setUptakeController(UptakeController uptakeController, UpdateController updateController) {
         this.uptakeController = uptakeController;
+        this.updateController = updateController;
     }
 
 
@@ -75,8 +78,9 @@ public class Test {
                     //Получаем ответ от устройства, обрабатываем данные и т.д.
 //                    data.add(serialPort.readString(event.getEventValue()));
                     data1 = serialPort.readString(event.getEventValue());
-                    System.out.println(data1);
-                    uptakeController.setCode(data1);
+//                    System.out.println(data1);
+//                    uptakeController.setCode(data1);
+                      updateController.setCode(data1);
 //                    data.forEach(System.out::println);
 //                    uptakeController.setCode(data);
                     //И снова отправляем запрос

@@ -20,21 +20,28 @@
     </table>
     <a th:href="@{/logout}"> Выйти </a>
 </div>
-<div id="div_refresh">
-    <form name="codeForm" id="codeForm" th:action="@{/code}" method="post">
-        <input type="hidden" name="codeInt" id="codeInt" th:value="*{data1}">
-        <input type="hidden" name="redir" id="redir" th:value="*{redir1}">
-        <input type="hidden" name="proofCode" id="proofCode" th:value="*{codeProof}">
-        <input type="hidden" name="done" id="done" th:attr="value=${proofActive? 'and PATDIREC.QUANTITY_DONE=1':'and PATDIREC.QUANTITY_DONE=0'}">
+<!--<div id="div_refresh">-->
+<!--    <form name="codeForm" id="codeForm" th:action="@{/code}" method="post">-->
+<!--        <input type="hidden" name="codeInt" id="codeInt" th:value="*{data1}">-->
+<!--        <input type="hidden" name="redir" id="redir" th:value="*{redir1}">-->
+<!--        <input type="hidden" name="proofCode" id="proofCode" th:value="*{codeProof}">-->
+<!--        <input type="hidden" name="done" id="done" th:attr="value=${proofActive? 'and PATDIREC.QUANTITY_DONE=1':'and PATDIREC.QUANTITY_DONE=0'}">-->
+<!--        <input type="text" name="GRPPRM" id="GRPPRMcode" th:attr="value=${torch?'1':'350'}">-->
+<!--        <div id="timediv">-->
+<!--        <input type="text" name="auto" id="auto" th:value="*{time}">-->
+<!--        </div>-->
 
 
-        <!--                                        <input type="text" name="codeInt" id="codeInt" >-->
-        <!--                                         <input type="submit" value="Отправить">-->
-    </form>
+<!--        &lt;!&ndash;                                        <input type="text" name="codeInt" id="codeInt" >&ndash;&gt;-->
+<!--        &lt;!&ndash;                                         <input type="submit" value="Отправить">&ndash;&gt;-->
+<!--    </form>-->
 
-    <!--                                    <form name="chekForm" id="chekForm" th:action="@{/chek}" method="post">-->
-    <!--                                        <input type="submit" value="Проверить">-->
-    <!--                                    </form>-->
+<!--    &lt;!&ndash;                                    <form name="chekForm" id="chekForm" th:action="@{/chek}" method="post">&ndash;&gt;-->
+<!--    &lt;!&ndash;                                        <input type="submit" value="Проверить">&ndash;&gt;-->
+<!--    &lt;!&ndash;                                    </form>&ndash;&gt;-->
+<!--</div>-->
+<div name="selector" id="selector">
+    <input type="hidden" name="selinput" id="selinput" value="">
 </div>
 <div>
     <div class="row rowColor" >
@@ -46,66 +53,73 @@
             <a class="nav-link " href="#" >Ручной ввод</a>
 
         </nav>
+
+        <div>
+            <!--                            <br>-->
+            <!--                            <h4>ВИЧ, Геп В, С, СИФ</h4>-->
+            <div class="float-right">
+                <datalist id="counts" >
+                    <option value="4" selected="selected"></option>
+                    <option value="1"></option>
+                    <option value="2"></option>
+                    <option value="3"></option>
+                    <option value="5"></option>
+
+                </datalist>
+                <form name="writeForm" id="writeForm" th:attr="action=${proofActive? '/writeProof':'/write'}" method="post">
+                    <input type="submit" class="btn btn-primary" value="Сформировать списки">
+                    <input type="hidden"  name="redir" id="redir1" value="redirect:/divrefresh">
+                    Схема HBsAg под:
+                    <!--                                    <input type="text" name="count"  value="w">-->
+                    <!--                                    <input type="text" name="count"  value="d">-->
+                    <!--                                    <input type="text" name="count"  value="1:10">-->
+                    <!--                                    <input type="text" name="count"  value="1:100">-->
+                    <!--                                    <input type="text" name="count"  value="1:1000">-->
+                    <!--                                    <input type="text" name="count"  value="1:10000">-->
+                    <input type="text" name="count"  value="w-d-1:10-1:100-1:1000-1:10000" size="35">
+                </form>
+
+            </div>
+            <div class="bg-white">
+                <br>
+                <div>
+                    <p><b>Ручной ввод</b></p>
+<!--                    <form name="refresh" id="refresh" th:action="@{/scan}" method="post" >-->
+                        <input type="text" name="code" id="code" onchange="func()">
+<!--                        <div name="gprmdiv" id="gprmdiv">-->
+<!--                            <input type="text" name="GRPPRM" id="GRPPRM" th:attr="value=${torch?'1':'350'}">-->
+<!--                        </div>-->
+
+                        <input type="submit" value="ВИЧ" onclick="t(func(),'','redirect:/divrefresh', 'and PATDIREC.QUANTITY_DONE=0', '350')">
+                        <input type="submit" value="TORCH" onclick="t(func(),'','redirect:/divrefresh', 'and PATDIREC.QUANTITY_DONE=0', '1')">
+                        <input type="submit" value="Подтвеждающие" onclick="t('', func(), 'redirect:/divrefresh', 'and PATDIREC.QUANTITY_DONE=1', '350')">
+<!--                    </form>-->
+<!--                    <p><b>Подтверждающие</b></p>-->
+<!--                    <form name="refreshProof" id="refreshProof" th:action="@{/scanProof}" method="post" >-->
+<!--                        <input type="text" name="codeProof" id="codeProof">-->
+<!--                        <input type="hidden" name="proofActive" id="proofActive" value="active">-->
+
+<!--                        <input type="submit" value="отправить">-->
+<!--                    </form>-->
+                </div>
+
+            </div>
+        </div>
         <div class="container-fluid" style="background-color: #F8F8FF">
             <div class="container-fluid">
                 <!--                <h1>Анализы в Казань</h1>-->
                 <!-- Nav tabs -->
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true" >ВИЧ</a>
+                    <li class="nav-item" name="vichtab" id="vichtab">
+                        <a th:attr="class=${torch? 'nav-link':'nav-link active'}" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true" onclick="f1()" >ВИЧ</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="true">TORCH</a>
+                    <li class="nav-item" name="torchtab" id="torchtab">
+                        <a th:attr=" class=${torch? 'nav-link active':'nav-link'}" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="true" onclick="f()">TORCH</a>
                     </li>
                 </ul>
                 <div class="tab-content">
-                    <div class="tab-pane active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                        <div>
-                            <!--                            <br>-->
-                            <!--                            <h4>ВИЧ, Геп В, С, СИФ</h4>-->
-                            <div class="float-right">
-                                <datalist id="counts" >
-                                    <option value="4" selected="selected"></option>
-                                    <option value="1"></option>
-                                    <option value="2"></option>
-                                    <option value="3"></option>
-                                    <option value="5"></option>
+                    <div th:attr="class=${torch? 'tab-pane':'tab-pane active'}" id="home" role="tabpanel" aria-labelledby="home-tab">
 
-                                </datalist>
-                                <form name="writeForm" id="writeForm" th:attr="action=${proofActive? '/writeProof':'/write'}" method="post">
-                                    <input type="submit" class="btn btn-primary" value="Сформировать списки">
-                                    <input type="hidden"  name="redir" id="redir1" value="redirect:/divrefresh">
-                                    Схема HBsAg под:
-<!--                                    <input type="text" name="count"  value="w">-->
-<!--                                    <input type="text" name="count"  value="d">-->
-<!--                                    <input type="text" name="count"  value="1:10">-->
-<!--                                    <input type="text" name="count"  value="1:100">-->
-<!--                                    <input type="text" name="count"  value="1:1000">-->
-<!--                                    <input type="text" name="count"  value="1:10000">-->
-                                    <input type="text" name="count"  value="w-d-1:10-1:100-1:1000-1:10000" size="35">
-                                </form>
-
-                            </div>
-                            <div class="bg-white">
-                                <br>
-                                <div>
-                                    <p><b>Ручной ввод</b></p>
-                                    <form name="refresh" id="refresh" th:action="@{/scan}" method="post" >
-                                        <input type="text" name="code" id="code">
-
-                                        <input type="submit" value="отправить">
-                                    </form>
-                                    <p><b>Подтверждающие</b></p>
-                                    <form name="refreshProof" id="refreshProof" th:action="@{/scanProof}" method="post" >
-                                        <input type="text" name="codeProof" id="codeProof">
-                                        <input type="hidden" name="proofActive" id="proofActive" value="active">
-
-                                        <input type="submit" value="отправить">
-                                    </form>
-                                </div>
-
-                            </div>
-                        </div>
 
                         <table class="table table-striped" border="1">
                             <tr>
@@ -140,8 +154,8 @@
                                     <td th:utext="${cont.label}"></td>
                                     <td >
                                         <form name="delmanual" id="delmanual" th:action="@{/deletemanual}" method="post">
-                                            <input type="hidden" name="delete" id="deleteanalysis" th:attr="value=${proofActive?'':selected1.indexOf(cont)}">
-                                            <input type="hidden" name="deleteProof" id="deleteProof" th:attr="value=${proofActive?selected1.indexOf(cont):''}">
+                                            <input type="hidden" name="delete" id="deleteanalysis" th:value="*{cont.emc}">
+                                            <input type="hidden" name="deleteProof" id="deleteProof" th:attr="value=${proofActive?'proof':'vich'}">
                                             <!--                                        <input type="text" name="codeInt" id="codeInt" >-->
                                             <input type="submit" class="btn btn-danger" value="Удалить">
                                         </form>
@@ -157,11 +171,59 @@
                             </tr>
                         </table>
                     </div>
-                    <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                    <div th:attr="class=${torch? 'tab-pane active':'tab-pane'}" id="profile" role="tabpanel" aria-labelledby="profile-tab">
                         <div>
                             <h4>TORCH</h4>
                             <div class="bg-white">
-                                TORCH uptake data
+                                <table class="table table-striped" border="1">
+                                    <tr>
+                                        <th>№</th>
+                                        <th>ЭМК</th>
+                                        <th>ФИО</th>
+                                        <th>Дата забора</th>
+                                        <th>Код забора</th>
+                                        <th>ВИЧ</th>
+                                        <th>HBsAg</th>
+                                        <th>Anti-HCV</th>
+                                        <th>SyphIFA</th>
+                                        <th>МРП</th>
+                                        <th>Контенгент</th>
+                                        <th>Филиал</th>
+                                        <!--                                <th>Статус</th>-->
+                                    </tr>
+
+                                    <th:block th:each = "cont:${selected2}">
+                                        <tr>
+                                            <td th:utext="${selected1.indexOf(cont)+1}"></td>
+                                            <td th:utext="${cont.emc}"></td>
+                                            <td th:utext="${cont.fio}"></td>
+                                            <td th:utext="${cont.date_bio}"></td>
+                                            <td th:utext="${cont.code}"></td>
+                                            <td th:utext="${cont.rubG}"></td>
+                                            <td th:utext="${cont.rubM}"></td>
+                                            <td th:utext="${cont.HSP60}"></td>
+                                            <td th:utext="${cont.clamA}"></td>
+                                            <td th:utext="${cont.clamG}"></td>
+<!--                                            <td th:utext="${cont.kontengent}"></td>-->
+                                            <td th:utext="${cont.label}"></td>
+                                            <td >
+                                                <form name="deltorchmanual" id="deltorchmanual" th:action="@{/deletemanual}" method="post">
+                                                    <input type="hidden" name="delete" id="deletetorch" th:value="*{cont.emc}">
+                                                    <input type="hidden" name="deleteProof" id="TorchSelector" value="torch">
+                                                    <!--                                        <input type="text" name="codeInt" id="codeInt" >-->
+                                                    <input type="submit" class="btn btn-danger" value="Удалить">
+                                                </form>
+                                            </td>
+                                            <!--                                    <td th:utext="${cont.totalChek()}" class="font-weight-bold text-primary"></td>-->
+
+                                            <!--                                    <td>-->
+                                            <!--                                        <button class="btn btn-danger" type="submit">x</button>-->
+                                            <!--                                    </td>-->
+
+                                    </th:block>
+
+                                    </tr>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -176,37 +238,126 @@
 </div>
 </div>
 
-<script>
-    // let URL = "divRefresh.html"
-    // function show()
-    // {
-    //     $.ajax({
-    //         url: "UptakeController.java",
-    //         cache: false,
-    //         success: function(html){
-    //             $("#codeInt").html(html);
-    //         }
-    //     });
-    // }
-    //
-    // $(document).ready(function(){
-    //     show();
-    //     setInterval('show()',1000);
-    // });
-</script>
-<script>
-    $( function() {
-        if ( $( '#codeInt' ).val() !== '' ) {
-            $( '#codeForm' ).submit();
+<!--<script>-->
+<!--    // let URL = "divRefresh.html"-->
+<!--    // function show()-->
+<!--    // {-->
+<!--    //     $.ajax({-->
+<!--    //         url: "UptakeController.java",-->
+<!--    //         cache: false,-->
+<!--    //         success: function(html){-->
+<!--    //             $("#codeInt").html(html);-->
+<!--    //         }-->
+<!--    //     });-->
+<!--    // }-->
+<!--    //-->
+<!--    // $(document).ready(function(){-->
+<!--    //     show();-->
+<!--    //     setInterval('show()',1000);-->
+<!--    // });-->
+<!--</script>-->
+<script> {
+        function func() {
+         let  valuecode =document.getElementById("code").value
+            return valuecode;
         }
-    });
+}
+
+    function t(codeInt, proofCode, redir, done, grpprm) {
+                            if (func()!=null) {
+                                let params = {
+                                    codeInt: codeInt,
+                                    proofCode: proofCode,
+                                    redir: redir,
+                                    done: done,
+                                    grpprm: grpprm
+
+
+
+                                }
+                                fetch('/code', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json;charset=utf-8'
+                                    },
+                                    body: JSON.stringify(params)
+                                })
+
+                                setTimeout("location.reload(true)", 1500)
+                            }
+
+
+                        }
+
+
 </script>
-<script>
-    $( function() {
-        if ( $( '#proofCode' ).val() !== '' ) {
-            $( '#codeForm' ).submit();
-        }
-    });
-</script>
+<!--<script>-->
+<!--    $( function() {-->
+<!--        if ( $( '#codeInt' ).val() !== '' ) {-->
+<!--            $( '#codeForm' ).submit();-->
+<!--        }-->
+<!--    });-->
+<!--</script>-->
+<!--<script>-->
+<!--    $( function() {-->
+<!--        if ( $( '#proofCode' ).val() !== '' ) {-->
+<!--            $( '#codeForm' ).submit();-->
+<!--        }-->
+<!--    });-->
+<!--</script>-->
+<!--<script>-->
+<!--    $("#profile-tab").on('click', function() {-->
+<!--        if ( $( 'selinput').val()=='') {-->
+<!--            $( 'selector').innerHTML=` <input type="hidden" name="selinput" id="selinput" value="torch">`-->
+<!--            $( 'vichtab').innerHTML=`<a class="nav-link " id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true" >ВИЧ</a>`-->
+<!--            $( 'torchtab').innerHTML=`<a class="nav-link active" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="true">TORCH</a>`-->
+<!--            $( 'gprmdiv').innerHTML=` <input type="hidden" name="GRPPRM" id="GRPPRM" value=1>`-->
+<!--            console.log($( 'selinput').val())-->
+<!--        }-->
+<!--    });-->
+<!--</script>-->
+<!--<script>-->
+<!--    $("#home-tab").on('click', function() {-->
+<!--        if ( $( 'selinput').val()=='torch') {-->
+<!--            $( 'selector').innerHTML=` <input type="hidden" name="selinput" id="selinput" value="">`-->
+<!--            $( 'vichtab').innerHTML=`<a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true" >ВИЧ</a>`-->
+<!--            $( 'torchtab').innerHTML=`<a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="true" onclick="f()">TORCH</a>`-->
+<!--            $( 'gprmdiv').innerHTML=` <input type="hidden" name="GRPPRM" id="GRPPRM" value=350>`-->
+<!--        }-->
+<!--    });-->
+<!--</script>-->
+
+<!--<script>-->
+<!--     function f() {-->
+
+<!--         document.getElementById("gprmdiv").innerHTML=` <input type="text" name="GRPPRM" id="GRPPRM" value="1">`-->
+<!--            console.log($( 'GRPPRM'))-->
+<!--    };-->
+<!--</script>-->
+
+<!--<script>-->
+<!--    function f1() {-->
+<!--           document.getElementById("gprmdiv").innerHTML=` <input type="text" name="GRPPRM" id="GRPPRM" value="350">`-->
+<!--        console.log($( 'GRPPRM'))-->
+<!--    };-->
+<!--</script>-->
+<!--<script>-->
+<!--    function t() {-->
+<!--        fetch('/update/time').then(-->
+<!--            (res)=>res.json()-->
+<!--            .then((data) => {-->
+<!--                data.forEach( function (some) {-->
+<!--                    document.getElementById("timediv").innerHTML=`<input type="text" name="auto" id="auto" value="${some}">`-->
+<!--                })-->
+<!--            }-->
+<!--        ))-->
+
+<!--    }-->
+<!--   $( (function () {-->
+<!--        t();-->
+<!--        setInterval('t()', 1000)-->
+<!--    }));-->
+<!--</script>-->
+
 </body>
 </html>

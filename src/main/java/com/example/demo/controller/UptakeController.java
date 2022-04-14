@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Analysis;
+import com.example.demo.model.Params;
 import com.example.demo.model.User;
 import com.example.demo.service.UptakeService;
 import com.example.demo.utils.DesktopApi;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.curs.xylophone.XML2SpreadSheetError;
 
@@ -41,6 +43,7 @@ import java.util.stream.Collectors;
 public class UptakeController {
 
     UptakeService uptakeService;
+    UpdateController updateController;
 //    XLConstructor xlConstructor;
 //    BCScaner bcScaner;
     List<Analysis> uptakeByCode = new ArrayList<>();
@@ -57,6 +60,7 @@ public class UptakeController {
     String redirmanual = "redirect:/divrefresh";
     String redirProof = "redirect:/proofCode";
     boolean proofActive;
+    boolean torch;
 
     public String getUserName() {
         String s = null;
@@ -68,10 +72,11 @@ public class UptakeController {
         return s;
     }
     @Autowired
-    public UptakeController(UptakeService uptakeService
+    public UptakeController(UptakeService uptakeService, UpdateController updateController
 //     BCScaner bcScaner
     ) {
         this.uptakeService = uptakeService;
+        this.updateController = updateController;
 //        this.bcScaner = bcScaner;
     }
 
@@ -81,48 +86,63 @@ public class UptakeController {
 //           modelMap.addAttribute("contingents", contService.getAll());
 //            return  "contingent";
 //    }
-    @PostMapping(value = "/scan")
-    public String getScan(@RequestParam(value = "code") String code) {
-        setCode(code);
-        setProofActive(false);
-//        System.out.println(code);
-        return "redirect:/divrefresh";
-    }
+//    @PostMapping(value = "/scan")
+//    public String getScan(@RequestParam(value = "code") String code, @RequestParam(value = "GRPPRM") Integer gprm) {
+//        setCode(code);
+//        setProofActive(false);
+//        if (gprm==1) {
+//            setTorch(true);
+//        } else {
+//            setTorch(false);
+//        }
+//        System.out.println(torch);
+//        return "redirect:/divrefresh";
+//    }
 
     @PostMapping(value = "/scanProof")
     public String getScanProof(@RequestParam(value = "codeProof") String codeProof) {
         setCodeProof(codeProof);
 //        System.out.println(code1);
         setProofActive(true);
+        setTorch(false);
         return "redirect:/divrefresh";
     }
 
     @GetMapping(value = "/divrefresh")
     public String redirect(ModelMap modelMap) {
 //        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<Analysis> dist = uptakeByCode
-                .stream()
-                .distinct()
-                .collect(Collectors.toList());
-        List<Analysis> distProof = uptakeProof
-                .stream()
-                .distinct()
-                .collect(Collectors.toList());
+
         modelMap.addAttribute("data1", code);
         modelMap.addAttribute("redir1", redirmanual);
-        if (!proofActive) {
-            modelMap.addAttribute("selected1", dist);
-        } else {
-            modelMap.addAttribute("selected1", distProof);
-        }
+
+
+            modelMap.addAttribute("selected2", uptakeTORCH
+                    .stream()
+                    .distinct()
+                    .collect(Collectors.toList()));
+            if (!proofActive) {
+                modelMap.addAttribute("selected1", uptakeByCode
+                        .stream()
+                        .distinct()
+                        .collect(Collectors.toList()));
+            } else {
+                modelMap.addAttribute("selected1", uptakeProof
+                        .stream()
+                        .distinct()
+                        .collect(Collectors.toList()));
+            }
         modelMap.addAttribute("codeProof", code1);
         modelMap.addAttribute("user", getUserName());
         modelMap.addAttribute("proofActive", proofActive);
+        modelMap.addAttribute("torch", torch);
+        modelMap.addAttribute("time", System.currentTimeMillis());
 
 
 //        Test.data.forEach(e -> uptakeByCode.add(contService
 //                .getByCode(Integer.parseInt(e.trim()))));
 //        System.out.println(proofActive);
+
+
         return "divRefresh";
 
     }
@@ -136,18 +156,33 @@ public class UptakeController {
     public String updateUser1(ModelMap model)  {
 //        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-    Test.getScan();
+//    Test.getScan();
         List<Analysis> dist = uptakeByCode
                 .stream()
                 .distinct()
                 .collect(Collectors.toList());
 
+
         model.addAttribute("data1", code);
         model.addAttribute("selected", dist);
         model.addAttribute("redir", redirect);
         model.addAttribute("user", getUserName());
-        model.addAttribute("torches", uptakeTORCH.stream().distinct().collect(Collectors.toList()));
         return "byCode";
+    }
+
+    @GetMapping(value = "/codeTorch")
+    public String uptakeTORCH(ModelMap model)  {
+        List<Analysis> dist = uptakeTORCH
+                .stream()
+                .distinct()
+                .collect(Collectors.toList());
+
+
+        model.addAttribute("data1", code);
+        model.addAttribute("selected", dist);
+        model.addAttribute("redir", redirect);
+        model.addAttribute("user", getUserName());
+        return "byCodeTorch";
     }
 
     @GetMapping(value = "/proofCode")
@@ -160,9 +195,9 @@ public class UptakeController {
                 .distinct()
                 .collect(Collectors.toList());
 
-        model.addAttribute("data1", code);
+//        model.addAttribute("data1", code);
         model.addAttribute("proofs", dist);
-        model.addAttribute("redir", redirProof);
+//        model.addAttribute("redir", redirProof);
         model.addAttribute("user", getUserName());
 //        System.out.println(dist);
         return "proofCode";
@@ -334,20 +369,24 @@ public class UptakeController {
     }
 
     @PostMapping(value = "/code")
-    public String updateUser(ModelMap model, @RequestParam(value = "codeInt") String codeInt,
-                             @RequestParam(value ="redir") String redir,
-                             @RequestParam(value="proofCode")String proof,
-                             @RequestParam(value = "done") String done,
-                             @RequestParam(value = "GRPPRM") Integer GRPPRM
-    ) throws SQLException {
+    public String updateUser(ModelMap model,
+//                             @RequestParam(value = "codeInt") String codeInt,
+//                             @RequestParam(value ="redir") String redir,
+//                             @RequestParam(value="proofCode")String proof,
+//                             @RequestParam(value = "done") String done,
+//                             @RequestParam(value = "GRPPRM") Integer GRPPRM
+                             @RequestBody Params params
+                             ) throws SQLException {
 //        chek.add(codeInt);
 //        System.out.println(proof);
 
             Analysis analysis = new Analysis();
             List<Object[]> data = new ArrayList<>();
-            if (proof.equals("")) {
-                data = uptakeService.getData(done, codeInt, GRPPRM);
-            } else { data = uptakeService.getData(done, proof, GRPPRM);}
+            if (params.getProofCode().equals("")) {
+                data = uptakeService.getData(params.getDone(), params.getCodeInt(), Integer.parseInt(params.getGrpprm()));
+                setProofActive(false);
+            } else { data = uptakeService.getData(params.getDone(), params.getProofCode(), Integer.parseInt(params.getGrpprm()));
+                        setProofActive(true);}
 //        try {
 //            Object[] data1 = data
 //                    .stream()
@@ -484,14 +523,17 @@ public class UptakeController {
 //
                 }
 //                uptakeByCode.removeIf(n -> (n.getEmc().equals(analysis.getEmc())&&n.getCode().equals(analysis.getCode())));
-                if (GRPPRM==1) {
-                    if (proof.equals("")) {
+                if (params.getGrpprm().equals("350")) {
+                    setTorch(false);
+                    if (params.getProofCode().equals("")) {
                         uptakeByCode.add(analysis);
+
                     } else {
                         uptakeProof.add(analysis);
                     }
                 } else {
                     uptakeTORCH.add(analysis);
+                    setTorch(true);
                 }
 //                chekByCode.add(analysis);
 //                chekByCode.add(analysis);
@@ -511,7 +553,10 @@ public class UptakeController {
 //        System.out.println(codeInt);
        code = null;
        code1 = null;
-        return redir;
+       updateController.setCode(null);
+
+
+        return params.getRedir();
     }
     @PostMapping(value = "/exportresult")
     public String exportResult() {
@@ -602,24 +647,53 @@ public class UptakeController {
         return "redirect:/chek";
     }
     @PostMapping(value = "/deleteanalysis")
-    public String delete(@RequestParam(value = "delete") int delete, @RequestParam(value = "deleteProof") int deleteProof) {
-        String redir = "redirect:/code";
-        if (delete != 0) {
-            uptakeByCode.remove(delete);
-        } else {
-            uptakeProof.remove(deleteProof);
-            redir=redirProof;
+    public String delete(@RequestParam(value = "delete") String delete, @RequestParam(value = "deleteProof") String deleteProof) {
+        String redir="redirect:/code";
+
+        switch (deleteProof) {
+            case "vich" : {
+                uptakeByCode.removeIf(e ->e.getEmc().equals(delete));
+                break;
+            }
+            case "torch" : {
+                uptakeTORCH.removeIf(e ->e.getEmc().equals(delete));
+                redir = "redirect:/codeTorch";
+                break;
+            }
+            case "proof": {
+                uptakeProof.removeIf(e ->e.getEmc().equals(delete));
+                redir="redirect:/proofCode";
+                break;
+            }
         }
+//        if (delete != 0) {
+//            uptakeByCode.remove(delete);
+//        } else {
+//            uptakeProof.remove(deleteProof);
+//            redir=redirProof;
+//        }
         return redir;
     }
 
     @PostMapping(value = "/deletemanual")
     public String deletemanual(@RequestParam(value = "delete") String delete, @RequestParam(value = "deleteProof") String deleteProof) {
-        if (!delete.equals("")) {
-            uptakeByCode.remove(Integer.parseInt(delete));
-        } else {
-            uptakeProof.remove(Integer.parseInt(deleteProof));
 
+        switch (deleteProof) {
+            case "vich" : {
+                uptakeByCode.removeIf(e ->e.getEmc().equals(delete));
+                setTorch(false);
+                break;
+            }
+            case "torch" : {
+                uptakeTORCH.removeIf(e ->e.getEmc().equals(delete));
+                setTorch(true);
+                break;
+            }
+            case "proof": {
+                uptakeProof.removeIf(e ->e.getEmc().equals(delete));
+                setTorch(false);
+                break;
+            }
         }
         return "redirect:/divrefresh";
     }
@@ -635,6 +709,10 @@ public class UptakeController {
 
     public void setProofActive(boolean proofActive) {
         this.proofActive = proofActive;
+    }
+
+    public void setTorch(boolean torch) {
+        this.torch = torch;
     }
 
     public List<Analysis> getUptakeByCode() {

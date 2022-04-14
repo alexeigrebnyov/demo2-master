@@ -27,44 +27,26 @@
 
         <nav class="nav col-md-12" >
             <a class="nav-link" th:href="@{/}">Главная</a>
-            <a class="nav-link" th:href="@{/code}">Забор</a>
-            <a class="nav-link active" href="#">Подтверждающие</a>
+            <a class="nav-link " th:href="@{/code}">Забор</a>
             <a class="nav-link " th:href="@{/chek}" >Результаты</a>
             <a class="nav-link " th:href="@{/divrefresh}" >Ручной ввод</a>
+            <a class="nav-link " th:href="@{/proofCode}" >Подтверждающие</a>
 
         </nav>
         <div class="container-fluid" style="background-color: #F8F8FF">
-                        <div>
-<!--                            <div id="div_refresh">-->
-<!--&lt;!&ndash;                                <form name="codeForm" id="codeForm" th:action="@{/proofCode}" method="post">&ndash;&gt;-->
-<!--                                <form name="codeForm" id="codeForm" th:action="@{/code}" method="post">-->
-<!--                                    <input type="hidden" name="codeInt" id="codeInt" value="">-->
-<!--                                    <input type="hidden" name="proofCode" id="proofCode" th:value="*{data1}">-->
-<!--&lt;!&ndash;                                    <input type="text" name="proofCode" id="proofCode" >&ndash;&gt;-->
-<!--                                    <input type="hidden" name="redir" id="redir" th:value="*{redir}">-->
-<!--                                    <input type="hidden" name="done" id="done" value="and PATDIREC.QUANTITY_DONE=1">-->
-
-<!--                                    &lt;!&ndash;                                        <input type="text" name="codeInt" id="codeInt" >&ndash;&gt;-->
-<!--&lt;!&ndash;                                                                             <input type="submit" value="Отправить">&ndash;&gt;-->
-<!--                                </form>-->
-
-<!--                            </div>-->
+            <div class="container-fluid">
+<!--                <h1>Анализы в Казань</h1>-->
+                <!-- Nav tabs -->
+                <div class="tab-content">
                             <div class="float-right">
-                                <datalist id="counts">
-                                    <option value="4" selected></option>
-                                    <option value="1"></option>
-                                    <option value="2"></option>
-                                    <option value="3"></option>
-                                    <option value="5"></option>
-
-                                </datalist>
-                                <form name="writeForm" id="writeForm" th:action="@{/writeProof}" method="post">
+                                <form name="writeForm" id="writeForm" th:action="@{/write}" method="post">
                                     <input type="submit" class="btn btn-primary" value="Сформировать списки">
-                                    <input type="hidden" name="redir" id="redirProof" value="redirect:/proofCode">
-                                    Схема HBsAg под: w-d-1:10-1:100-1:1000-1:10000. Для изменения зайдите в "Ручной ввод"
-                                    <input type="hidden" name="count"  value="w-d-1:10-1:100-1:1000-1:10000" size="35">
+                                    <input type="hidden" name="redir" id="redirProof" value="redirect:/code">
                                 </form>
 
+                            </div>
+                            <div class="bg-white">
+                                <br>
                             </div>
                         </div>
 
@@ -80,45 +62,37 @@
                                 <th>Anti-HCV</th>
                                 <th>SyphIFA</th>
                                 <th>МРП</th>
-                                <th>Контенгент</th>
                                 <th>Филиал</th>
-                                <!--                                <th>Статус</th>-->
+<!--                                <th>Статус</th>-->
                             </tr>
+                            <div id="dataRowDiv"></div>
 
-                            <th:block th:each = "cont:${proofs}">
+                            <th:block th:each = "cont:${selected}">
                                 <tr>
-                                    <td th:utext="${proofs.indexOf(cont)+1}"></td>
+                                    <td th:utext="${selected.indexOf(cont)+1}"></td>
                                     <td th:utext="${cont.emc}"></td>
                                     <td th:utext="${cont.fio}"></td>
                                     <td th:utext="${cont.date_bio}"></td>
                                     <td th:utext="${cont.code}"></td>
-                                    <td th:utext="${cont.hiv}"></td>
-                                    <td th:utext="${cont.hbsAg}"></td>
-                                    <td th:utext="${cont.atHCV}"></td>
-                                    <td th:utext="${cont.syphIFA}"></td>
-                                    <td th:utext="${cont.syphMRP}"></td>
-                                    <td th:utext="${cont.kontengent}"></td>
+                                    <td th:utext="${cont.rubG}"></td>
+                                    <td th:utext="${cont.rubM}"></td>
+                                    <td th:utext="${cont.HSP60}"></td>
+                                    <td th:utext="${cont.clamA}"></td>
+                                    <td th:utext="${cont.clamG}"></td>
                                     <td th:utext="${cont.label}"></td>
-                                    <td th:utext="${cont.adres}"></td>
                                     <td >
                                         <form name="delForm" id="delForm" th:action="@{/deleteanalysis}" method="post">
                                             <input type="hidden" name="delete" id="deleteanalysis" th:value="*{cont.emc}">
-                                            <input type="hidden" name="deleteProof" id="deleteProof" value="proof">
+                                            <input type="hidden" name="deleteProof" id="deleteProof" value="torch">
                                             <!--                                        <input type="text" name="codeInt" id="codeInt" >-->
                                             <input type="submit" class="btn btn-danger" value="Удалить">
                                         </form>
                                     </td>
-                                    <!--                                    <td th:utext="${cont.totalChek()}" class="font-weight-bold text-primary"></td>-->
-
-                                    <!--                                    <td>-->
-                                    <!--                                        <button class="btn btn-danger" type="submit">x</button>-->
-                                    <!--                                    </td>-->
 
                             </th:block>
 
                             </tr>
                         </table>
-                    </div>
 
                 </div>
 
@@ -131,23 +105,16 @@
 </div>
 </div>
 
-<!--&lt;!&ndash;<script>&ndash;&gt;-->
-<!--    // let URL = "divRefresh.html"-->
-<!--    // function show()-->
-<!--    // {-->
-<!--    //     $.ajax({-->
-<!--    //         url: "UptakeController.java",-->
-<!--    //         cache: false,-->
-<!--    //         success: function(html){-->
-<!--    //             $("#codeInt").html(html);-->
-<!--    //         }-->
-<!--    //     });-->
-<!--    // }-->
-<!--    //-->
-<!--    // $(document).ready(function(){-->
-<!--    //     show();-->
-<!--    //     setInterval('show()',1000);-->
-<!--    // });-->
+<!--<script>-->
+<!--    $( function() {-->
+<!--        if ( $( '#codeInt' ).val() !== '' ) {-->
+<!--            $( '#codeForm' ).submit();-->
+<!--        }-->
+<!--        if ($( '#torchcodeFormcodeInt').val()!=='') {-->
+<!--            $( '#torchcodeForm').submit();-->
+<!--        }-->
+<!--    });-->
+<!--</script>-->
 
 <script>
     function t() {
@@ -158,11 +125,11 @@
                             // document.getElementById("code_update").innerHTML=`<input type="text" name="codeInt" id="codeInt" value="${some}">`
                             if (some!=null) {
                                 let params = {
-                                    codeInt: '',
-                                    proofCode: some,
-                                    redir: 'redirect:/proofCode',
-                                    done: 'and PATDIREC.QUANTITY_DONE=1',
-                                    grpprm: '350'
+                                    codeInt: some,
+                                    proofCode: '',
+                                    redir: 'redirect:/codeTorch',
+                                    done: 'and PATDIREC.QUANTITY_DONE=0',
+                                    grpprm: '1'
 
 
 
@@ -189,7 +156,6 @@
         setInterval('t()', 1000)
     }));
 </script>
-<!--</script>-->
 <!--<script>-->
 <!--    $( function() {-->
 <!--        if ( $( '#proofCode' ).val() !== '' ) {-->
@@ -197,13 +163,5 @@
 <!--        }-->
 <!--    });-->
 <!--</script>-->
-<!--<script>-->
-<!--    $( function() {-->
-<!--        if ( $( '#codeProofInt' ).val() !== '' ) {-->
-<!--            $( '#codeProofForm' ).submit();-->
-<!--        }-->
-<!--    });-->
-<!--</script>-->
-
 </body>
 </html>
