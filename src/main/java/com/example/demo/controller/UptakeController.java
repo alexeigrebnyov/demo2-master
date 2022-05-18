@@ -4,12 +4,12 @@ import com.example.demo.model.Analysis;
 import com.example.demo.model.Params;
 import com.example.demo.model.User;
 import com.example.demo.service.UptakeService;
-import com.example.demo.utils.DesktopApi;
-import com.example.demo.utils.Test;
+import com.example.demo.utils.Constants;
+//import com.example.demo.utils.Test;
 import com.example.demo.utils.XLConstructor;
-import org.hibernate.type.LocalDateTimeType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.RestTemplate;
 import ru.curs.xylophone.XML2SpreadSheetError;
 
 import java.io.File;
@@ -25,14 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
-import java.sql.Time;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -61,6 +55,7 @@ public class UptakeController {
     String redirProof = "redirect:/proofCode";
     boolean proofActive;
     boolean torch;
+    RestTemplate template = new RestTemplate();
 
     public String getUserName() {
         String s = null;
@@ -189,7 +184,7 @@ public class UptakeController {
     public String getProofs(ModelMap model)  {
 //        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        Test.getScan();
+//        Test.getScan();
         List<Analysis> dist = uptakeProof
                 .stream()
                 .distinct()
@@ -202,10 +197,14 @@ public class UptakeController {
 //        System.out.println(dist);
         return "proofCode";
     }
+    @GetMapping("/gormonu")
+    public String getGorm() {
+        return "byCodeGormonu";
+    }
     @GetMapping(value = "/chek")
     public String getCheked (ModelMap model) throws SQLException {
 //        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        chekAnalysis();
+        chekAnalysis(uptakeByCode, 350);
         List<Analysis> dist = uptakeByCode
                 .stream()
                 .distinct()
@@ -214,6 +213,21 @@ public class UptakeController {
         model.addAttribute("chekedAnalysis", dist);
         model.addAttribute("user", getUserName());
         return "chek";
+
+    }
+
+    @GetMapping(value = "/chekTorch")
+    public String getChekedTorch (ModelMap model) throws SQLException {
+//        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        chekAnalysis(uptakeTORCH, 1);
+        List<Analysis> dist = uptakeTORCH
+                .stream()
+                .distinct()
+                .collect(Collectors.toList());
+
+        model.addAttribute("chekedAnalysis", dist);
+        model.addAttribute("user", getUserName());
+        return "chekTorch";
 
     }
     @GetMapping(value = "/admin")
@@ -241,13 +255,20 @@ public class UptakeController {
     public String refresh() throws SQLException {
 
         if (uptakeByCode.size()!=0) {uptakeByCode.clear();}
+        if (uptakeProof.size()!=0) {uptakeProof.clear();}
 //        if (chekByCode.size()!=0) {chekByCode.clear();}
         return "redirect:/code";
     }
+
+    @PostMapping(value = "/refreshTorch")
+    public String refreshTorch() throws SQLException {
+
+        if (uptakeTORCH.size()!=0) {uptakeTORCH.clear();}
+//        if (chekByCode.size()!=0) {chekByCode.clear();}
+        return "redirect:/codeTorch";
+    }
     @PostMapping(value = "/write")
     public String write(@RequestParam(value = "redir") String redir) throws IOException, XML2SpreadSheetError {
-//        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        String userName = userDetails.getUsername();
         List<Analysis> dist = uptakeByCode
                 .stream()
                 .distinct()
@@ -295,7 +316,10 @@ public class UptakeController {
             System.out.println(ex.getMessage());
         }
         XLConstructor.writeXML(dist);
-        XLConstructor.xml2XLSX();
+        XLConstructor.xml2XLSX("//192.168.7.100/ifa/ifaList/report.xlsx");
+        RequestEntity request = RequestEntity
+                .get("http://"+ Constants.SERVERENDPOINT+"/update/openVich").build();
+        ResponseEntity<String> response = template.exchange(request, String.class);
 
         return redir;
 
@@ -304,8 +328,6 @@ public class UptakeController {
     @PostMapping(value = "/writeProof")
     public String writeProof(@RequestParam (value = "redir") String redirect,
                              @RequestParam ("count") String count) throws IOException, XML2SpreadSheetError {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String userName = getUserName();
         List<Analysis> dist = uptakeProof
                 .stream()
                 .distinct()
@@ -361,7 +383,69 @@ public class UptakeController {
             System.out.println(ex.getMessage());
         }
         XLConstructor.writeXML(dist);
-        XLConstructor.xml2XLSX();
+        XLConstructor.xml2XLSX("//192.168.7.100/ifa/ifaList/ProofReport.xlsx");
+        RequestEntity request = RequestEntity
+                .get("http://"+Constants.SERVERENDPOINT+"/update/openProof").build();
+        ResponseEntity<String> response = template.exchange(request, String.class);
+
+        return redirect;
+
+
+    }
+
+    @PostMapping(value = "/writeTorch")
+    public String writeTorch(@RequestParam (value = "redir") String redirect) throws IOException, XML2SpreadSheetError {
+        List<Analysis> dist = uptakeTORCH
+                .stream()
+                .distinct()
+                .collect(Collectors.toList());
+
+//        String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+
+        deleteAllFilesFolder("//192.168.7.100/ifa/torch");
+        try(
+                FileOutputStream fosB=new FileOutputStream("//192.168.7.100/ifa/torch/RubGList.txt", true);
+                FileOutputStream fosC=new FileOutputStream("//192.168.7.100/ifa/torch/RubMList.txt", true);
+                FileOutputStream fos=new FileOutputStream("//192.168.7.100/ifa/torch/ChlamGList.txt", true);
+                FileOutputStream fosSyf=new FileOutputStream("//192.168.7.100/ifa/torch/ChlamAList.txt", true);
+                FileOutputStream fosHSP=new FileOutputStream("//192.168.7.100/ifa/torch/HSP60List.txt", true);
+        ) {
+
+
+            for (Analysis data:
+                    dist) {
+                if (data.getRubG().equals("1")) {
+                    String item =getUserName()+" "+ data.getEmc()+ System.lineSeparator();
+                    fosB.write(item.getBytes());
+//                    System.out.println(data.getHiv());
+                }
+                if (data.getRubM().equals("1")) {
+                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
+
+                    fosC.write(item.getBytes());
+                }
+                if (data.getClamG().equals("1")) {
+                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
+                    fos.write(item.getBytes());
+                }
+                if (data.getClamA().equals("1")) {
+                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
+                    fosSyf.write(item.getBytes());
+                }
+                if (data.getHSP60().equals("1")) {
+                    String item =getUserName()+" "+  data.getEmc()+" "+  System.lineSeparator();
+                    fosHSP.write(item.getBytes());
+                }
+
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+        XLConstructor.writeTORCHXML(dist);
+        XLConstructor.xml2XLSX("//192.168.7.100/ifa/ifaList/TorchReport.xlsx");
+        RequestEntity request = RequestEntity
+                .get("http://"+Constants.SERVERENDPOINT+"/update/openTorch").build();
+        ResponseEntity<String> response = template.exchange(request, String.class);
 
         return redirect;
 
@@ -469,7 +553,7 @@ public class UptakeController {
                                 analysis.setRubG("");
                         }
 
-                        if (data1[9].toString().equals("Rub-M")) {
+                        if (data1[9].toString().equals("Rub- M")) {
                             analysis.setRubM("1");
                             if (data1[4] != null) {
                                 analysis.setResultRubM(data1[4].toString());
@@ -477,6 +561,25 @@ public class UptakeController {
                         } else {
                             if (analysis.getRubM() == null)
                                 analysis.setRubM("");
+                        }
+                        if (data1[9].toString().equals("Clam-A")) {
+                            analysis.setClamA("1");
+                            if (data1[4] != null) {
+                                analysis.setResultClamA(data1[4].toString());
+                            }
+                        } else {
+                            if (analysis.getClamA() == null)
+                                analysis.setClamA("");
+                        }
+
+                        if (data1[9].toString().equals("Chlam-G")) {
+                            analysis.setClamG("1");
+                            if (data1[4] != null) {
+                                analysis.setResultClamG(data1[4].toString());
+                            }
+                        } else {
+                            if (analysis.getClamG() == null)
+                                analysis.setClamG("");
                         }
 
                         if (data1[9].toString().equals("cHSP60-Ig G(белок тепл.шока и")) {
@@ -554,27 +657,39 @@ public class UptakeController {
        code = null;
        code1 = null;
        updateController.setCode(null);
+        RequestEntity request = RequestEntity
+                .get("http://"+Constants.SERVERENDPOINT+"/update/setcode").build();
+        ResponseEntity<String> response = template.exchange(request, String.class);
 
 
         return params.getRedir();
     }
+
+//    @PostMapping(value = "/gormonucode")
+//    public String getGormonu(@RequestBody Params params) throws SQLException {
+//        uptakeService.getDataGormonu(params.getCodeInt(), Integer.parseInt(params.getGrpprm()), done);
+//        return  params.getRedir();
+//    }
     @PostMapping(value = "/exportresult")
-    public String exportResult() {
-        File expres = new File("C:/Users/ifa.NNPLUS/IFA.jar");
-        DesktopApi.open(expres);
-        return "redirect:/chek";
+    public String exportResult(@RequestParam("redir") String redir) {
+//        File expres = new File("C:/Users/Grebnev_A/IFA.jar");
+//       System.out.println( DesktopApi.open(expres));
+        RequestEntity request = RequestEntity
+                .get("http://"+Constants.SERVERENDPOINT+"/update/run").build();
+        ResponseEntity<String> response = template.exchange(request, String.class);
+        return redir;
     }
 //    @PostMapping(value = "/chek")
-    public String chekAnalysis () throws SQLException {
+    public String chekAnalysis (List<Analysis> chekAnalysis, Integer GRPPRM) throws SQLException {
 //        List<Analysis> dist = uptakeByCode
 //                .stream()
 //                .distinct()
 //                .collect(Collectors.toList());
 //        chek.add("3856");
         List<Object[]> data = new ArrayList<>();
-        for (Analysis upt:uptakeByCode) {
+        for (Analysis upt:chekAnalysis) {
 
-        data = uptakeService.chek(" ",upt.getCode());
+        data = uptakeService.chek(" ",upt.getCode(), GRPPRM);
 //		System.out.println(data.size());
 //        try {
 //            Object[] data1 = data
@@ -620,6 +735,32 @@ public class UptakeController {
                     if (data1[0] != null) {upt.setResultSyphIfa(data1[0].toString());}
                     else {upt.setResultSyphIfa("");}
                 }
+                if (data1[1].toString().equals("Rub-G")) {
+//                    upt.setHiv("1");
+                    if (data1[0] != null ) {upt.setResultRubG(data1[0].toString());}
+                    else {upt.setResultRubG("");}
+                }
+                if (data1[1].toString().equals("Rub- M")) {
+//                    upt.setHiv("1");
+                    if (data1[0] != null ) {upt.setResultRubM(data1[0].toString());}
+                    else {upt.setResultRubM("");}
+                }
+                if (data1[1].toString().equals("cHSP60-Ig G(белок тепл.шока и")) {
+//                    upt.setHiv("1");
+                    if (data1[0] != null ) {upt.setResultHSP60(data1[0].toString());}
+                    else {upt.setResultHSP60("");}
+                }
+                if (data1[1].toString().equals("Clam-A")) {
+//                    upt.setHiv("1");
+                    if (data1[0] != null ) {upt.setResultClamA(data1[0].toString());}
+                    else {upt.setResultClamA("");}
+                }
+                if (data1[1].toString().equals("Chlam-G")) {
+//                    upt.setHiv("1");
+                    if (data1[0] != null ) {upt.setResultClamG(data1[0].toString());}
+                    else {upt.setResultClamG("");}
+                }
+
 //                System.out.println(Arrays.toString(data1));
 
             } catch (Exception ignored) {}

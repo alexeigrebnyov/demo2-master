@@ -38,7 +38,10 @@ public class UptakeDaoImpl implements UptakeDao {
 
     public  List<Object[]> getData(String done, String bio_code, Integer GRPPRM) throws SQLException {
         List<Object[]> objects = new ArrayList<>();
-        Connection connection = database.getConnection();
+        try(Connection connection = database.getConnection()) {
+
+
+
         Statement statement = connection.createStatement();
 
         ResultSet resultSet = statement.executeQuery("select  PATDIREC.PATIENTS_ID,\n" +
@@ -117,7 +120,7 @@ public class UptakeDaoImpl implements UptakeDao {
                 " --and FM_DEP.MAIN_ORG_ID=20 --филиал выполнивший забор биоматериала");
 
         while (resultSet.next()) {
-            objects.add(new Object[] {
+            objects.add(new Object[]{
                     resultSet.getObject(1),
                     resultSet.getObject(2),
                     resultSet.getObject(3),
@@ -133,134 +136,167 @@ public class UptakeDaoImpl implements UptakeDao {
                     resultSet.getObject(13)
             });
         }
-//
-//       return entityManager.createNativeQuery("SELECT DISTINCT patdirec.PATIENTS_ID,\n" +
-//               " dbo.fNNPlus_Patient (pat.PATIENTS_ID,1),\n" +
-//               "--pat.nom+' '+substring(pat.PRENOM,1,1)+'. '+substring(pat.PATRONYME,1,1)+'.', \n" +
-//               "(case \n" +
-//               "when patdirec.kontengent=0 then '108.б - доноры биологических жидкостей'\n" +
-//               "when patdirec.kontengent=1 then '109.а - беременные при взятии на учет'\n" +
-//               "when patdirec.kontengent=2 then '109.б - беременные на сроке 25-26 и 38-39 недель'\n" +
-//               "when patdirec.kontengent=3 then '116 б - в соответствии со стандартами мед. помощи (ВРТ, перед манипуляциями,добровольное обследование)'\n" +
-//               "when patdirec.kontengent=4 then '110 - половые партнеры беременных'\n" +
-//               "when patdirec.kontengent=5 then '132.б - профилактический медосмотр'\n" +
-//               "when patdirec.kontengent=6 then '132.в - медицинские аварийные ситуации'\n" +
-//               "end),\n" +
-//               "DIR_ANSW.MOTCONSU_RESP_ID\n" +
-//               ",\n" +
-//               "(case \n" +
-//               "when LAB_METHODS.CODE='А/т к ВИЧ 1,2 +А/г' then \n" +
-//               "(select DISTINCT AT_K_VIH_1_2 from DIR_ANSW DA inner join DATA141 ON DA.MOTCONSU_RESP_ID=DATA141.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID ) \n" +
-//               "when LAB_METHODS.CODE='HBsAg' then \n" +
-//               " (select DISTINCT HBS_AG from DIR_ANSW DA inner join DATA141 ON DA.MOTCONSU_RESP_ID=DATA141.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID ) \n" +
-//               "when LAB_METHODS.CODE='Ат .к. HCV' then \n" +
-//               " (select DISTINCT HCV from DIR_ANSW DA inner join DATA141 ON DA.MOTCONSU_RESP_ID=DATA141.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID ) \n" +
-//               "when LAB_METHODS.CODE='Syphilis ИФА' then \n" +
-//               " (select DISTINCT SIPHILIS_TPHA_TEST from DIR_ANSW DA inner join DATA141 ON DA.MOTCONSU_RESP_ID=DATA141.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
-//               " when LAB_METHODS.CODE='Сифилис МРП' then \n" +
-//               " (select DISTINCT SIPHILIS_MR from DIR_ANSW DA inner join DATA141 ON DA.MOTCONSU_RESP_ID=DATA141.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
-//               " end)\n" +
-//               ",FM_DEP.MAIN_ORG_ID,\n" +
-//               "FM_ORG.LABEL,\n" +
-//               "PATDIREC.PATDIREC_ID,\n" +
-//               "PATDIREC.DATE_BIO,\n" +
-//               "--DS_PARAMS.DS_PARAMS_ID,\n" +
-//               "--,PATDIREC.PL_EXAM_ID,\n" +
-//               " --LAB_METHODS.LAB_METHODS_ID, \n" +
-//               " LAB_METHODS.CODE, \n" +
-//               "  PATDIREC.BIO_CODE\n" +
-//               "  --,LAB_METHODBIO.LAB_METHODBIO_ID\n" +
-//               "  FROM\n" +
-//               " PATDIREC PATDIREC WITH(NOLOCK)  JOIN PL_EXAM PL_EXAM WITH(NOLOCK)  ON PATDIREC.PL_EXAM_ID = PL_EXAM.PL_EXAM_ID \n" +
-//               " INNER JOIN DIR_ANSW ON PATDIREC.PATDIREC_ID=DIR_ANSW.PATDIREC_ID\n" +
-//               " inner join DIR_SERV ON PATDIREC.PATDIREC_ID =DIR_SERV.PATDIREC_ID\n" +
-//               " inner JOIN FM_DEP ON PATDIREC.MEDECINS_BIO_DEP_ID=FM_DEP.FM_DEP_ID\n" +
-//               " INNER JOIN FM_ORG ON FM_DEP.MAIN_ORG_ID=FM_ORG.FM_ORG_ID\n" +
-//               " inner join DS_SERVPARAMS ON DIR_SERV.FM_SERV_ID=DS_SERVPARAMS.FM_SERV_ID\n" +
-//               " inner JOIN DS_PARAMS ON DS_SERVPARAMS.DS_PARAMS_ID=DS_PARAMS.DS_PARAMS_ID\n" +
-//               " JOIN LAB_METHODBIO LAB_METHODBIO WITH(NOLOCK)  ON DS_PARAMS.DS_PARAMS_ID = LAB_METHODBIO.DS_PARAMS_ID \n" +
-//               " JOIN LAB_METHODS LAB_METHODS WITH(NOLOCK)  ON LAB_METHODBIO.LAB_METHODS_ID = LAB_METHODS.LAB_METHODS_ID \n" +
-//               " LEFT OUTER JOIN VIEW_GRPPRM VIEW_GRPPRM WITH(NOLOCK)  ON DS_PARAMS.DS_PARAMS_ID = VIEW_GRPPRM.DS_PARAMS_ID \n" +
-//               " LEFT OUTER JOIN PATIENTS PAT WITH(NOLOCK)  ON PATDIREC.PATIENTS_ID = PAT.PATIENTS_ID \n" +
-//               "WHERE\n" +
-//               "VIEW_GRPPRM.GRPPRM_ID = 227 --рабочий журнал по вичам\n" +
-//               "and PATDIREC.QUANTITY_DONE=0 --анализ не выполнен\n" +
-//               "and  PATDIREC.BIO_CODE=: bio_code -- код забора\n" +
-//               "and PATDIREC.DATE_BIO >dateadd(day,-30,'20200209') --\n" +
-//               " --and FM_DEP.MAIN_ORG_ID=20 --филиал выполнивший забор биоматериала\n" +
-//               "ORDER BY\n" +
-//               " PATDIREC.DATE_BIO")
-//               .setParameter("bio_code", bio_code)
-//               .getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return objects;
     }
-    public  List<Object[]> chek (String done, String bio_code) throws SQLException {
+
+    public List<Object[]> getDataGormonu(String bio_code, Integer GRPPRM, String done) {
         List<Object[]> objects = new ArrayList<>();
-        Connection connection = database.getConnection();
-        Statement statement = connection.createStatement();
+        try(Connection connection = database.getConnection()) {
+            Statement statement = connection.createStatement();
 
-        ResultSet resultSet = statement.executeQuery("select  --PATDIREC.PATIENTS_ID,\n" +
-                "       -- dbo.fNNPlus_Patient (pat.PATIENTS_ID,1),\n" +
-                "--pat.nom+' '+substring(pat.PRENOM,1,1)+'. '+substring(pat.PATRONYME,1,1)+'.',\n" +
-                "\n" +
-                "--         (case\n" +
-                "--              when kontengent=0 then '108.б - доноры биологических жидкостей'\n" +
-                "--              when kontengent=1 then '109.а - беременные при взятии на учет'\n" +
-                "--              when kontengent=2 then '109.б - беременные на сроке 25-26 и 38-39 недель'\n" +
-                "--              when kontengent=3 then '116 б - в соответствии со стандартами мед. помощи (ВРТ, перед манипуляциями,добровольное обследование)'\n" +
-                "--              when kontengent=4 then '110 - половые партнеры беременных'\n" +
-                "--              when kontengent=5 then '132.б - профилактический медосмотр'\n" +
-                "--              when kontengent=6 then '132.в - медицинские аварийные ситуации'\n" +
-                "--             end),\n" +
-                "--         DIR_ANSW.MOTCONSU_RESP_ID\n" +
-                "--         ,\n" +
-                "        (case\n" +
-                "             when LAB_METHODS.CODE='А/т к ВИЧ 1,2 +А/г' then\n" +
-                "                 (select DISTINCT AT_K_VICH_1_2 from DIR_ANSW DA inner join DATA_W693_VICH_SIFIL_GEPAT ON DA.MOTCONSU_RESP_ID=DATA_W693_VICH_SIFIL_GEPAT.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
-                "             when LAB_METHODS.CODE='HBsAg' then\n" +
-                "                 (select DISTINCT HBS_AG from DIR_ANSW DA inner join DATA_W693_VICH_SIFIL_GEPAT ON DA.MOTCONSU_RESP_ID=DATA_W693_VICH_SIFIL_GEPAT.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
-                "             when LAB_METHODS.CODE='Ат .к. HCV' then\n" +
-                "                 (select DISTINCT AT_K_HCV from DIR_ANSW DA inner join DATA_W693_VICH_SIFIL_GEPAT ON DA.MOTCONSU_RESP_ID=DATA_W693_VICH_SIFIL_GEPAT.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
-                "             when LAB_METHODS.CODE='Syphilis ИФА' then\n" +
-                "                 (select DISTINCT SIPHILIS_TPHA_TEST from DIR_ANSW DA inner join DATA_W693_VICH_SIFIL_GEPAT ON DA.MOTCONSU_RESP_ID=DATA_W693_VICH_SIFIL_GEPAT.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
-                "             when LAB_METHODS.CODE='Сифилис МРП' then\n" +
-                "                 (select DISTINCT SIPHILIS_MR from DIR_ANSW DA inner join DATA_W693_VICH_SIFIL_GEPAT ON DA.MOTCONSU_RESP_ID=DATA_W693_VICH_SIFIL_GEPAT.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
-                "            end),\n" +
-                "--         ,FM_DEP.MAIN_ORG_ID,\n" +
-                "--         FM_ORG.LABEL,\n" +
-                "--         PATDIREC.PATDIREC_ID,\n" +
-                "--         PATDIREC.DATE_BIO,\n" +
-                "--DS_PARAMS.DS_PARAMS_ID,\n" +
-                "--,PATDIREC.PL_EXAM_ID,\n" +
-                "        --LAB_METHODS.LAB_METHODS_ID,\n" +
-                "        LAB_METHODS.CODE\n" +
-                "--         PATDIREC.BIO_CODE,\n" +
-                "--         PAT.POL\n" +
-                "\n" +
-                "        ,* from  PATDIREC PATDIREC WITH(NOLOCK)  JOIN PL_EXAM PL_EXAM WITH(NOLOCK)  ON PATDIREC.PL_EXAM_ID = PL_EXAM.PL_EXAM_ID\n" +
-                "                                                 INNER JOIN DIR_ANSW ON PATDIREC.PATDIREC_ID=DIR_ANSW.PATDIREC_ID\n" +
-                "                                                 inner join DIR_SERV ON PATDIREC.PATDIREC_ID =DIR_SERV.PATDIREC_ID\n" +
-                "                                                 inner JOIN FM_DEP ON PATDIREC.MEDECINS_BIO_DEP_ID=FM_DEP.FM_DEP_ID\n" +
-                "                                                 LEFT OUTER JOIN PATIENTS PAT WITH(NOLOCK)  ON PATDIREC.PATIENTS_ID = PAT.PATIENTS_ID\n" +
-                "                                                 INNER JOIN FM_ORG ON FM_DEP.MAIN_ORG_ID=FM_ORG.FM_ORG_ID\n" +
-                "                                                 inner join DS_SERVPARAMS ON DIR_SERV.FM_SERV_ID=DS_SERVPARAMS.FM_SERV_ID\n" +
-                "                                                 inner JOIN DS_PARAMS ON DS_SERVPARAMS.DS_PARAMS_ID=DS_PARAMS.DS_PARAMS_ID\n" +
-                "                                                 JOIN LAB_METHODBIO LAB_METHODBIO WITH(NOLOCK)  ON DS_PARAMS.DS_PARAMS_ID = LAB_METHODBIO.DS_PARAMS_ID\n" +
-                "                                                 JOIN LAB_METHODS LAB_METHODS WITH(NOLOCK)  ON LAB_METHODBIO.LAB_METHODS_ID = LAB_METHODS.LAB_METHODS_ID\n" +
-                "                                                 LEFT OUTER JOIN VIEW_GRPPRM VIEW_GRPPRM WITH(NOLOCK)  ON DS_PARAMS.DS_PARAMS_ID = VIEW_GRPPRM.DS_PARAMS_ID\n" +
-                "--DS_PARAMS\n" +
-                "where\n" +
-                "        VIEW_GRPPRM.GRPPRM_ID = 350 --рабочий журнал по вичам\n" +
-                "  --and PATDIREC.QUANTITY_DONE=0 --анализ не выполнен\n" +
-                "  and  PATDIREC.BIO_CODE= -- код забора\n" + bio_code +
-                "  and PATDIREC.DATE_BIO >dateadd(day,-PL_EXAM.VAL_PERIOD,getdate()) --\n" +
-                "--and FM_DEP.MAIN_ORG_ID=20 --филиал выполнивший забор биоматериала");
+            ResultSet resultSet = statement.executeQuery("select PATDIREC.PATIENTS_ID,\n" +
+                    "        dbo.fNNPlus_Patient (pat.PATIENTS_ID,1),\n" +
+                    "\n" +
+                    "        (case\n" +
+                    "             when LAB_METHODS.CODE='AMG'  then\n" +
+                    "                 (select DISTINCT DATA_W693_GORMONU.AMG from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
+                    "             when LAB_METHODS.CODE='AND' or LAB_METHODS.CODE='17-OH'  then\n" +
+                    "                 (select DISTINCT DATA_W693_GORMONU.ANDR_ZHEN_17_ON_PROG from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
+                    "             when LAB_METHODS.CODE='E2'   then\n" +
+                    "                 (select DISTINCT DATA_W693_GORMONU.ESTRADIOL from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
+                    "             when LAB_METHODS.CODE='CA-125'   then\n" +
+                    "                 (select DISTINCT DATA_W693_GORMONU.SA_125 from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
+                    "            end),\n" +
+                    "        FM_ORG.LABEL,\n" +
+                    "        PATDIREC.DATE_BIO,\n" +
+                    "        --DS_PARAMS.DS_PARAMS_ID,\n" +
+                    "        --,PATDIREC.PL_EXAM_ID,\n" +
+                    "        --LAB_METHODS.LAB_METHODS_ID,\n" +
+                    "        LAB_METHODS.CODE,\n" +
+                    "        PATDIREC.BIO_CODE,\n" +
+                    "        PAT.POL,\n" +
+                    "        PAT.ADRES_PO_PROPISKE\n" +
+                    "         from  PATDIREC PATDIREC WITH(NOLOCK)  JOIN PL_EXAM PL_EXAM WITH(NOLOCK)  ON PATDIREC.PL_EXAM_ID = PL_EXAM.PL_EXAM_ID\n" +
+                    "                                                 INNER JOIN DIR_ANSW ON PATDIREC.PATDIREC_ID=DIR_ANSW.PATDIREC_ID\n" +
+                    "                                                 inner join DIR_SERV ON PATDIREC.PATDIREC_ID =DIR_SERV.PATDIREC_ID\n" +
+                    "                                                 inner JOIN FM_DEP ON PATDIREC.MEDECINS_BIO_DEP_ID=FM_DEP.FM_DEP_ID\n" +
+                    "                                                 LEFT OUTER JOIN PATIENTS PAT WITH(NOLOCK)  ON PATDIREC.PATIENTS_ID = PAT.PATIENTS_ID\n" +
+                    "                                                 INNER JOIN FM_ORG ON FM_DEP.MAIN_ORG_ID=FM_ORG.FM_ORG_ID\n" +
+                    "                                                 inner join DS_SERVPARAMS ON DIR_SERV.FM_SERV_ID=DS_SERVPARAMS.FM_SERV_ID\n" +
+                    "                                                 inner JOIN DS_PARAMS ON DS_SERVPARAMS.DS_PARAMS_ID=DS_PARAMS.DS_PARAMS_ID\n" +
+                    "                                                 JOIN LAB_METHODBIO LAB_METHODBIO WITH(NOLOCK)  ON DS_PARAMS.DS_PARAMS_ID = LAB_METHODBIO.DS_PARAMS_ID\n" +
+                    "                                                 JOIN LAB_METHODS LAB_METHODS WITH(NOLOCK)  ON LAB_METHODBIO.LAB_METHODS_ID = LAB_METHODS.LAB_METHODS_ID\n" +
+                    "                                                 LEFT OUTER JOIN VIEW_GRPPRM VIEW_GRPPRM WITH(NOLOCK)  ON DS_PARAMS.DS_PARAMS_ID = VIEW_GRPPRM.DS_PARAMS_ID\n" +
+                    "    --DS_PARAMS\n" +
+                    "where\n" +
+                    "        VIEW_GRPPRM.GRPPRM_ID =" + GRPPRM + " --рабочий журнал по вичам\n" +
+                    "  and PATDIREC.QUANTITY_DONE="+done+
+                    "\n" +
+                    "--                 LAB_METHODS.CODE='17-OH' order by PATDIREC.DATE_BIO desc\n" +
+                    "\n" +
+                    "  and PATDIREC.BIO_CODE=" + bio_code+
+                    "and PATDIREC.DATE_BIO >dateadd(day,-30,getdate())");
 
-        while (resultSet.next()) {
-            objects.add(new Object[]{
-                    resultSet.getObject(1),
-                    resultSet.getObject(2),
-            });
+            while (resultSet.next()) {
+                objects.add(new Object[]{
+                        resultSet.getObject(1),
+                        resultSet.getObject(2),
+                        resultSet.getObject(3),
+                        resultSet.getObject(4),
+                        resultSet.getObject(5),
+                        resultSet.getObject(6),
+                        resultSet.getObject(7),
+                        resultSet.getObject(8),
+                        resultSet.getObject(9),
+                });
+
+            }
+             } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        return objects;
+    }
+
+
+    public  List<Object[]> chek (String done, String bio_code, Integer GRPPRM) throws SQLException {
+        List<Object[]> objects = new ArrayList<>();
+        try(Connection connection = database.getConnection()) {
+
+
+
+            Statement statement = connection.createStatement();
+
+            ResultSet resultSet = statement.executeQuery("select  --PATDIREC.PATIENTS_ID,\n" +
+                    "       -- dbo.fNNPlus_Patient (pat.PATIENTS_ID,1),\n" +
+                    "--pat.nom+' '+substring(pat.PRENOM,1,1)+'. '+substring(pat.PATRONYME,1,1)+'.',\n" +
+                    "\n" +
+                    "--         (case\n" +
+                    "--              when kontengent=0 then '108.б - доноры биологических жидкостей'\n" +
+                    "--              when kontengent=1 then '109.а - беременные при взятии на учет'\n" +
+                    "--              when kontengent=2 then '109.б - беременные на сроке 25-26 и 38-39 недель'\n" +
+                    "--              when kontengent=3 then '116 б - в соответствии со стандартами мед. помощи (ВРТ, перед манипуляциями,добровольное обследование)'\n" +
+                    "--              when kontengent=4 then '110 - половые партнеры беременных'\n" +
+                    "--              when kontengent=5 then '132.б - профилактический медосмотр'\n" +
+                    "--              when kontengent=6 then '132.в - медицинские аварийные ситуации'\n" +
+                    "--             end),\n" +
+                    "--         DIR_ANSW.MOTCONSU_RESP_ID\n" +
+                    "--         ,\n" +
+                    "        (case\n" +
+                    "             when LAB_METHODS.CODE='А/т к ВИЧ 1,2 +А/г' then\n" +
+                    "                 (select DISTINCT AT_K_VICH_1_2 from DIR_ANSW DA inner join DATA_W693_VICH_SIFIL_GEPAT ON DA.MOTCONSU_RESP_ID=DATA_W693_VICH_SIFIL_GEPAT.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
+                    "             when LAB_METHODS.CODE='HBsAg' then\n" +
+                    "                 (select DISTINCT HBS_AG from DIR_ANSW DA inner join DATA_W693_VICH_SIFIL_GEPAT ON DA.MOTCONSU_RESP_ID=DATA_W693_VICH_SIFIL_GEPAT.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
+                    "             when LAB_METHODS.CODE='Ат .к. HCV' then\n" +
+                    "                 (select DISTINCT AT_K_HCV from DIR_ANSW DA inner join DATA_W693_VICH_SIFIL_GEPAT ON DA.MOTCONSU_RESP_ID=DATA_W693_VICH_SIFIL_GEPAT.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
+                    "             when LAB_METHODS.CODE='Syphilis ИФА' then\n" +
+                    "                 (select DISTINCT SIPHILIS_TPHA_TEST from DIR_ANSW DA inner join DATA_W693_VICH_SIFIL_GEPAT ON DA.MOTCONSU_RESP_ID=DATA_W693_VICH_SIFIL_GEPAT.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
+                    "             when LAB_METHODS.CODE='Сифилис МРП' then\n" +
+                    "                 (select DISTINCT SIPHILIS_MR from DIR_ANSW DA inner join DATA_W693_VICH_SIFIL_GEPAT ON DA.MOTCONSU_RESP_ID=DATA_W693_VICH_SIFIL_GEPAT.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
+                    "when LAB_METHODS.CODE='Rub-G' then\n" +
+                    "(select DISTINCT DATA_W693_VUI.DYN_72840_72913 from DIR_ANSW DA inner join DATA_W693_VUI ON DA.MOTCONSU_RESP_ID=DATA_W693_VUI.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
+                    "when LAB_METHODS.CODE='Rub- M' then\n" +
+                    "(select DISTINCT DATA_W693_VUI.DYN_72840_72914 from DIR_ANSW DA inner join DATA_W693_VUI ON DA.MOTCONSU_RESP_ID=DATA_W693_VUI.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
+                    "when LAB_METHODS.CODE='cHSP60-Ig G(белок тепл.шока и' then\n" +
+                    "(select DISTINCT DATA_W693_VUI.DYN_72840_72917 from DIR_ANSW DA inner join DATA_W693_VUI ON DA.MOTCONSU_RESP_ID=DATA_W693_VUI.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
+                    "when LAB_METHODS.CODE='Clam-A' then\n" +
+                    "(select DISTINCT DATA_W693_VUI.DYN_72840_72916 from DIR_ANSW DA inner join DATA_W693_VUI ON DA.MOTCONSU_RESP_ID=DATA_W693_VUI.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
+                    "when LAB_METHODS.CODE='Chlam-G' then\n" +
+                    "(select DISTINCT DATA_W693_VUI.DYN_72840_72915 from DIR_ANSW DA inner join DATA_W693_VUI ON DA.MOTCONSU_RESP_ID=DATA_W693_VUI.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )" +
+
+                    "            end),\n" +
+                    "--         ,FM_DEP.MAIN_ORG_ID,\n" +
+                    "--         FM_ORG.LABEL,\n" +
+                    "--         PATDIREC.PATDIREC_ID,\n" +
+                    "--         PATDIREC.DATE_BIO,\n" +
+                    "--DS_PARAMS.DS_PARAMS_ID,\n" +
+                    "--,PATDIREC.PL_EXAM_ID,\n" +
+                    "        --LAB_METHODS.LAB_METHODS_ID,\n" +
+                    "        LAB_METHODS.CODE\n" +
+                    "--         PATDIREC.BIO_CODE,\n" +
+                    "--         PAT.POL\n" +
+                    "\n" +
+                    "        ,* from  PATDIREC PATDIREC WITH(NOLOCK)  JOIN PL_EXAM PL_EXAM WITH(NOLOCK)  ON PATDIREC.PL_EXAM_ID = PL_EXAM.PL_EXAM_ID\n" +
+                    "                                                 INNER JOIN DIR_ANSW ON PATDIREC.PATDIREC_ID=DIR_ANSW.PATDIREC_ID\n" +
+                    "                                                 inner join DIR_SERV ON PATDIREC.PATDIREC_ID =DIR_SERV.PATDIREC_ID\n" +
+                    "                                                 inner JOIN FM_DEP ON PATDIREC.MEDECINS_BIO_DEP_ID=FM_DEP.FM_DEP_ID\n" +
+                    "                                                 LEFT OUTER JOIN PATIENTS PAT WITH(NOLOCK)  ON PATDIREC.PATIENTS_ID = PAT.PATIENTS_ID\n" +
+                    "                                                 INNER JOIN FM_ORG ON FM_DEP.MAIN_ORG_ID=FM_ORG.FM_ORG_ID\n" +
+                    "                                                 inner join DS_SERVPARAMS ON DIR_SERV.FM_SERV_ID=DS_SERVPARAMS.FM_SERV_ID\n" +
+                    "                                                 inner JOIN DS_PARAMS ON DS_SERVPARAMS.DS_PARAMS_ID=DS_PARAMS.DS_PARAMS_ID\n" +
+                    "                                                 JOIN LAB_METHODBIO LAB_METHODBIO WITH(NOLOCK)  ON DS_PARAMS.DS_PARAMS_ID = LAB_METHODBIO.DS_PARAMS_ID\n" +
+                    "                                                 JOIN LAB_METHODS LAB_METHODS WITH(NOLOCK)  ON LAB_METHODBIO.LAB_METHODS_ID = LAB_METHODS.LAB_METHODS_ID\n" +
+                    "                                                 LEFT OUTER JOIN VIEW_GRPPRM VIEW_GRPPRM WITH(NOLOCK)  ON DS_PARAMS.DS_PARAMS_ID = VIEW_GRPPRM.DS_PARAMS_ID\n" +
+                    "--DS_PARAMS\n" +
+                    "where\n" +
+                    "        VIEW_GRPPRM.GRPPRM_ID =" + GRPPRM + " --рабочий журнал по вичам\n" +
+                    "  --and PATDIREC.QUANTITY_DONE=0 --анализ не выполнен\n" +
+                    "  and  PATDIREC.BIO_CODE= -- код забора\n" + bio_code +
+                    "  and PATDIREC.DATE_BIO >dateadd(day,-PL_EXAM.VAL_PERIOD,getdate()) --\n" +
+                    "--and FM_DEP.MAIN_ORG_ID=20 --филиал выполнивший забор биоматериала");
+
+            while (resultSet.next()) {
+                objects.add(new Object[]{
+                        resultSet.getObject(1),
+                        resultSet.getObject(2),
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return objects;
     }
@@ -303,8 +339,8 @@ public class UptakeDaoImpl implements UptakeDao {
 
         User user = new User();
         Set<Role> roles =  new HashSet<>();
-        try {
-            Connection connection = database.getConnection();
+        try (Connection connection = database.getConnection()) {
+
             Statement statement = connection.createStatement();
 
             ResultSet resultSet = statement.executeQuery("SELECT * FROM LABOR_USERS where nameUser="+"'"+s+"'");
@@ -326,8 +362,8 @@ public class UptakeDaoImpl implements UptakeDao {
     public void saveUser(String name, String password, String role) {
         User user = new User(name, password, null);
         registerUser(user);
-        try {
-            Connection connection = database.getConnection();
+        try(Connection connection = database.getConnection()) {
+
             Statement statement = connection.createStatement();
             statement.executeUpdate("insert LABOR_USERS (nameUser, passwordUser, roleUser)" +
                     "VALUES (" + "'" + user.getName() + "'" + ", " + "'" + user.getPassword() + "'" + "," + "'"+ role+ "'" + ")");
@@ -342,8 +378,8 @@ public class UptakeDaoImpl implements UptakeDao {
         List<User> allUsers = new ArrayList<>();
         Set<Role> roles =  new HashSet<>();
 
-        try {
-            Connection connection = database.getConnection();
+        try(Connection connection = database.getConnection()) {
+
             Statement statement = connection.createStatement();
 
             ResultSet resultSet = statement.executeQuery("SELECT * FROM LABOR_USERS");
@@ -362,8 +398,8 @@ public class UptakeDaoImpl implements UptakeDao {
         return allUsers;
     }
     public void removeUserById(long id) {
-        try {
-            Connection connection = database.getConnection();
+        try(Connection connection = database.getConnection()) {
+
             Statement statement = connection.createStatement();
             statement.executeUpdate("DELETE FROM LABOR_USERS WHERE Id =" + id);
 

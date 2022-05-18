@@ -38,6 +38,8 @@
 
         </nav>
         <div class="container-fluid" style="background-color: #F8F8FF">
+            <label for="grpcheck">E2</label>
+            <input type="checkbox" name="grpcheck" id="grpcheck">
             <div class="container-fluid">
 <!--                <h1>Анализы в Казань</h1>-->
                 <!-- Nav tabs -->
@@ -54,50 +56,32 @@
                             </div>
                         </div>
 
-                        <table class="table table-striped" border="1">
-                            <tr>
-                                <th>№</th>
-                                <th>ЭМК</th>
-                                <th>ФИО</th>
-                                <th>Дата забора</th>
-                                <th>Код забора</th>
-                                <th>Rub-G</th>
-                                <th>Rub-M</th>
-                                <th>Хламидии Ig G</th>
-                                <th>Хламидии Ig A</th>
-                                <th>Хламидии БТШ</th>
-                                <th>Филиал</th>
-                                <th>Статус</th>
+<!--                        <table class="table table-striped" border="1">-->
+<!--                            <tr>-->
+<!--                                <th>№</th>-->
+<!--                                <th>ЭМК</th>-->
+<!--                                <th>ФИО</th>-->
+<!--                                <th>Дата забора</th>-->
+<!--                                <th>Код забора</th>-->
+<!--                                <th>Rub-G</th>-->
+<!--                                <th>Rub-M</th>-->
+<!--                                <th>Хламидии Ig G</th>-->
+<!--                                <th>Хламидии Ig A</th>-->
+<!--                                <th>Хламидии БТШ</th>-->
+<!--                                <th>Филиал</th>-->
 <!--                                <th>Статус</th>-->
-                            </tr>
+<!--&lt;!&ndash;                                <th>Статус</th>&ndash;&gt;-->
+<!--                            </tr>-->
                             <div id="dataRowDiv"></div>
 
-                            <th:block th:each = "cont:${selected}">
-                                <tr>
-                                    <td th:utext="${selected.indexOf(cont)+1}"></td>
-                                    <td th:utext="${cont.emc}"></td>
-                                    <td th:utext="${cont.fio}"></td>
-                                    <td th:utext="${cont.date_bio}"></td>
-                                    <td th:utext="${cont.code}"></td>
-                                    <td th:utext="${cont.rubG}"></td>
-                                    <td th:utext="${cont.rubM}"></td>
-                                    <td th:utext="${cont.clamG}"></td>
-                                    <td th:utext="${cont.clamA}"></td>
-                                    <td th:utext="${cont.HSP60}"></td>
-                                    <td th:utext="${cont.label}"></td>
-                                    <td >
-                                        <form name="delForm" id="delForm" th:action="@{/deleteanalysis}" method="post">
-                                            <input type="hidden" name="delete" id="deleteanalysis" th:value="*{cont.emc}">
-                                            <input type="hidden" name="deleteProof" id="deleteProof" value="torch">
-                                            <!--                                        <input type="text" name="codeInt" id="codeInt" >-->
-                                            <input type="submit" class="btn btn-danger" value="Удалить">
-                                        </form>
-                                    </td>
 
-                            </th:block>
 
-                            </tr>
-                        </table>
+<!--                        </table>-->
+                <div id="dataRowDiv1">
+                    <input type="text" value="tetxt">
+                    <input type="checkbox" name="chk" id="chk">
+
+                </div>
 
                 </div>
 
@@ -120,34 +104,59 @@
 <!--        }-->
 <!--    });-->
 <!--</script>-->
-
 <script>
+
+
+    function getList(code=''){
+        let row = ''
+        fetch('/update/gormonu/'+code+grp+'/1')
+            .then((res)=>res.json()
+                .then((data) => {
+                    data.forEach( function (analys) {
+                        row+=`<tr>
+                                                <td >${analys.emc}</td>
+                                                <td >${analys.fio}</td>
+                                                    </tr>`
+                        console.log(row)
+                        setDiv(row)})
+                }))
+    }
+</script>
+<script>
+    let grp='/1836'
+    $('input[name=grpcheck]').change(function(){
+        if($(this).is(':checked')) {
+            grp='/351'
+        }
+        else {
+                grp='/1836'
+            // document.readyState
+
+        }})
+getList('0000')
+
     function t() {
+
         fetch('/update/code').then(
             (res)=>res.json()
                 .then((data) => {
                         data.forEach( function (some) {
                             // document.getElementById("code_update").innerHTML=`<input type="text" name="codeInt" id="codeInt" value="${some}">`
                             if (some!=null) {
-                                let params = {
-                                    codeInt: some,
-                                    proofCode: '',
-                                    redir: 'redirect:/codeTorch',
-                                    done: 'and PATDIREC.QUANTITY_DONE=0',
-                                    grpprm: '1'
 
 
+                                // let params = {
+                                //     codeInt: some,
+                                //     proofCode: '',
+                                //     redir: 'redirect:/gormonu',
+                                //     done: 'and PATDIREC.QUANTITY_DONE=0',
+                                //     grpprm: '1'
+                                //
+                                // }
 
-                                }
-                                fetch('/code', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json;charset=utf-8'
-                                    },
-                                    body: JSON.stringify(params)
-                                })
+                                getList(some)
 
-                                setTimeout("location.reload(true)", 1000)
+                                // setTimeout("location.reload(true)", 1000)
                             }
 
 
@@ -155,12 +164,40 @@
                     }
                 ))
 
+
+
+
     }
     $( (function () {
         t();
         setInterval('t()', 1000)
     }));
 </script>
+
+<script>
+
+    function setDiv(stroka='') {
+        let begin =`<table class="table table-striped" border="1">
+                            <tr>
+                                <th>№</th>
+                                <th>ЭМК</th>
+                                <th>ФИО</th>
+                                <th>Дата забора</th>
+                                <th>Код забора</th>
+                                <th>Rub-G</th>
+                                <th>Rub-M</th>
+                                <th>Хламидии Ig G</th>
+                                <th>Хламидии Ig A</th>
+                                <th>Хламидии БТШ</th>
+                                <th>Филиал</th>
+                                <th>Статус</th>
+<!--                                <th>Статус</th>-->
+                            </tr>`
+        let end = `</table>`
+        document.getElementById("dataRowDiv").innerHTML=begin+stroka+end
+    }
+</script>
+
 <!--<script>-->
 <!--    $( function() {-->
 <!--        if ( $( '#proofCode' ).val() !== '' ) {-->

@@ -27,11 +27,14 @@
 
         <nav class="nav col-md-12" >
             <a class="nav-link" th:href="@{/}">Главная</a>
-            <a class="nav-link active" href="#">Забор</a>
+            <a class="nav-link active" href="#">ВИЧ</a>
             <a class="nav-link " th:href="@{/codeTorch}" >TORCH</a>
-            <a class="nav-link " th:href="@{/chek}" >Результаты</a>
-            <a class="nav-link " th:href="@{/divrefresh}" >Ручной ввод</a>
             <a class="nav-link " th:href="@{/proofCode}" >Подтверждающие</a>
+            <a class="nav-link " th:href="@{/divrefresh}" >Ручной ввод</a>
+            <a class="nav-link " th:href="@{/chek}" >Результаты ВИЧ</a>
+            <a class="nav-link " th:href="@{/chekTorch}" >Результаты TORCH</a>
+
+
 
         </nav>
         <div class="container-fluid" style="background-color: #F8F8FF">
@@ -184,6 +187,7 @@
 
 
                                 }
+
                                 fetch('/code', {
                                     method: 'POST',
                                     headers: {

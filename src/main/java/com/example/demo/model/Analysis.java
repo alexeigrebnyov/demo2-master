@@ -340,6 +340,11 @@ public class Analysis {
                 ", resultatHCV='" + resultatHCV + '\'' +
                 ", resultSyphIfa='" + resultSyphIfa + '\'' +
                 ", resultMRP='" + resultMRP + '\'' +
+                ", resultRubG='" + resultRubG + '\'' +
+                ", resultRubM='" + resultRubM + '\'' +
+                ", resultHSP60='" + resultHSP60 + '\'' +
+                ", resultClamA='" + resultClamA + '\'' +
+                ", resultClamG='" + resultClamG + '\'' +
                 ", main_org_id='" + main_org_id + '\'' +
                 ", label='" + label + '\'' +
                 ", patdirect_id='" + patdirect_id + '\'' +
@@ -349,13 +354,18 @@ public class Analysis {
                 ", atHCV='" + atHCV + '\'' +
                 ", syphIFA='" + syphIFA + '\'' +
                 ", syphMRP='" + syphMRP + '\'' +
+                ", RubG='" + RubG + '\'' +
+                ", RubM='" + RubM + '\'' +
+                ", HSP60='" + HSP60 + '\'' +
+                ", ClamA='" + ClamA + '\'' +
+                ", ClamG='" + ClamG + '\'' +
                 ", code='" + code + '\'' +
                 ", sex='" + sex + '\'' +
                 ", adres='" + adres + '\'' +
                 '}';
     }
 
-//    @Override
+    //    @Override
 //    public boolean equals(Object o) {
 //        if (this == o) return true;
 //        if (o == null || getClass() != o.getClass()) return false;
@@ -458,8 +468,50 @@ public class Analysis {
         return true;
 
     }
+
+    public boolean chekRubG() {
+        if (RubG.equals("1")){
+            try {
+                return !resultRubG.equals("");
+            } catch (Exception ex) {return  false;}}
+        return true;
+    }
+    public boolean chekRubM() {
+        if (RubM.equals("1")){
+            try {
+                return !resultRubM.equals("");
+            } catch (Exception ex) {return  false;}}
+        return true;
+    }
+    public boolean chekClamG() {
+        if (ClamG.equals("1")){
+            try {
+                return !resultClamG.equals("");
+            } catch (Exception ex) {return  false;}}
+        return true;
+    }
+    public boolean chekClamA() {
+        if (ClamA.equals("1")){
+            try {
+                return !resultClamA.equals("");
+            } catch (Exception ex) {return  false;}}
+        return true;
+    }
+    public boolean chekHSP() {
+        if (HSP60.equals("1")){
+            try {
+                return !resultHSP60.equals("");
+            } catch (Exception ex) {return  false;}}
+        return true;
+    }
     public String totalChek() {
         if(chek() && chekatHCV() && chekHbs() && chekHiv() && chekSyphIfa()) {return " ";}
         return "!!!!!";
     }
+
+    public String torchChek() {
+        if(chekRubG() && chekRubM() && chekClamG() && chekClamA() && chekHSP()) {return " ";}
+        return "!!!!!";
+    }
+
 }

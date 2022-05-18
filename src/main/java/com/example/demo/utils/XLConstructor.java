@@ -37,7 +37,7 @@ public class XLConstructor {
         this.uptakeService = uptakeService;
     }
 
-    public static void xml2XLSX() throws IOException, XML2SpreadSheetError {
+    public static void xml2XLSX(String fileRep) throws IOException, XML2SpreadSheetError {
 //        FileInputStream data = new FileInputStream("C:/Repo/Report1.xml");
 //        File out = new File("C:/Users/ifa.NNPLUS/report.xlsx");
 //        FileOutputStream output = new FileOutputStream(out);
@@ -47,7 +47,7 @@ public class XLConstructor {
 //        DesktopApi.open(out);
 
         FileInputStream data = new FileInputStream("//192.168.7.100/ifa/ifaList/Report1.xml");
-        File out = new File("//192.168.7.100/ifa/ifaList/report.xlsx");
+        File out = new File(fileRep);
         FileOutputStream output = new FileOutputStream(out);
         File template = new File("//192.168.7.100/ifa/ifaList/template.xlsx");
         File desc = new File("//192.168.7.100/ifa/ifaList/descriptor.xml");
@@ -289,6 +289,112 @@ public class XLConstructor {
 //				e.setTextContent(forum);
 //				e_forums.appendChild (e);
 //			}
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } finally {
+            // Сохраняем Document в XML-файл
+            if (doc != null)
+                writeDocument(doc);
+        }
+
+    }
+
+    public static void writeTORCHXML( List<Analysis> users) throws IOException {
+        DocumentBuilderFactory dbf = null;
+        DocumentBuilder db  = null;
+        Document doc = null;
+        try {
+            dbf = DocumentBuilderFactory.newInstance();
+            db  = dbf.newDocumentBuilder();
+            doc = db.newDocument();
+
+            Element e_root   = doc.createElement("report");
+//			e_root.setAttribute("lang", "en");
+            Element columnId  = doc.createElement("column");
+            columnId.setAttribute("data", "Фио");
+            Element columnpatientId = doc.createElement("column");
+            columnpatientId.setAttribute("data", "Дата забора");
+            Element columnuptakeCod = doc.createElement("column");
+            columnuptakeCod.setAttribute("data", "Код забора");
+            Element columnnumber = doc.createElement("column");
+            columnnumber.setAttribute("data", "RubG");
+            Element columnresult = doc.createElement("column");
+            columnresult.setAttribute("data", "RubM");
+            Element columnHCV = doc.createElement("column");
+            columnHCV.setAttribute("data", "Хлам G");
+            Element columnIfa = doc.createElement("column");
+            columnIfa.setAttribute("data", "Хлам А");
+            Element columnMRP = doc.createElement("column");
+            columnMRP.setAttribute("data", "БТШ");
+            e_root.appendChild(columnId);
+            e_root.appendChild(columnpatientId);
+            e_root.appendChild(columnuptakeCod);
+            e_root.appendChild(columnnumber);
+            e_root.appendChild(columnresult);
+            e_root.appendChild(columnHCV);
+            e_root.appendChild(columnIfa);
+            e_root.appendChild(columnMRP);
+            doc.appendChild(e_root);
+
+            int hivIterator = 1;
+            int hbsIterator=1;
+            int hcvIterator=1;
+            int ifaIterator = 1;
+            int mrpIterator = 1;
+            for (Analysis hiv : users) {
+//                int hivNumber = hivCount - (hivCount-hivIterator);
+//                int hbsNumber = hbsCount - (hbsCount-hbsIterator);
+//                int hcvNumber = hcvCount - (hcvCount-hcvIterator);
+//                int z = hivs.size()-(hivs.size()-i);
+                Element item = doc.createElement("item");
+                item.setAttribute("name", hiv.getEmc());
+                Element id = doc.createElement("data");
+                id.setAttribute("value", hiv.getFio());
+                Element patientid = doc.createElement("data");
+                patientid.setAttribute("value", hiv.getDate_bio());
+                Element uptakeCod = doc.createElement("data");
+                uptakeCod.setAttribute("value", hiv.getCode());
+                Element number = doc.createElement("data");
+                if (hiv.getRubG().equals("1")) {
+                    number.setAttribute("value", String.valueOf(hivIterator));
+                    hivIterator++;
+                } else {number.setAttribute("value", "");}
+                Element result = doc.createElement("data");
+                if (hiv.getRubM().equals("1")) {
+                    result.setAttribute("value", String.valueOf(hbsIterator));
+                    hbsIterator++;
+                } else {result.setAttribute("value", "");}
+                Element hcv = doc.createElement("data");
+                if (hiv.getClamG().equals("1")) {
+                    hcv.setAttribute("value", String.valueOf(hcvIterator));
+                    hcvIterator++;
+                } else {hcv.setAttribute("value", "");}
+                Element ifa = doc.createElement("data");
+                if (hiv.getClamA().equals("1")) {
+                    ifa.setAttribute("value", String.valueOf(ifaIterator));
+                    ifaIterator++;
+                } else {ifa.setAttribute("value", "");}
+
+                Element mrp = doc.createElement("data");
+                if (hiv.getHSP60().equals("1")) {
+                    mrp.setAttribute("value", String.valueOf(mrpIterator));
+                    mrpIterator++;
+                } else {mrp.setAttribute("value", "");}
+
+
+
+                item.appendChild(id);
+                item.appendChild(patientid);
+                item.appendChild(uptakeCod);
+                item.appendChild(number);
+                item.appendChild(result);
+                item.appendChild(hcv);
+                item.appendChild(ifa);
+                item.appendChild(mrp);
+
+                e_root.appendChild (item);
+
+            }
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
         } finally {

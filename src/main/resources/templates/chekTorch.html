@@ -26,11 +26,11 @@
         <nav class="nav col-md-12" >
             <a class="nav-link" th:href="@{/}">Главная</a>
             <a class="nav-link " th:href="@{/code}">ВИЧ</a>
-            <a class="nav-link active" href="#" >TORCH</a>
             <a class="nav-link " th:href="@{/proofCode}" >Подтверждающие</a>
             <a class="nav-link " th:href="@{/divrefresh}" >Ручной ввод</a>
-            <a class="nav-link active" href="#" >Результаты ВИЧ</a>
-            <a class="nav-link " th:href="@{/chekTorch}" >Результаты TORCH</a>
+            <a class="nav-link " th:href="@{/chek}" >Результаты ВИЧ</a>
+            <a class="nav-link active" href="#" >Результаты TORCH</a>
+
 
 
         </nav>
@@ -43,13 +43,13 @@
                                 <div class="float-right">
                                     <form name="exportForm" id="exportForm" th:action="@{/exportresult}" method="post">
                                         <input type="submit" class="btn btn-primary" value="Выдать результаты">
-                                        <input type="hidden" name="redir" class="btn btn-primary" value="redirect:/chek">
+                                        <input type="hidden" name="redir" class="btn btn-primary" value="redirect:/chekTorch">
                                     </form>
                                 </div>
                                 <br>
                                 <br>
                                 <div class="float-right">
-                                <form name="refreshForm" id="refrehForm" th:action="@{/refresh}" method="post">
+                                <form name="refreshForm" id="refrehForm" th:action="@{/refreshTorch}" method="post">
                                     <input type="submit" class="btn btn-danger" value="Завершить работу">
                                 </form>
                             </div>
@@ -79,12 +79,11 @@
                                 <th>ФИО</th>
                                 <th>Дата забора</th>
                                 <th>Код забора</th>
-                                <th>ВИЧ</th>
-                                <th>HBsAg</th>
-                                <th>Anti-HCV</th>
-                                <th>SyphIFA</th>
-                                <th>МРП</th>
-                                <th>Контенгент</th>
+                                <th>Rub-G</th>
+                                <th>Rub-M</th>
+                                <th>Хламидии Ig G</th>
+                                <th>Хламидии Ig A</th>
+                                <th>Хламидии БТШ</th>
                                 <th>Филиал</th>
                                 <th>Статус</th>
                             </tr>
@@ -96,14 +95,13 @@
                                     <td th:utext="${cont.fio}"></td>
                                     <td th:utext="${cont.date_bio}"></td>
                                     <td th:utext="${cont.code}"></td>
-                                    <td th:utext="${cont.resultHiv}"></td>
-                                    <td th:utext="${cont.resultHbsAg}"></td>
-                                    <td th:utext="${cont.resultatHCV}"></td>
-                                    <td th:utext="${cont.resultSyphIfa}"></td>
-                                    <td th:utext="${cont.resultMRP}"></td>
-                                    <td th:utext="${cont.kontengent}"></td>
+                                    <td th:utext="${cont.resultRubG}!=null?${cont.resultRubG}+' ME/ml':''" ></td>
+                                    <td th:utext="${cont.resultRubM}"></td>
+                                    <td th:utext="${cont.resultClamG}"></td>
+                                    <td th:utext="${cont.resultClamA}"></td>
+                                    <td th:utext="${cont.resultHSP60}"></td>
                                     <td th:utext="${cont.label}"></td>
-                                    <td th:utext="${cont.totalChek()}" class="font-weight-bold text-danger"></td>
+                                    <td th:utext="${cont.torchChek()}" class="font-weight-bold text-danger"></td>
 
 <!--                                    <td>-->
 <!--                                        <button class="btn btn-danger" type="submit">x</button>-->
@@ -114,6 +112,7 @@
                             </tr>
                         </table>
 
+            </div>
 
         </div>
 

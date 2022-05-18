@@ -7,7 +7,8 @@ import java.util.List;
 
 public interface UptakeService {
     List<Object[]> getData(String done, String bio_code, Integer GRPPRM) throws SQLException;
-    List<Object[]> chek (String done, String bio_code) throws SQLException;
+    List<Object[]> getDataGormonu(String bio_code, Integer GRPPRM, String done) throws SQLException;
+    List<Object[]> chek (String done, String bio_code, Integer GRPPRM) throws SQLException;
     void saveUser(String name, String password, String role);
     public List<User> getAllUsers();
     public void removeUserById(long id);

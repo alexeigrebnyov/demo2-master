@@ -48,9 +48,13 @@
 
         <nav class="nav col-md-12" >
             <a class="nav-link" th:href="@{/}">Главная</a>
-            <a class="nav-link" th:href="@{/code}">Забор</a>
-            <a class="nav-link " th:href="@{/chek}" >Результаты</a>
-            <a class="nav-link " href="#" >Ручной ввод</a>
+            <a class="nav-link " th:href="@{/code}">ВИЧ</a>
+            <a class="nav-link " th:href="@{/codeTorch}" >TORCH</a>
+            <a class="nav-link " th:href="@{/proofCode}" >Подтверждающие</a>
+            <a class="nav-link active" href="#" >Ручной ввод</a>
+            <a class="nav-link " th:href="@{/chek}" >Результаты ВИЧ/a>
+            <a class="nav-link " th:href="@{/chekTorch}" >Результаты TORCH</a>
+
 
         </nav>
 
@@ -58,6 +62,7 @@
             <!--                            <br>-->
             <!--                            <h4>ВИЧ, Геп В, С, СИФ</h4>-->
             <div class="float-right">
+                <input type="hidden" id="torch" th:value="*{torch}">
                 <datalist id="counts" >
                     <option value="4" selected="selected"></option>
                     <option value="1"></option>
@@ -66,7 +71,8 @@
                     <option value="5"></option>
 
                 </datalist>
-                <form name="writeForm" id="writeForm" th:attr="action=${proofActive? '/writeProof':'/write'}" method="post">
+                <div id="writeDiv">
+                <form name="writeForm" id="writeForm" th:attr="action=${proofActive?'/writeProof':'write'}" method="post">
                     <input type="submit" class="btn btn-primary" value="Сформировать списки">
                     <input type="hidden"  name="redir" id="redir1" value="redirect:/divrefresh">
                     Схема HBsAg под:
@@ -78,6 +84,7 @@
                     <!--                                    <input type="text" name="count"  value="1:10000">-->
                     <input type="text" name="count"  value="w-d-1:10-1:100-1:1000-1:10000" size="35">
                 </form>
+                </div>
 
             </div>
             <div class="bg-white">
@@ -111,10 +118,10 @@
                 <!-- Nav tabs -->
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                     <li class="nav-item" name="vichtab" id="vichtab">
-                        <a th:attr="class=${torch? 'nav-link':'nav-link active'}" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true" onclick="f1()" >ВИЧ</a>
+                        <a th:attr="class=${torch? 'nav-link':'nav-link active'}" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true" onclick="setTorch('false')" >ВИЧ</a>
                     </li>
                     <li class="nav-item" name="torchtab" id="torchtab">
-                        <a th:attr=" class=${torch? 'nav-link active':'nav-link'}" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="true" onclick="f()">TORCH</a>
+                        <a th:attr=" class=${torch? 'nav-link active':'nav-link'}" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="true" onclick="setTorch('true')">TORCH</a>
                     </li>
                 </ul>
                 <div class="tab-content">
@@ -290,6 +297,31 @@
                         }
 
 
+</script>
+<script>
+    setWrite();
+    function setWrite() {
+        let write =document.getElementById("writeDiv")
+        if (document.getElementById("torch").value==='true') {
+        //     write.innerHTML=`<form name="writeForm" id="writeForm" th:attr="action=${proofActive?'/writeProof':'write'}" method="post">
+        //             <input type="submit" class="btn btn-primary" value="Сформировать списки">
+        //             <input type="hidden"  name="redir" id="redir1" value="redirect:/divrefresh">
+        //             Схема HBsAg под:
+        //             <input type="text" name="count"  value="w-d-1:10-1:100-1:1000-1:10000" size="35">
+        //         </form>`
+        // } else {
+            write.innerHTML=`<form name="writeForm" id="writeForm" action="/writeTorch" method="post">
+                    <input type="submit" class="btn btn-primary" value="Сформировать списки">
+                    <input type="hidden"  name="redir" id="redir1" value="redirect:/divrefresh">
+                </form>`
+        }
+    }
+</script>
+<script>
+    function setTorch(bool) {
+        document.getElementById("torch").value=bool
+        console.log(document.getElementById("torch").value)
+    }
 </script>
 <!--<script>-->
 <!--    $( function() {-->

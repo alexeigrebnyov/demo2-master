@@ -22,9 +22,15 @@ public class UptakeSeviceImpl implements UptakeService {
     public List<Object[]> getData(String done,String bio_code, Integer GRPPRM) throws SQLException {
         return uptakeDao.getData(done, bio_code, GRPPRM);
     }
+
     @Override
-    public List<Object[]> chek (String done,String bio_code) throws SQLException {
-        return uptakeDao.chek(done, bio_code);
+    public List<Object[]> getDataGormonu(String bio_code, Integer GRPPRM, String done) throws SQLException {
+        return uptakeDao.getDataGormonu(bio_code, GRPPRM, done);
+    }
+
+    @Override
+    public List<Object[]> chek (String done,String bio_code, Integer GRPPRM) throws SQLException {
+        return uptakeDao.chek(done, bio_code, GRPPRM);
     }
 
 
