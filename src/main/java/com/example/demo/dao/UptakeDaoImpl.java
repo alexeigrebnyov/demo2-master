@@ -13,10 +13,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Repository("UptakeDao")
 public class UptakeDaoImpl implements UptakeDao {
@@ -142,7 +139,7 @@ public class UptakeDaoImpl implements UptakeDao {
         return objects;
     }
 
-    public List<Object[]> getDataGormonu(String bio_code, Integer GRPPRM, String done) {
+    public List<Object[]> getDataGormonu(String bio_code,  String done, String GPRM) {
         List<Object[]> objects = new ArrayList<>();
         try(Connection connection = database.getConnection()) {
             Statement statement = connection.createStatement();
@@ -181,13 +178,14 @@ public class UptakeDaoImpl implements UptakeDao {
                     "                                                 JOIN LAB_METHODS LAB_METHODS WITH(NOLOCK)  ON LAB_METHODBIO.LAB_METHODS_ID = LAB_METHODS.LAB_METHODS_ID\n" +
                     "                                                 LEFT OUTER JOIN VIEW_GRPPRM VIEW_GRPPRM WITH(NOLOCK)  ON DS_PARAMS.DS_PARAMS_ID = VIEW_GRPPRM.DS_PARAMS_ID\n" +
                     "    --DS_PARAMS\n" +
-                    "where\n" +
-                    "        VIEW_GRPPRM.GRPPRM_ID =" + GRPPRM + " --рабочий журнал по вичам\n" +
-                    "  and PATDIREC.QUANTITY_DONE="+done+
+                    "where\n" +GPRM+
+//                    "        VIEW_GRPPRM.GRPPRM_ID in (1836, 351) and " + " --рабочий журнал по вичам\n" +
+                    " PATDIREC.QUANTITY_DONE="+done+
                     "\n" +
                     "--                 LAB_METHODS.CODE='17-OH' order by PATDIREC.DATE_BIO desc\n" +
                     "\n" +
-                    "  and PATDIREC.BIO_CODE=" + bio_code+
+                    "  and " +
+                    "PATDIREC.BIO_CODE=" + bio_code+
                     "and PATDIREC.DATE_BIO >dateadd(day,-30,getdate())");
 
             while (resultSet.next()) {
@@ -207,7 +205,6 @@ public class UptakeDaoImpl implements UptakeDao {
              } catch (Exception e) {
             e.printStackTrace();
         }
-
 
         return objects;
     }

@@ -45,10 +45,11 @@
                 <!-- Nav tabs -->
                 <div class="tab-content">
                             <div class="float-right">
-                                <form name="writeForm" id="writeForm" th:action="@{/writeTorch}" method="post">
-                                    <input type="submit" class="btn btn-primary" value="Сформировать списки">
-                                    <input type="hidden" name="redir" id="redirTorch" value="redirect:/codeTorch">
-                                </form>
+<!--                                <form name="writeForm" id="writeForm" th:action="@{/writeTorch}" method="post">-->
+                                    <input type="submit" class="btn btn-primary" onclick="fetch('/update/writeGormonu')" value="Сформировать списки">
+                                    <input type="submit" class="btn btn-primary" onclick="getDoneList()" value="Выдать результаты">
+<!--                                    <input type="hidden" name="redir" id="redirTorch" value="redirect:/codeTorch">-->
+<!--                                </form>-->
 
                             </div>
                             <div class="bg-white">
@@ -109,16 +110,37 @@
 
     function getList(code=''){
         let row = ''
-        fetch('/update/gormonu/'+code+grp+'/1')
+        fetch('/update/gormonu/'+code+'/0')
             .then((res)=>res.json()
                 .then((data) => {
                     data.forEach( function (analys) {
                         row+=`<tr>
                                                 <td >${analys.emc}</td>
                                                 <td >${analys.fio}</td>
+                                                <td class="font-weight-bold text-danger">${analys.gCheck}</td>
                                                     </tr>`
                         console.log(row)
                         setDiv(row)})
+                }))
+    }
+
+</script>
+<script>
+
+
+    function getDoneList(){
+        let rowDone = ''
+        fetch('/update/chekGormonu/')
+            .then((res)=>res.json()
+                .then((data) => {
+                    data.forEach( function (analys) {
+                        rowDone+=`<tr>
+                                                <td >${analys.emc}</td>
+                                                <td >${analys.fio}</td>
+                                                <td >${analys.date_bio}</td>
+                                                    </tr>`
+                        console.log(rowDone)
+                        setDiv(rowDone)})
                 }))
     }
 </script>
@@ -133,7 +155,7 @@
             // document.readyState
 
         }})
-getList('0000')
+// getList('0000')
 
     function t() {
 

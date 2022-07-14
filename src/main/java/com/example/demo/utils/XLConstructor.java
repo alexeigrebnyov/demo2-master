@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.awt.Desktop;
@@ -52,7 +53,7 @@ public class XLConstructor {
         File template = new File("//192.168.7.100/ifa/ifaList/template.xlsx");
         File desc = new File("//192.168.7.100/ifa/ifaList/descriptor.xml");
         XML2Spreadsheet.process(data, desc, template, false, output);
-        DesktopApi.open(out);
+//        DesktopApi.open(out);
 
 
 
@@ -270,6 +271,7 @@ public class XLConstructor {
                 item.appendChild(kontengent);
                 item.appendChild(kont);
 
+
                 e_root.appendChild (item);
 
 //                if (hiv.getHiv().equals("1")) {
@@ -395,6 +397,122 @@ public class XLConstructor {
                 e_root.appendChild (item);
 
             }
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } finally {
+            // Сохраняем Document в XML-файл
+            if (doc != null)
+                writeDocument(doc);
+        }
+
+    }
+
+    public static void writeGormonuXML( List<Analysis> users) throws IOException {
+        DocumentBuilderFactory dbf = null;
+        DocumentBuilder db  = null;
+        Document doc = null;
+        try {
+            dbf = DocumentBuilderFactory.newInstance();
+            db  = dbf.newDocumentBuilder();
+            doc = db.newDocument();
+
+            Element e_root   = doc.createElement("report");
+//			e_root.setAttribute("lang", "en");
+            Element columnId  = doc.createElement("column");
+            columnId.setAttribute("data", "Фио");
+            Element columnpatientId = doc.createElement("column");
+            columnpatientId.setAttribute("data", "Дата забора");
+            Element columnuptakeCod = doc.createElement("column");
+            columnuptakeCod.setAttribute("data", "Код забора");
+            Element columnnumber = doc.createElement("column");
+            columnnumber.setAttribute("data", "АМГ");
+            Element columnresult = doc.createElement("column");
+            columnresult.setAttribute("data", "17-OH");
+            Element columnHCV = doc.createElement("column");
+            columnHCV.setAttribute("data", "CA-125");
+            Element columnIfa = doc.createElement("column");
+            columnIfa.setAttribute("data", "E2");
+            e_root.appendChild(columnId);
+            e_root.appendChild(columnpatientId);
+            e_root.appendChild(columnuptakeCod);
+            e_root.appendChild(columnnumber);
+            e_root.appendChild(columnresult);
+            e_root.appendChild(columnHCV);
+            e_root.appendChild(columnIfa);
+            doc.appendChild(e_root);
+//			if (posts.size() == 0)
+//				return;
+
+//            List<Analysis> users  = uptakeService.getUptakeByCode();
+//            List<String> hivs = users
+//                    .stream().map(Analysis::getHiv)
+//                    .collect(Collectors.toList());
+            int hivIterator = 1;
+            int hbsIterator=1;
+            int hcvIterator=1;
+            int ifaIterator = 1;
+            for (Analysis hiv : users) {
+//                int hivNumber = hivCount - (hivCount-hivIterator);
+//                int hbsNumber = hbsCount - (hbsCount-hbsIterator);
+//                int hcvNumber = hcvCount - (hcvCount-hcvIterator);
+//                int z = hivs.size()-(hivs.size()-i);
+                Element item = doc.createElement("item");
+                item.setAttribute("name", hiv.getEmc());
+                Element id = doc.createElement("data");
+                id.setAttribute("value", hiv.getFio());
+                Element patientid = doc.createElement("data");
+                patientid.setAttribute("value", hiv.getDate_bio());
+                Element uptakeCod = doc.createElement("data");
+                uptakeCod.setAttribute("value", hiv.getCode());
+                Element number = doc.createElement("data");
+                if (hiv.getHiv().equals("1")) {
+                    number.setAttribute("value", String.valueOf(hivIterator));
+                    hivIterator++;
+                } else {number.setAttribute("value", "");}
+                Element result = doc.createElement("data");
+                if (hiv.getHbsAg().equals("1")) {
+                    result.setAttribute("value", String.valueOf(hbsIterator));
+                    hbsIterator++;
+                } else {result.setAttribute("value", "");}
+                Element hcv = doc.createElement("data");
+                if (hiv.getAtHCV().equals("1")) {
+                    hcv.setAttribute("value", String.valueOf(hcvIterator));
+                    hcvIterator++;
+                } else {hcv.setAttribute("value", "");}
+                Element ifa = doc.createElement("data");
+                if (hiv.getSyphIFA().equals("1")) {
+                    ifa.setAttribute("value", String.valueOf(ifaIterator));
+                    ifaIterator++;
+                } else {ifa.setAttribute("value", "");}
+
+
+                item.appendChild(id);
+                item.appendChild(patientid);
+                item.appendChild(uptakeCod);
+                item.appendChild(number);
+                item.appendChild(result);
+                item.appendChild(hcv);
+                item.appendChild(ifa);
+
+                e_root.appendChild (item);
+
+//                if (hiv.getHiv().equals("1")) {
+//                    i++;
+//                }
+            }
+//            Element item1 = doc.createElement("item1");
+//            item1.setAttribute("name1", "116 б");
+//            Element kont116F = doc.createElement("data1");
+//            kont116F.setAttribute("value1", String.valueOf(hivCount));
+//            item1.appendChild(kont116F);
+//            e_root.appendChild(item1);
+
+//			System.out.println("    форумов : " + forums.size());
+//			for (String forum : forums) {
+//				Element e = doc.createElement("forum");
+//				e.setTextContent(forum);
+//				e_forums.appendChild (e);
+//			}
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
         } finally {

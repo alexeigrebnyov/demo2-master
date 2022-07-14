@@ -34,6 +34,7 @@ public class Analysis {
     private String code;
     private String sex;
     private String adres;
+    private String gCheck=gormonuChek();
 
     public Analysis() {
     }
@@ -362,6 +363,8 @@ public class Analysis {
                 ", code='" + code + '\'' +
                 ", sex='" + sex + '\'' +
                 ", adres='" + adres + '\'' +
+                ", gCheck='" + gCheck + '\'' +
+                ", gormonuCheck='" + gormonuChek() + '\'' +
                 '}';
     }
 
@@ -504,6 +507,46 @@ public class Analysis {
             } catch (Exception ex) {return  false;}}
         return true;
     }
+
+    public boolean chekAMG() {
+        try {
+            if (hiv.equals("1")) {
+
+                return !resultHiv.equals("");
+            }
+        }catch (Exception ex) {return  false;}
+        return true;
+    }
+
+    public boolean chek17() {
+        try {
+        if (hbsAg.equals("1")) {
+
+            return !resultHbsAg.equals("");
+        }
+            } catch (Exception ex) {return  false;}
+        return true;
+    }
+
+    public boolean chekCA() {
+        try {
+        if (atHCV.equals("1")) {
+
+            return !resultatHCV.equals("");
+        }
+            } catch (Exception ex) {return false;}
+        return true;
+    }
+
+    public boolean chekE2() {
+        try {
+        if (syphIFA.equals("1")){
+
+                return !resultSyphIfa.equals("");
+        }
+            } catch (Exception ex) {return  false;}
+        return true;
+    }
     public String totalChek() {
         if(chek() && chekatHCV() && chekHbs() && chekHiv() && chekSyphIfa()) {return " ";}
         return "!!!!!";
@@ -514,4 +557,16 @@ public class Analysis {
         return "!!!!!";
     }
 
+    public String gormonuChek() {
+        if(chekAMG() && chek17() && chekCA() && chekE2()) {return" ";}
+        return "!!!!!";
+    }
+
+    public String getgCheck() {
+        return gCheck;
+    }
+
+    public void setgCheck(String gCheck) {
+        this.gCheck = gCheck;
+    }
 }

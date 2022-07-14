@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 public class UptakeController {
 
     UptakeService uptakeService;
-    UpdateController updateController;
+//    UpdateController updateController;
 //    XLConstructor xlConstructor;
 //    BCScaner bcScaner;
     List<Analysis> uptakeByCode = new ArrayList<>();
@@ -67,11 +67,11 @@ public class UptakeController {
         return s;
     }
     @Autowired
-    public UptakeController(UptakeService uptakeService, UpdateController updateController
+    public UptakeController(UptakeService uptakeService
 //     BCScaner bcScaner
     ) {
         this.uptakeService = uptakeService;
-        this.updateController = updateController;
+//        this.updateController = updateController;
 //        this.bcScaner = bcScaner;
     }
 
@@ -452,6 +452,58 @@ public class UptakeController {
 
     }
 
+    public void writeGormonu(List<Analysis> analysisList) throws IOException, XML2SpreadSheetError {
+        List<Analysis> dist = analysisList
+                .stream()
+                .distinct()
+                .collect(Collectors.toList());
+
+//        String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+
+        deleteAllFilesFolder("//192.168.7.100/ifa/Гормоны");
+        try(
+                FileOutputStream fosB=new FileOutputStream("//192.168.7.100/ifa/Гормоны/AMGList.txt", true);
+                FileOutputStream fosC=new FileOutputStream("//192.168.7.100/ifa/Гормоны/17List.txt", true);
+                FileOutputStream fos=new FileOutputStream("//192.168.7.100/ifa/Гормоны/CAList.txt", true);
+                FileOutputStream fosSyf=new FileOutputStream("//192.168.7.100/ifa/Гормоны/E2List.txt", true);
+        ) {
+
+
+            for (Analysis data:
+                    dist) {
+                if (data.getHiv().equals("1")) {
+                    String item =getUserName()+" "+ data.getEmc()+ System.lineSeparator();
+                    fosB.write(item.getBytes());
+//                    System.out.println(data.getHiv());
+                }
+                if (data.getHbsAg().equals("1")) {
+                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
+
+                    fosC.write(item.getBytes());
+                }
+                if (data.getAtHCV().equals("1")) {
+                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
+                    fos.write(item.getBytes());
+                }
+                if (data.getSyphIFA().equals("1")) {
+                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
+                    fosSyf.write(item.getBytes());
+                }
+
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+        XLConstructor.writeGormonuXML(dist);
+        XLConstructor.xml2XLSX("//192.168.7.100/ifa/ifaList/GormonuReport.xlsx");
+        RequestEntity request = RequestEntity
+                .get("http://"+Constants.SERVERENDPOINT+"/update/openGormonu").build();
+        ResponseEntity<String> response = template.exchange(request, String.class);
+
+
+
+    }
+
     @PostMapping(value = "/code")
     public String updateUser(ModelMap model,
 //                             @RequestParam(value = "codeInt") String codeInt,
@@ -656,7 +708,7 @@ public class UptakeController {
 //        System.out.println(codeInt);
        code = null;
        code1 = null;
-       updateController.setCode(null);
+//       updateController.setCode(null);
         RequestEntity request = RequestEntity
                 .get("http://"+Constants.SERVERENDPOINT+"/update/setcode").build();
         ResponseEntity<String> response = template.exchange(request, String.class);

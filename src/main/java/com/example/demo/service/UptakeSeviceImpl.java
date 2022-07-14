@@ -24,8 +24,8 @@ public class UptakeSeviceImpl implements UptakeService {
     }
 
     @Override
-    public List<Object[]> getDataGormonu(String bio_code, Integer GRPPRM, String done) throws SQLException {
-        return uptakeDao.getDataGormonu(bio_code, GRPPRM, done);
+    public List<Object[]> getDataGormonu(String bio_code,  String done, String GPRM) throws SQLException {
+        return uptakeDao.getDataGormonu(bio_code,  done, GPRM);
     }
 
     @Override
