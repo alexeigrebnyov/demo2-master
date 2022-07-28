@@ -66,7 +66,7 @@ public class XLConstructor {
 //      rt.exec(".\\report.xlsx");
 
     }
-    private static void writeDocument(Document document)
+    public static void writeDocument(Document document)
             throws TransformerFactoryConfigurationError
     {
         Transformer trf = null;

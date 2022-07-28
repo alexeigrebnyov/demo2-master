@@ -1,26 +1,43 @@
 package com.example.demo.model;
 
+import javax.persistence.*;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
-
+@Entity
+@Table(name = "commonAnalysis")
 public class CommonAnalysis {
+    @Column(name = "emc")
     private String emc;
+    @Column(name = "fio")
     private String fio;
+    @Column(name = "code")
     private String code;
+    @Column(name = "date_bio")
     private String date_bio;
+    @Column(name = "label")
     private String label;
-    private Map<String, String> assignments;
+
+
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "commonAnalysis", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Assignment> assignments;
+    @Id
+    @GeneratedValue
+    private Long id;
 
     public CommonAnalysis() {
     }
 
-    public CommonAnalysis(String emc, String fio, String code, String date_bio, String label, Map<String, String> assignments) {
+    public CommonAnalysis(String emc, String fio, String code, String date_bio, String label, Set<Assignment> assignments) {
         this.emc = emc;
         this.fio = fio;
         this.code = code;
         this.date_bio = date_bio;
         this.label = label;
         this.assignments = assignments;
+
     }
 
     public String getEmc() {
@@ -63,12 +80,26 @@ public class CommonAnalysis {
         this.label = label;
     }
 
-    public Map<String, String> getAssignments() {
+    public Set<Assignment> getAssignments() {
         return assignments;
     }
 
-    public void setAssignments(Map<String, String> assignments) {
+    public void setAssignments(Set<Assignment> assignments) {
         this.assignments = assignments;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CommonAnalysis that = (CommonAnalysis) o;
+        return Objects.equals(emc, that.emc) && Objects.equals(code, that.code);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(emc, code);
     }
 
     @Override
@@ -81,5 +112,13 @@ public class CommonAnalysis {
                 ", label='" + label + '\'' +
                 ", assignments=" + assignments +
                 '}';
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
     }
 }

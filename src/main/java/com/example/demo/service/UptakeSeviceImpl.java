@@ -1,12 +1,16 @@
 package com.example.demo.service;
 
 import com.example.demo.dao.UptakeDao;
+import com.example.demo.model.CommonAnalysis;
 import com.example.demo.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.Document;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 public class UptakeSeviceImpl implements UptakeService {
@@ -47,6 +51,33 @@ public class UptakeSeviceImpl implements UptakeService {
     @Override
     public void removeUserById(long id) {
         uptakeDao.removeUserById(id);
+    }
+
+    @Override
+    public void saveCommon(CommonAnalysis ca) {
+        uptakeDao.saveCommon(ca);
+
+    }
+
+    @Override
+    public List<CommonAnalysis> getCommon() {
+        return uptakeDao.getCommon();
+    }
+
+    @Override
+    public void deleteCommon(long id) {
+        uptakeDao.deleteCommon(id);
+
+    }
+
+    @Override
+    public Document getDoc(List<CommonAnalysis> analyses, Set<String> indets, Document doc) {
+        return uptakeDao.getDoc(analyses, indets, doc);
+    }
+
+    @Override
+    public List<String> getBCAsignments(String in) {
+        return uptakeDao.getBCAsignments(in);
     }
 
 

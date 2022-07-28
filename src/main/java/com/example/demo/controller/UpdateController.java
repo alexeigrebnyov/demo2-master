@@ -28,7 +28,8 @@ public class UpdateController {
     String code;
     List<Analysis> analysisList = new ArrayList<>();
     List<Analysis> checkAnalysisList = new ArrayList<>();
-    List<Analysis> dist = analysisList.stream().distinct().collect(Collectors.toList());
+    List<Analysis> dist = new ArrayList<>();
+//            analysisList.stream().distinct().collect(Collectors.toList());
     UptakeService uptakeService;
     UptakeController uptakeController;
     RestTemplate template = new RestTemplate();
@@ -68,7 +69,7 @@ public class UpdateController {
         RequestEntity request = RequestEntity
                 .get("http://"+Constants.SERVERENDPOINT+"/update/setcode").build();
         ResponseEntity<String> response = template.exchange(request, String.class);
-        System.out.println(dist);
+//        System.out.println(dist);
         return dist;
     }
 

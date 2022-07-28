@@ -201,6 +201,11 @@ public class UptakeController {
     public String getGorm() {
         return "byCodeGormonu";
     }
+
+    @GetMapping("/commonPost")
+    public String getCommon() {
+        return "commonPostKazan.html";
+    }
     @GetMapping(value = "/chek")
     public String getCheked (ModelMap model) throws SQLException {
 //        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
