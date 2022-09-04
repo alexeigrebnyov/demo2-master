@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.dao.UptakeDao;
+import com.example.demo.model.Assignment;
 import com.example.demo.model.CommonAnalysis;
 import com.example.demo.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -78,6 +80,41 @@ public class UptakeSeviceImpl implements UptakeService {
     @Override
     public List<String> getBCAsignments(String in) {
         return uptakeDao.getBCAsignments(in);
+    }
+
+    @Override
+    public void updateByLabel(String label) {
+        uptakeDao.updateByLabel(label);
+    }
+
+    @Override
+    public List<CommonAnalysis> getByLabel(String label, boolean status) {
+        return uptakeDao.getByLabel(label, status);
+    }
+
+    @Override
+    public Long getMaxId() {
+        return uptakeDao.getMaxId();
+    }
+
+    @Override
+    public List<Object[]> getCommonData(int filial, String from, String to) {
+        return uptakeDao.getCommonData(filial,from,to);
+    }
+
+    @Override
+    public List<String> getOncoCytologyCodes(int filial, String from, String to) {
+        return uptakeDao.getOncoCytologyCodes(filial, from, to);
+    }
+
+    @Override
+    public List<Object[]> getOncoCytology(String code, String from, String to) {
+        return uptakeDao.getOncoCytology(code, from, to);
+    }
+
+    @Override
+    public void saveAssigment(Assignment a) {
+        uptakeDao.saveAssigment(a);
     }
 
 

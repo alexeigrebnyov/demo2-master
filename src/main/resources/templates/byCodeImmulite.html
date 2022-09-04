@@ -31,7 +31,7 @@
             <a class="nav-link active" href="#" >TORCH</a>
             <a class="nav-link " th:href="@{/proofCode}" >Подтверждающие</a>
             <a class="nav-link " th:href="@{/divrefresh}" >Ручной ввод</a>
-            <a class="nav-link " th:href="@{/immulite}" >Иммулайт</a>
+            <a class="nav-link " th:href="@{/gormonu}" >Гормоны ИФА</a>
             <a class="nav-link " th:href="@{/chek}" >Результаты ВИЧ</a>
             <a class="nav-link " th:href="@{/chekTorch}" >Результаты TORCH</a>
             <a class="nav-link " th:href="@{/reportPage}" >Забор филиалы</a>
@@ -46,8 +46,8 @@
                 <div class="tab-content">
                             <div class="float-right">
 <!--                                <form name="writeForm" id="writeForm" th:action="@{/writeTorch}" method="post">-->
-                                    <input type="submit" class="btn btn-primary" onclick="fetch('/update/writeGormonu')" value="Сформировать списки">
-                                    <input type="submit" class="btn btn-success" onclick="exp()" value="Выдать результаты">
+                                    <input type="submit" class="btn btn-primary" onclick="fetch('/immulite/writeGormonu')" value="Сформировать списки">
+                                    <input type="submit" class="btn btn-success" onclick="exp()" value="Выдать результаты" >
                                     <input type="submit" class="btn btn-danger" onclick="clearList()" value="Очистить список">
 <!--                                    <input type="hidden" name="redir" id="redirTorch" value="redirect:/codeTorch">-->
 <!--                                </form>-->
@@ -112,8 +112,7 @@
     function getList(code=''){
         let row = ''
         let count = 1
-
-        fetch('/update/gormonu/'+code+'/0')
+        fetch('/immulite/gormonu/'+code+'/0')
             .then((res)=>res.json()
                 .then((data) => {
                     data.forEach( function (analys) {
@@ -125,11 +124,17 @@
                                                 <td >${analys.hiv}</td>
                                                 <td >${analys.hbsAg}</td>
                                                 <td >${analys.atHCV}</td>
+                                                <td >${analys.syphIFA}</td>
+                                                <td >${analys.rubM}</td>
+                                                <td >${analys.rubG}</td>
+                                                <td >${analys.clamG}</td>
+                                                <td >${analys.syphMRP}</td>
+                                                <td >${analys.clamA}</td>
+                                                <td >${analys.sbg}</td>
+                                                <td >${analys.dga}</td>
                                                 <td >${analys.label}</td>
-                                                 <td class="font-weight-bold text-danger">${analys.gCheck}</td>
-                                                <td ><button class="btn-danger" onclick="
-                                                 dele(${analys.emc})
-                                                ">Удалить</button></td>
+                                                <td ><button class="btn-danger" onclick="dele(${analys.emc})">Удалить</button></td>
+                                                // <td class="font-weight-bold text-danger">${analys.immChek}</td>
                                                     </tr>`
                         // console.log(row)
                         setDiv(row)
@@ -143,17 +148,17 @@
 <script>
 
     function exp() {
-        fetch('/update/runGorm')
+        fetch('/update/runImmulite')
         setTimeout(getDoneList, 30000)
 
     }
+
 </script>
 
 <script>
     function clearList() {
-        fetch('/update/clear')
+        fetch('/immulite/clear')
         document.location.reload()
-
     }
 </script>
 <script>
@@ -165,7 +170,7 @@
 
 
         // if (succes === 1) {
-            fetch('/update/chekGormonu/')
+            fetch('/immulite/chekGormonu/')
                 .then((res) => res.json()
                     .then((data) => {
                         data.forEach(function (analys) {
@@ -177,15 +182,23 @@
                                                 <td >${analys.resultHiv!=null?analys.resultHiv:''}</td>
                                                 <td >${analys.resultHbsAg!=null?analys.resultHbsAg:''}</td>
                                                 <td >${analys.resultatHCV!=null?analys.resultatHCV:''}</td>
+                                                <td >${analys.resultSyphIfa!=null?analys.resultSyphIfa:''}</td>
+                                                   <td >${analys.resultRubM!=null?analys.resultRubM:''}</td>
+                                                   <td >${analys.resultRubG!=null?analys.resultRubG:''}</td>
+                                                    <td >${analys.resultClamG!=null?analys.resultClamG:''}</td>
+                                                    <td >${analys.resultMRP!=null?analys.resultMRP:''}</td>
+                                                    <td >${analys.resultClamA!=null?analys.resultClamA:''}</td>
+                                                    <td >${analys.resultHSP60!=null?analys.resultHSP60:''}</td>
+                                                    <td >${analys.resultDGA!=null?analys.resultDGA:''}</td>
                                                 <td >${analys.label}</td>
-                                                <td class="font-weight-bold text-danger">${analys.gCheck}</td>
-
+                                                <td class="font-weight-bold text-danger">${analys.immChek}</td>
                                                     </tr>`
                             // console.log(rowDone)
                             setDiv(rowDone)
                             count++
                         })
                     }))
+        window.scrollBy(0, 2)
         // }
     }
 </script>
@@ -204,7 +217,7 @@
 
     function t() {
 
-        fetch('/update/code').then(
+        fetch('/immulite/code').then(
             (res)=>res.json()
                 .then((data) => {
                         data.forEach( function (some) {
@@ -251,9 +264,17 @@
                                 <th>ФИО</th>
                                 <th>Дата забора</th>
                                 <th>Код забора</th>
-                                <th>АМГ</th>
-                                <th>17-ОН</th>
-                                <th>СА-125</th>
+                                <th>E2</th>
+                                <th>ФСГ</th>
+                                <th>ТТГ</th>
+                                <th>АТ к ТПО</th>
+                                <th>Т4</th>
+                                <th>ПРЛ</th>
+                                <th>ЛГ</th>
+                                <th>ПРГ</th>
+                                <th>TES</th>
+                                <th>СССГ</th>
+                                <th>DGA-S</th>
                                 <th>Филиал</th>
                                 <th>Статус</th>
 <!--                                <th>Статус</th>-->
@@ -262,9 +283,10 @@
         document.getElementById("dataRowDiv").innerHTML=begin+stroka+end
     }
 </script>
+
 <script>
     function dele(del='') {
-        fetch('/update/delete',
+        fetch('/immulite/delete',
             {
                 method: 'POST',
                 body: del

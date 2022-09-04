@@ -30,6 +30,7 @@
             <a class="nav-link " th:href="@{/divrefresh}" >Ручной ввод</a>
             <a class="nav-link " th:href="@{/chek}" >Результаты ВИЧ</a>
             <a class="nav-link active" href="#" >Результаты TORCH</a>
+            <a class="nav-link " th:href="@{/reportPage}" >Забор филиалы</a>
 
 
 
@@ -41,7 +42,7 @@
                             <div class="bg-white">
                                 <br>
                                 <div class="float-right">
-                                    <form name="exportForm" id="exportForm" th:action="@{/exportresult}" method="post">
+                                    <form name="exportForm" id="exportForm" th:action="@{/exporttorch}" method="post">
                                         <input type="submit" class="btn btn-primary" value="Выдать результаты">
                                         <input type="hidden" name="redir" class="btn btn-primary" value="redirect:/chekTorch">
                                     </form>

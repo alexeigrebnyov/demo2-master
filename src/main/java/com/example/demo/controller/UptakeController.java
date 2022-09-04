@@ -202,9 +202,32 @@ public class UptakeController {
         return "byCodeGormonu";
     }
 
+    @GetMapping("/immulite")
+    public String getImmulite() {
+        return "byCodeImmulite";
+    }
+
     @GetMapping("/commonPost")
-    public String getCommon() {
+    public String getCommon(ModelMap map) {
+        String user = getUserName();
+        String server;
+        switch (user) {
+            case "Alex": server="localhost:8099";
+            break;
+            case "Rif": server="localhost:8084";
+            break;
+            case "ifa": server=Constants.SERVERENDPOINT;
+                break;
+            default: server="localhost:8099";
+        }
+        map.addAttribute("user", user);
+        map.addAttribute("server", server);
         return "commonPostKazan.html";
+    }
+    @GetMapping("/reportPage")
+    public String getReportPage(ModelMap map) {
+        map.addAttribute("user", getUserName());
+        return "reportMaker";
     }
     @GetMapping(value = "/chek")
     public String getCheked (ModelMap model) throws SQLException {
@@ -470,7 +493,7 @@ public class UptakeController {
                 FileOutputStream fosB=new FileOutputStream("//192.168.7.100/ifa/Гормоны/AMGList.txt", true);
                 FileOutputStream fosC=new FileOutputStream("//192.168.7.100/ifa/Гормоны/17List.txt", true);
                 FileOutputStream fos=new FileOutputStream("//192.168.7.100/ifa/Гормоны/CAList.txt", true);
-                FileOutputStream fosSyf=new FileOutputStream("//192.168.7.100/ifa/Гормоны/E2List.txt", true);
+//                FileOutputStream fosSyf=new FileOutputStream("//192.168.7.100/ifa/Гормоны/E2List.txt", true);
         ) {
 
 
@@ -490,10 +513,10 @@ public class UptakeController {
                     String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
                     fos.write(item.getBytes());
                 }
-                if (data.getSyphIFA().equals("1")) {
-                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
-                    fosSyf.write(item.getBytes());
-                }
+//                if (data.getSyphIFA().equals("1")) {
+//                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
+//                    fosSyf.write(item.getBytes());
+//                }
 
             }
         } catch (Exception ex) {
@@ -509,6 +532,84 @@ public class UptakeController {
 
     }
 
+    public void writeImm(List<Analysis> analysisList) throws IOException, XML2SpreadSheetError {
+        List<Analysis> dist = analysisList
+                .stream()
+                .distinct()
+                .collect(Collectors.toList());
+
+//        String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+
+        deleteAllFilesFolder("//192.168.7.100/ifa/Имммулайт");
+        try(
+                FileOutputStream fosB=new FileOutputStream("//192.168.7.100/ifa/Имммулайт/E2List.txt", true);
+                FileOutputStream fosC=new FileOutputStream("//192.168.7.100/ifa/Имммулайт/FSGList.txt", true);
+                FileOutputStream fos=new FileOutputStream("//192.168.7.100/ifa/Имммулайт/TTGList.txt", true);
+                FileOutputStream fosSyf=new FileOutputStream("//192.168.7.100/ifa/Имммулайт/ATTPOList.txt", true);
+                FileOutputStream fosT4=new FileOutputStream("//192.168.7.100/ifa/Имммулайт/T4List.txt", true);
+                FileOutputStream fosPRL=new FileOutputStream("//192.168.7.100/ifa/Имммулайт/PRLList.txt", true);
+                FileOutputStream fosLG=new FileOutputStream("//192.168.7.100/ifa/Имммулайт/LGList.txt", true);
+                FileOutputStream fosPRG=new FileOutputStream("//192.168.7.100/ifa/Имммулайт/PRGList.txt", true);
+                FileOutputStream fosTes=new FileOutputStream("//192.168.7.100/ifa/Имммулайт/TESTList.txt", true);
+                FileOutputStream fosSBG=new FileOutputStream("//192.168.7.100/ifa/Имммулайт/SBGList.txt", true);
+                FileOutputStream fosDGA=new FileOutputStream("//192.168.7.100/ifa/Имммулайт/DGAList.txt", true);
+        ) {
+
+
+            for (Analysis data:
+                    dist) {
+                String item =getUserName()+" "+ data.getEmc()+ System.lineSeparator();
+                if (data.getHiv().equals("1")) {
+                    fosB.write(item.getBytes());
+//                    System.out.println(data.getHiv());
+                }
+                if (data.getHbsAg().equals("1")) {
+                    fosC.write(item.getBytes());
+                }
+                if (data.getAtHCV().equals("1")) {
+                    fos.write(item.getBytes());
+                }
+                if (data.getSyphIFA().equals("1")) {
+                    fosSyf.write(item.getBytes());
+                }
+
+                if (data.getRubM().equals("1")) {
+                    fosT4.write(item.getBytes());
+                }
+
+                if (data.getRubG().equals("1")) {
+                    fosPRL.write(item.getBytes());
+                }
+                if (data.getClamG().equals("1")) {
+                    fosLG.write(item.getBytes());
+                }
+                if (data.getSyphMRP().equals("1")) {
+                    fosPRG.write(item.getBytes());
+                }
+                if (data.getClamA().equals("1")) {
+                    fosTes.write(item.getBytes());
+                }
+                if (data.getSbg().equals("1")) {
+                    fosSBG.write(item.getBytes());
+                }
+                if (data.getDga().equals("1")) {
+                    fosDGA.write(item.getBytes());
+                }
+
+
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+        XLConstructor.writeImmXML(dist);
+        XLConstructor.xml2XLSX("//192.168.7.100/ifa/ifaList/ImmReport.xlsx");
+        RequestEntity request = RequestEntity
+                .get("http://"+Constants.SERVERENDPOINT+"/update/openImm").build();
+        ResponseEntity<String> response = template.exchange(request, String.class);
+
+
+
+    }
     @PostMapping(value = "/code")
     public String updateUser(ModelMap model,
 //                             @RequestParam(value = "codeInt") String codeInt,
@@ -736,7 +837,18 @@ public class UptakeController {
         ResponseEntity<String> response = template.exchange(request, String.class);
         return redir;
     }
-//    @PostMapping(value = "/chek")
+
+    @PostMapping(value = "/exporttorch")
+    public String exportTorch(@RequestParam("redir") String redir) {
+//        File expres = new File("C:/Users/Grebnev_A/IFA.jar");
+//       System.out.println( DesktopApi.open(expres));
+        RequestEntity request = RequestEntity
+                .get("http://"+Constants.SERVERENDPOINT+"/update/runTORCH").build();
+        ResponseEntity<String> response = template.exchange(request, String.class);
+        return redir;
+    }
+
+    //    @PostMapping(value = "/chek")
     public String chekAnalysis (List<Analysis> chekAnalysis, Integer GRPPRM) throws SQLException {
 //        List<Analysis> dist = uptakeByCode
 //                .stream()

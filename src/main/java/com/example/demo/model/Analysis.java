@@ -17,6 +17,7 @@ public class Analysis {
     private String resultHSP60;
     private String resultClamA;
     private String resultClamG;
+    private String resultDGA;
     private String main_org_id;
     private String label;
     private String patdirect_id;
@@ -28,13 +29,16 @@ public class Analysis {
     private String syphMRP;
     private String RubG;
     private String RubM;
-    private String HSP60;
+    private String hsp60;
     private String ClamA;
     private String ClamG;
+    private String sbg;
+    private String dga;
     private String code;
     private String sex;
     private String adres;
-    private String gCheck=gormonuChek();
+    private String gCheck;
+    private String immCheck;
 
     public Analysis() {
     }
@@ -43,7 +47,8 @@ public class Analysis {
                     String resultHbsAg, String resultatHCV, String resultSyphIfa, String resultMRP, String resultRubG,
                     String resultRubM,  String resultHSP60, String resultClamA, String resultClamG, String main_org_id,
                     String label, String patdirect_id, String date_bio, String hiv, String hbsAg, String atHCV,
-                    String syphIFA,String syphMRP, String RubG, String RubM, String HSP60, String code, String sex,
+                    String syphIFA,String syphMRP, String RubG, String RubM, String hsp60, String sbg,
+                    String dga, String resultDGA,String code, String sex,
                     String ClamA, String ClamG, String adres) {
         this.emc = emc;
         this.fio = fio;
@@ -59,6 +64,7 @@ public class Analysis {
         this.resultHSP60 = resultHSP60;
         this.resultClamA = resultClamA;
         this.resultClamG = resultClamG;
+        this.resultDGA = resultDGA;
         this.main_org_id = main_org_id;
         this.label = label;
         this.patdirect_id = patdirect_id;
@@ -70,12 +76,38 @@ public class Analysis {
         this.syphMRP = syphMRP;
         this.RubG = RubG;
         this.RubM = RubM;
-        this.HSP60 = HSP60;
+        this.hsp60 = hsp60;
+        this.sbg = sbg;
         this.ClamA = ClamA;
         this.ClamG = ClamG;
+        this.dga = dga;
         this.code = code;
         this.sex = sex;
         this.adres = adres;
+    }
+
+    public String getResultDGA() {
+        return resultDGA;
+    }
+
+    public void setResultDGA(String resultDGA) {
+        this.resultDGA = resultDGA;
+    }
+
+    public String getDga() {
+        return dga;
+    }
+
+    public void setDga(String dga) {
+        this.dga = dga;
+    }
+
+    public String getSbg() {
+        return sbg;
+    }
+
+    public void setSbg(String sbg) {
+        this.sbg = sbg;
     }
 
     public String getKontengent() {
@@ -306,11 +338,11 @@ public class Analysis {
     }
 
     public String getHSP60() {
-        return HSP60;
+        return hsp60;
     }
 
-    public void setHSP60(String HSP60) {
-        this.HSP60 = HSP60;
+    public void setHSP60(String hsp60) {
+        this.hsp60 = hsp60;
     }
 
     public String getClamA() {
@@ -329,6 +361,7 @@ public class Analysis {
         ClamG = clamG;
     }
 
+
     @Override
     public String toString() {
         return "Analysis{" +
@@ -346,6 +379,7 @@ public class Analysis {
                 ", resultHSP60='" + resultHSP60 + '\'' +
                 ", resultClamA='" + resultClamA + '\'' +
                 ", resultClamG='" + resultClamG + '\'' +
+                ", resultDGA='" + resultDGA + '\'' +
                 ", main_org_id='" + main_org_id + '\'' +
                 ", label='" + label + '\'' +
                 ", patdirect_id='" + patdirect_id + '\'' +
@@ -357,9 +391,11 @@ public class Analysis {
                 ", syphMRP='" + syphMRP + '\'' +
                 ", RubG='" + RubG + '\'' +
                 ", RubM='" + RubM + '\'' +
-                ", HSP60='" + HSP60 + '\'' +
+                ", HSP60='" + hsp60 + '\'' +
                 ", ClamA='" + ClamA + '\'' +
                 ", ClamG='" + ClamG + '\'' +
+                ", SBG='" + sbg + '\'' +
+                ", DGA='" + dga + '\'' +
                 ", code='" + code + '\'' +
                 ", sex='" + sex + '\'' +
                 ", adres='" + adres + '\'' +
@@ -501,7 +537,7 @@ public class Analysis {
         return true;
     }
     public boolean chekHSP() {
-        if (HSP60.equals("1")){
+        if (hsp60.equals("1")){
             try {
                 return !resultHSP60.equals("");
             } catch (Exception ex) {return  false;}}
@@ -540,13 +576,34 @@ public class Analysis {
 
     public boolean chekE2() {
         try {
-        if (syphIFA.equals("1")){
+        if (hiv.equals("1")){
 
-                return !resultSyphIfa.equals("");
+                return !resultHiv.equals("");
         }
             } catch (Exception ex) {return  false;}
         return true;
     }
+    public boolean chekSBG() {
+        try {
+            if (sbg.equals("1")){
+
+                return !resultHSP60.equals("");
+            }
+        } catch (Exception ex) {return  false;}
+        return true;
+    }
+
+    public boolean chekDGA() {
+        try {
+            if (dga.equals("1")){
+
+                return !resultDGA.equals("");
+            }
+        } catch (Exception ex) {return  false;}
+        return true;
+    }
+
+
     public String totalChek() {
         if(chek() && chekatHCV() && chekHbs() && chekHiv() && chekSyphIfa()) {return " ";}
         return "!!!!!";
@@ -558,15 +615,22 @@ public class Analysis {
     }
 
     public String gormonuChek() {
-        if(chekAMG() && chek17() && chekCA() && chekE2()) {return" ";}
+        if(chekAMG() && chek17() && chekCA() ) {return" ";}
+        return "!!!!!";
+    }
+
+    public String getImmChek() {
+        if(chekHiv() && chekHbs() && chekatHCV() && chekSyphIfa()&& chekRubM() && chekRubG() && chekClamG() && chekClamA() && chekE2() && chekSBG()
+        && chekDGA()) {return" ";}
         return "!!!!!";
     }
 
     public String getgCheck() {
-        return gCheck;
+
+        return gormonuChek();
     }
 
-    public void setgCheck(String gCheck) {
+    public void setGCheck(String gCheck) {
         this.gCheck = gCheck;
     }
 }

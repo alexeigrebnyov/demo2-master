@@ -1,11 +1,14 @@
 package com.example.demo.dao;
 
+import com.example.demo.model.Analysis;
+import com.example.demo.model.Assignment;
 import com.example.demo.model.CommonAnalysis;
 import com.example.demo.model.User;
 import org.springframework.stereotype.Repository;
 import org.w3c.dom.Document;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,6 +26,14 @@ public interface UptakeDao {
     public List<CommonAnalysis> getCommon();
     public void deleteCommon(long id);
     public Document getDoc(List<CommonAnalysis> analyses, Set<String> indets, Document doc);
+    public Document getGormDoc(List<Analysis> analyses, Set<String> indets, Document doc);
     List<String> getBCAsignments(String in);
+    void updateByLabel(String label);
+    List<CommonAnalysis> getByLabel(String label, boolean status);
+    Long getMaxId();
+    public List<Object[]> getCommonData(int filial, String from, String to);
+    List<String> getOncoCytologyCodes(int filial, String from, String to);
+    List<Object[]> getOncoCytology(String code, String from, String to);
+    public void saveAssigment(Assignment a);
 
 }

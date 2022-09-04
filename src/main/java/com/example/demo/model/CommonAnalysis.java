@@ -18,6 +18,8 @@ public class CommonAnalysis {
     private String date_bio;
     @Column(name = "label")
     private String label;
+    @Column(name = "status")
+    private Boolean status;
 
 
 
@@ -30,13 +32,14 @@ public class CommonAnalysis {
     public CommonAnalysis() {
     }
 
-    public CommonAnalysis(String emc, String fio, String code, String date_bio, String label, Set<Assignment> assignments) {
+    public CommonAnalysis(String emc, String fio, String code, String date_bio, String label, Set<Assignment> assignments, boolean status) {
         this.emc = emc;
         this.fio = fio;
         this.code = code;
         this.date_bio = date_bio;
         this.label = label;
         this.assignments = assignments;
+        this.status=status;
 
     }
 
@@ -58,6 +61,10 @@ public class CommonAnalysis {
 
     public String getCode() {
         return code;
+    }
+
+    public Boolean isStatus() {
+        return status;
     }
 
     public void setCode(String code) {
@@ -88,18 +95,21 @@ public class CommonAnalysis {
         this.assignments = assignments;
     }
 
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CommonAnalysis that = (CommonAnalysis) o;
-        return Objects.equals(emc, that.emc) && Objects.equals(code, that.code);
+        return Objects.equals(emc, that.emc);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(emc, code);
+        return Objects.hash(emc);
     }
 
     @Override

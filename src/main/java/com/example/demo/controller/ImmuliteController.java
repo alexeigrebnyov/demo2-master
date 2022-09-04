@@ -1,6 +1,5 @@
 package com.example.demo.controller;
 
-//import com.example.demo.utils.Test;
 import com.example.demo.model.Analysis;
 import com.example.demo.service.UptakeService;
 import com.example.demo.utils.Constants;
@@ -14,29 +13,27 @@ import ru.curs.xylophone.XML2SpreadSheetError;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/update")
-public class UpdateController {
-
+@RequestMapping("/immulite")
+public class ImmuliteController {
     String code;
     List<Analysis> analysisList = new ArrayList<>();
     List<Analysis> checkAnalysisList = new ArrayList<>();
     List<Analysis> dist = new ArrayList<>();
-//            analysisList.stream().distinct().collect(Collectors.toList());
+    //            analysisList.stream().distinct().collect(Collectors.toList());
     UptakeService uptakeService;
     UptakeController uptakeController;
     RestTemplate template = new RestTemplate();
     @Autowired
-    public UpdateController(UptakeService uptakeService, UptakeController uptakeController) {
+    public ImmuliteController(UptakeService uptakeService, UptakeController uptakeController) {
         this.uptakeService=uptakeService;
         this.uptakeController=uptakeController;
     }
 
-//    @GetMapping("/time")
+    //    @GetMapping("/time")
 //    public ResponseEntity<List<Long>> getTime() {
 //        List<Long> times =new ArrayList<>();
 //        times.add(System.currentTimeMillis());
@@ -53,14 +50,14 @@ public class UpdateController {
         return ResponseEntity.ok(codes);
 
     }
-    @GetMapping("/setserver/{code}")
-    public void setCode1(@PathVariable("code") String code) {
-        Constants.setSERVERENDPOINT(code);
-    }
+//    @GetMapping("/setserver/{code}")
+//    public void setCode1(@PathVariable("code") String code) {
+//        Constants.setSERVERENDPOINT(code);
+//    }
 
     @GetMapping(value = "/gormonu/{code}/{done}")
     public List<Analysis> getGormonu(@PathVariable("code") String code, @PathVariable String done) throws SQLException {
-        analysisList.addAll(getAnalysisList(code, done, "VIEW_GRPPRM.GRPPRM_ID in (1836) and"));
+        analysisList.addAll(getAnalysisList(code, done, "VIEW_GRPPRM.GRPPRM_ID in (351) and"));
 
         dist=analysisList.stream().distinct().collect(Collectors.toList());
         RequestEntity request = RequestEntity
@@ -68,26 +65,10 @@ public class UpdateController {
         ResponseEntity<String> response = template.exchange(request, String.class);
         return dist;
     }
-    @GetMapping("/runGorm")
-    public void exportGormResult() throws InterruptedException {
-        RequestEntity request = RequestEntity
-                .get("http://"+Constants.SERVERENDPOINT+"/update/runGorm").build();
-        ResponseEntity<String> response = template.exchange(request, String.class);
-//        Thread.sleep(15000);
-    }
-
-    @GetMapping("/runImmulite")
-    public void exportImmuliteResult() throws InterruptedException {
-        RequestEntity request = RequestEntity
-                .get("http://"+Constants.SERVERENDPOINT+"/update/runImmulite").build();
-        ResponseEntity<String> response = template.exchange(request, String.class);
-//        Thread.sleep(15000);
-    }
-
     @GetMapping("/run")
     public void exportResult() throws InterruptedException {
         RequestEntity request = RequestEntity
-                .get("http://"+Constants.SERVERENDPOINT+"/update/run").build();
+                .get("http://"+Constants.SERVERENDPOINT+"/update/runGorm").build();
         ResponseEntity<String> response = template.exchange(request, String.class);
 //        Thread.sleep(15000);
     }
@@ -95,7 +76,7 @@ public class UpdateController {
     @GetMapping("/chekGormonu")
     public List<Analysis> checkGormonu() throws SQLException {
         for (Analysis a: dist) {
-            checkAnalysisList.addAll(getAnalysisList(a.getCode(), "1", "VIEW_GRPPRM.GRPPRM_ID in (1836) and"));
+            checkAnalysisList.addAll(getAnalysisList(a.getCode(), "1", "VIEW_GRPPRM.GRPPRM_ID in (351) and"));
 
         }
         return checkAnalysisList.stream().distinct().collect(Collectors.toList());
@@ -103,7 +84,7 @@ public class UpdateController {
 
     @GetMapping("/writeGormonu")
     public void writeGormonu() throws XML2SpreadSheetError, IOException {
-        uptakeController.writeGormonu(analysisList);
+        uptakeController.writeImm(analysisList);
     }
 
     public void setAnalysisList(List<Analysis> analysisList) {
@@ -127,7 +108,7 @@ public class UpdateController {
 
 
 
-                if (o[5].toString().equals("***АМГ")) {
+                if (o[5].toString().equals("Эстрадиол(Е2)")) {
                     analysis.setHiv("1");
                     if (o[2] != null) {
                         analysis.setResultHiv(o[2].toString());
@@ -137,7 +118,7 @@ public class UpdateController {
                         analysis.setHiv("");
                     }
                 }
-                if (o[5].toString().equals("***17-OH - прогестерон")) {
+                if (o[5].toString().equals("ФСГ")) {
                     analysis.setHbsAg("1");
                     if (o[2] != null) {
                         analysis.setResultHbsAg(o[2].toString());
@@ -147,7 +128,7 @@ public class UpdateController {
                         analysis.setHbsAg("");
                     }
                 }
-                if (o[5].toString().equals("***СА 125")) {
+                if (o[5].toString().equals("ТТГ-тиреотропный гормон")) {
                     analysis.setAtHCV("1");
                     if (o[2] != null) {
                         analysis.setResultatHCV(o[2].toString());
@@ -156,22 +137,79 @@ public class UpdateController {
                     analysis.setAtHCV("");
                 }
                 }
-//                if (o[5].toString().equals("Эстрадиол(Е2)")) {
-//                    analysis.setSyphIFA("1");
-//                    if (o[2] != null) {
-//                        analysis.setResultSyphIfa(o[2].toString());
-//                    }
-//                } else { if (analysis.getSyphIFA() == null)
-//                    analysis.setSyphIFA("");
-//                }
+                if (o[5].toString().equals("АТ к ТПО")) {
+                    analysis.setSyphIFA("1");
+                    if (o[2] != null) {
+                        analysis.setResultSyphIfa(o[2].toString());
+                    }
+                } else { if (analysis.getSyphIFA() == null)
+                    analysis.setSyphIFA("");
+                }
 
-                analysis.setSyphIFA("");
-                analysis.setRubM("");
-                analysis.setRubG("");
-                analysis.setClamG("");
-                analysis.setClamA("");
-                analysis.setSbg("");
-                analysis.setDga("");
+                if (o[5].toString().equals("Т4 тироксин")) {
+                    analysis.setRubM("1");
+                    if (o[2] != null) {
+                        analysis.setResultRubM(o[2].toString());
+                    }
+                } else { if (analysis.getRubM() == null)
+                    analysis.setRubM("");
+                }
+
+                if (o[5].toString().equals("Пролактин")) {
+                    analysis.setRubG("1");
+                    if (o[2] != null) {
+                        analysis.setResultRubG(o[2].toString());
+                    }
+                } else { if (analysis.getRubG() == null)
+                    analysis.setRubG("");
+                }
+
+                if (o[5].toString().equals("ЛГ")) {
+                    analysis.setClamG("1");
+                    if (o[2] != null) {
+                        analysis.setResultClamG(o[2].toString());
+                    }
+                } else { if (analysis.getClamG() == null)
+                    analysis.setClamG("");
+                }
+
+                if (o[5].toString().equals("Прогестерон")) {
+                    analysis.setSyphMRP("1");
+                    if (o[2] != null) {
+                        analysis.setResultMRP(o[2].toString());
+                    }
+                } else { if (analysis.getSyphMRP() == null)
+                    analysis.setSyphMRP("");
+                }
+
+                if (o[5].toString().equals("Тестостерон общий")) {
+                    analysis.setClamA("1");
+                    if (o[2] != null) {
+                        analysis.setResultClamA(o[2].toString());
+                    }
+                } else { if (analysis.getClamA() == null)
+                    analysis.setClamA("");
+                }
+
+                if (o[5].toString().equals("СССГ")) {
+                    analysis.setSbg("1");
+                    if (o[2] != null) {
+                        analysis.setResultHSP60(o[2].toString());
+                    }
+                } else { if (analysis.getSbg() == null)
+                    analysis.setSbg("");
+                }
+
+                if (o[5].toString().equals("ДГА-S")) {
+                    analysis.setDga("1");
+                    if (o[2] != null) {
+                        analysis.setResultDGA(o[2].toString());
+                    }
+                } else { if (analysis.getDga() == null)
+                    analysis.setDga("");
+                }
+
+
                 analysis.setLabel(o[3].toString());
                 analysis.setDate_bio(o[4].toString());
                 analysis.setCode(o[6].toString());
@@ -201,4 +239,5 @@ public class UpdateController {
     public void clearList() {
         analysisList.clear();
     }
+
 }

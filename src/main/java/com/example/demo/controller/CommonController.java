@@ -2,6 +2,8 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Assignment;
 import com.example.demo.model.CommonAnalysis;
+import com.example.demo.model.json.PeriodData;
+import com.example.demo.model.json.RequestData;
 import com.example.demo.service.UptakeService;
 import com.example.demo.utils.Constants;
 import com.example.demo.utils.XLConstructor;
@@ -20,6 +22,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,6 +34,14 @@ public class CommonController {
 
     UptakeService uptakeService;
     RestTemplate template = new RestTemplate();
+    List<CommonAnalysis> cmaList = new ArrayList<>();
+    Map<String, String> getLabels() {
+        Map<String, String> labels = new HashMap<>();
+        labels.put("localhost:8099", "Бр.Касимовых");
+        labels.put("localhost:8084", "Ижевск");
+        labels.put(Constants.SERVERENDPOINT, "Киров");
+        return labels;
+    }
 
 
     @Autowired
@@ -41,21 +54,40 @@ public class CommonController {
         System.out.println("Hi!");
     }
 
-    @GetMapping("/{code}/{done}/{GPRM}")
-    public List<CommonAnalysis> getAssignment(@PathVariable("code") String bio_code, @PathVariable("done") String done, @PathVariable("GPRM") String GPRM) throws SQLException {
-        Set<Assignment> assignment = new HashSet<>();
-        List<CommonAnalysis> cmaList = new ArrayList<>();
+    @GetMapping("/code/{server}")
+    public ResponseEntity<List<String>> getCode(@PathVariable("server") String server) {
 
-         new CommonAnalysis();
-       List<Object[]> objects= uptakeService.getDataGormonu(bio_code, done, GPRM);
         RequestEntity request = RequestEntity
-                .get("http://"+ Constants.SERVERENDPOINT+"/update/setcode").build();
+                .get("http://"+ server+" /update/code").build();
+        ResponseEntity<String> response = new RestTemplate().exchange(request, String.class);
+        List<String> codes =new ArrayList<>();
+//        Test.getScan();
+        codes.add(response.getBody());
+        return ResponseEntity.ok(codes);
+
+    }
+
+//    @GetMapping("/{code}/{done}/{GPRM}/{server}")
+//    public List<CommonAnalysis> getAssignment(@PathVariable("code") String bio_code, @PathVariable("done") String done, @PathVariable("GPRM") String GPRM,
+//                                              @PathVariable("server") String server)
+    @PostMapping("/")
+    public List<CommonAnalysis> getAssignment(@RequestBody()RequestData requestData)
+    throws SQLException {
+        Set<Assignment> assignment = new HashSet<>();
+
+
+//         new CommonAnalysis();
+       List<Object[]> objects= uptakeService.getDataGormonu(requestData.code, requestData.done, requestData.gprm);
+        RequestEntity request = RequestEntity
+                .get("http://"+ requestData.server+"/update/setcode").build();
         ResponseEntity<String> response = template.exchange(request, String.class);
 //        Set<Assignment> finalAssignment = assignment;
+    try {
+
 
         CommonAnalysis cma =  objects.stream()
                 .findFirst()
-                .map(o-> new CommonAnalysis(o[0].toString(), o[1].toString(), o[6].toString(), o[4].toString(),  o[3].toString(),assignment))
+                .map(o-> new CommonAnalysis(o[0].toString(), o[1].toString(), o[6].toString(), o[4].toString(),  o[3].toString(),assignment, false))
                 .orElseThrow();
 
         objects.stream()
@@ -66,12 +98,102 @@ public class CommonController {
         cma.setAssignments(assignment);
         uptakeService.saveCommon(cma);
         cmaList.add(cma);
+    } catch (Exception ignored) {}
 
 
 
-//       System.out.println(cma);
-        return cmaList;
 
+//       System.out.println(cmaList);
+        return requestData.status.equals("")?cmaList.stream().distinct().collect(Collectors.toList()):
+                uptakeService.getByLabel(getLabels().get(requestData.server), requestData.status.equals("отправленные") )
+                        .stream().distinct().collect(Collectors.toList());
+
+    }
+
+    public List<CommonAnalysis> getCommons(List<String> codes, String gprm)
+            throws SQLException {
+
+        for (String code:codes ) {
+
+
+            Set<Assignment> assignment = new HashSet<>();
+            List<Object[]> objects = uptakeService.getDataGormonu(code, "0", gprm);
+            try {
+
+
+                CommonAnalysis cma = objects.stream()
+                        .findFirst()
+                        .map(o -> new CommonAnalysis(o[0].toString(), o[1].toString(), o[6].toString(), o[4].toString(), o[3].toString(), assignment, false))
+                        .orElseThrow();
+
+                objects.stream()
+                        .distinct()
+                        .map(o -> assignment.add(new Assignment(o[5].toString(), o[4].toString(), o[0].toString(), cma)))
+                        .collect(Collectors.toList());
+
+                cma.setAssignments(assignment);
+                uptakeService.saveCommon(cma);
+                cmaList.add(cma);
+            } catch (Exception ignored) {
+            }
+
+        }
+        return cmaList.stream().distinct().collect(Collectors.toList());
+
+    }
+
+    public List<CommonAnalysis> getCytoCommons(List<String> codes, String from, String to)
+            throws SQLException {
+        if (cmaList.size()>0) {
+            cmaList.clear();
+        }
+        for (String code:codes ) {
+
+
+            Set<Assignment> assignment = new HashSet<>();
+            List<Object[]> objects = uptakeService.getOncoCytology(code, from, to);
+            try {
+
+
+                CommonAnalysis cma = objects.stream()
+                        .findFirst()
+                        .map(o -> new CommonAnalysis(o[0].toString(), o[1].toString(), o[2].toString(), o[3].toString(), o[4].toString(), assignment, false))
+                        .orElseThrow();
+
+                objects.stream()
+                        .distinct()
+                        .map(o -> assignment.add(new Assignment(o[5].toString(), o[3].toString(), o[0].toString(), cma)))
+                        .collect(Collectors.toList());
+
+                cma.setAssignments(assignment);
+                uptakeService.saveCommon(cma);
+                cmaList.add(cma);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
+        }
+        return cmaList.stream().distinct().collect(Collectors.toList());
+
+    }
+
+    @GetMapping("/commonList/{filial}/{from}/{to}")
+    public List<CommonAnalysis> sbor(@PathVariable("filial") int filial, @PathVariable("from") String from,
+                                     @PathVariable("to") String to) throws SQLException {
+        List<CommonAnalysis> allAnalysis = new ArrayList<>();
+//        List<String> strings = List.of("1059","1069", "1103");
+        List<String> strings = uptakeService.getCommonData(filial,from+":00.000",
+                        to+":00.000")
+                .stream()
+                .map(a ->a[6].toString())
+                .distinct().collect(Collectors.toList());
+
+//        System.out.println(uptakeService.getOncoCytologyCodes(filial,from, to));
+//        System.out.println(getCytoCommons(uptakeService.getOncoCytologyCodes(filial,from, to)));
+        allAnalysis.addAll(getCytoCommons(uptakeService.getOncoCytologyCodes(filial,from+":00.000", to+":00.000"), from+":00.000", to+":00.000"));
+        allAnalysis.addAll(getCommons(strings, ""));
+
+        return  allAnalysis;
     }
 
     @GetMapping("/getAll")
@@ -82,7 +204,21 @@ public class CommonController {
 //    @Transactional
     @GetMapping("/delete/{id}")
     public void delete(@PathVariable("id") Long id) {
-        uptakeService.deleteCommon(id);
+        try {
+            uptakeService.deleteCommon(id);
+            cmaList.removeIf(c-> c.getId().equals(id));
+        } catch (Exception e) {
+//            cmaList.removeIf(c-> Objects.equals(c.getId(), id));
+//           CommonAnalysis ca = uptakeService.getCommon().stream()
+//                    .filter(a -> a.getEmc().equals(emc)&&a.getCode().equals(code))
+//                    .findFirst().orElseThrow();
+//            System.out.println("in catch "+ca);
+//           uptakeService.deleteCommon(ca.getId());
+
+
+        }
+
+
     }
 
     @GetMapping("/deleteAll")
@@ -92,6 +228,11 @@ public class CommonController {
         }
     }
 
+    @GetMapping("/update/{label}")
+    public void update(@PathVariable("label") String label) {
+        uptakeService.updateByLabel(label);
+    }
+
     @GetMapping("/getDocs")
     public List<Document> getDocument() throws XML2SpreadSheetError, IOException {
         Set<String> indets = new HashSet<>(uptakeService.getBCAsignments("351"));
@@ -99,6 +240,10 @@ public class CommonController {
         Set<String> vich = new HashSet<>(uptakeService.getBCAsignments("350"));
         Set<String> bc = new HashSet<>(uptakeService.getBCAsignments( "1793, 337, 340"));
         Set<String> ifaGorm = new HashSet<>(uptakeService.getBCAsignments( "1836"));
+        Set<String> coaguloGramma = new HashSet<>(uptakeService.getBCAsignments( "338"));
+        Set<String> erAg = new HashSet<>(uptakeService.getBCAsignments( "349"));
+        Set<String> cytolog = new HashSet<>(Set.of("онкоцитология", "bla"));
+        Set<String> kario = new HashSet<>(Set.of("bla", "кариотип"));
 //        System.out.println(bc);
 
 //        indets.add("AMG");
@@ -131,13 +276,17 @@ public class CommonController {
         List<CommonAnalysis> commonAnalyses = uptakeService.getCommon().stream().distinct().collect(Collectors.toList());
 //        Set<CommonAnalysis> analysisSet = new HashSet<>(commonAnalyses);
 //        analysisSet.forEach(System.out::println);
-        List<Set<String>> commonList = List.of(indets,torch, vich, bc, ifaGorm);
+        List<Set<String>> commonList = List.of(indets,torch, vich, bc, ifaGorm, coaguloGramma, erAg, cytolog, kario);
         List<String> paths = List.of(
                 "//192.168.7.100/ifa/ifaList/reportCommon.xlsx"
                 ,"//192.168.7.100/ifa/ifaList/reportCommonTorch.xlsx"
                 ,"//192.168.7.100/ifa/ifaList/reportCommonVich.xlsx"
                 ,"//192.168.7.100/ifa/ifaList/reportCommonBc.xlsx"
                 ,"//192.168.7.100/ifa/ifaList/reportCommonIfaGorm.xlsx"
+                ,"//192.168.7.100/ifa/ifaList/reportCommonCoagulogramma.xlsx"
+                ,"//192.168.7.100/ifa/ifaList/reportCommonErAg.xlsx"
+                ,"//192.168.7.100/ifa/ifaList/reportCommonCytolog.xlsx"
+                ,"//192.168.7.100/ifa/ifaList/reportCommonKario.xlsx"
         );
 
 
@@ -164,6 +313,39 @@ public class CommonController {
 
 
         return documents;
+    }
+
+    @GetMapping("/period")
+    public List<PeriodData> getPeriods() {
+
+        int from20;
+        int to20;
+        int from42;
+        int to42;
+        int from43;
+        int to43;
+        DayOfWeek day = DayOfWeek.from(LocalDate.now());
+        int value = day.getValue();
+        switch (value) {
+            case 1 : from20=3; to20=1; from42=0; to42=0; from43=3; to43=1;
+                break;
+            case 2 : from20=0; to20=0; from42=2; to42=1; from43=3;  to43=1;
+                break;
+            case 3 : from20=0; to20=0; from42=0; to42=0; from43=2;  to43=1;
+                break;
+            case 4 : from20=3; to20=1; from42=3; to42=1; from43=0;  to43=0;
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + value);
+        }
+        List<PeriodData> periods = new ArrayList<>(List.of(
+                new PeriodData(20, from20, to20),
+                new PeriodData(42, from42, to42),
+                new PeriodData(43, from43, to43)
+
+        ));
+        return periods;
+
     }
 
 

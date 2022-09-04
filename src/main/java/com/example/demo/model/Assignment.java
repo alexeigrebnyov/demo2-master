@@ -1,5 +1,7 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -13,6 +15,7 @@ public class Assignment {
     @Column(name = "pat")
     private String pat;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "commonAnalysis_id")
 
@@ -54,6 +57,14 @@ public class Assignment {
 
     public void setPat(String pat) {
         this.pat = pat;
+    }
+
+    public CommonAnalysis getCommonAnalysis() {
+        return commonAnalysis;
+    }
+
+    public void setCommonAnalysis(CommonAnalysis commonAnalysis) {
+        this.commonAnalysis = commonAnalysis;
     }
 
     @Override

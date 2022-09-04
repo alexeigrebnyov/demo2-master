@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<!-- CSS only -->
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/css/bootstrap.min.css" integrity="sha384-DhY6onE6f3zzKbjUPRc2hOzGAdEf4/Dz+WJwBvEYL/lkkIsI3ihufq9hk9K4lVoK" crossorigin="anonymous">
+    <!-- JavaScript Bundle with Popper.js -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/js/bootstrap.bundle.min.js" integrity="sha384-BOsAfwzjNJHrJ8cZidOg56tcQWfp6y72vEJ8xQ9w6Quywb24iOsW913URv1IS4GD" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<!--    <meta http-equiv="refresh" content="1">-->
+    <title>Title</title>
+</head>
+<body>
+<div class="rowColor">
+    <table>
+        <tr class="contentContainer float-right"> <td th:utext="${user}"> </td></tr>
+    </table>
+    <a th:href="@{/logout}"> Выйти </a>
+</div>
+
+
+<div>
+    <div class="row rowColor" >
+
+        <nav class="nav col-md-12" >
+            <a class="nav-link" th:href="@{/}">Главная</a>
+            <a class="nav-link " th:href="@{/code}">ВИЧ</a>
+            <a class="nav-link active" href="#" >TORCH</a>
+            <a class="nav-link " th:href="@{/proofCode}" >Подтверждающие</a>
+            <a class="nav-link " th:href="@{/divrefresh}" >Ручной ввод</a>
+            <a class="nav-link " th:href="@{/gormonu}" >Гормоны ИФА</a>
+            <a class="nav-link " th:href="@{/chek}" >Результаты ВИЧ</a>
+            <a class="nav-link " th:href="@{/chekTorch}" >Результаты TORCH</a>
+
+
+
+        </nav>
+        <div class="container-fluid" style="background-color: #F8F8FF">
+            <div class="container-fluid">
+<!--                <h1>Анализы в Казань</h1>-->
+                <!-- Nav tabs -->
+                <div class="tab-content">
+                            <div class="float-right">
+                                <input type="submit" class="btn btn-primary" onclick="getReport()" value="Записать данные">
+                                <input type="submit" class="btn btn-success" onclick="writeReport()" value="Сформировать списки">
+                                <input type="submit" class="btn btn-danger" onclick="delList()" value="Очистить таблицу">
+                                <br>
+                                <br>
+                                <label for="izhevskFrom">Ижевск</label>
+                                <input id="izhevskFrom" type="datetime-local" pattern="yyyy-dd-mm hh:mm" required> <input id="izhevskTo" type="datetime-local" pattern="yyyy-dd-mm hh:mm" required
+                                                                                                               onchange="izhInit()">
+                                <br>
+                                <br>
+                                <label for="kirovFrom">Киров</label>
+                                <input id="kirovFrom" type="datetime-local" pattern="yyyy-dd-mm hh:mm" required> <input id="kirovTo" type="datetime-local" pattern="yyyy-dd-mm hh:mm" required
+                                                                                                                     onchange="kirInit()">
+                                <br>
+                                <br>
+                                <label for="chelnyFrom">Челны</label>
+                                <input id="chelnyFrom" type="datetime-local" pattern="yyyy-dd-mm hh:mm" required> <input id="chelnyTo" type="datetime-local" pattern="yyyy-dd-mm hh:mm" required
+                                                                                                                        onchange="chelnyInit()">
+<!--                                <form name="writeForm" id="writeForm" th:action="@{/writeTorch}" method="post">-->
+
+<!--                                    <input type="hidden" name="redir" id="redirTorch" value="redirect:/codeTorch">-->
+<!--                                </form>-->
+
+                            </div>
+                            <div class="bg-white">
+                                <br>
+                            </div>
+                        </div>
+
+<!--                        <table class="table table-striped" border="1">-->
+<!--                            <tr>-->
+<!--                                <th>№</th>-->
+<!--                                <th>ЭМК</th>-->
+<!--                                <th>ФИО</th>-->
+<!--                                <th>Дата забора</th>-->
+<!--                                <th>Код забора</th>-->
+<!--                                <th>Rub-G</th>-->
+<!--                                <th>Rub-M</th>-->
+<!--                                <th>Хламидии Ig G</th>-->
+<!--                                <th>Хламидии Ig A</th>-->
+<!--                                <th>Хламидии БТШ</th>-->
+<!--                                <th>Филиал</th>-->
+<!--                                <th>Статус</th>-->
+<!--&lt;!&ndash;                                <th>Статус</th>&ndash;&gt;-->
+<!--                            </tr>-->
+                            <div id="dataRowDiv"></div>
+
+
+
+<!--                        </table>-->
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+</div>
+</div>
+
+<!--<script>-->
+<!--    $( function() {-->
+<!--        if ( $( '#codeInt' ).val() !== '' ) {-->
+<!--            $( '#codeForm' ).submit();-->
+<!--        }-->
+<!--        if ($( '#torchcodeFormcodeInt').val()!=='') {-->
+<!--            $( '#torchcodeForm').submit();-->
+<!--        }-->
+<!--    });-->
+<!--</script>-->
+<script>
+    let izhFrom = ''
+    let izhTo = ''
+    let kirFrom = ''
+    let kirTo = ''
+    let chelnyFrom = ''
+    let chelnyTo = ''
+    function izhInit() {
+        izhFrom=document.querySelector('#izhevskFrom').value
+        izhTo=document.querySelector('#izhevskTo').value
+    }
+    function kirInit() {
+        kirFrom=document.querySelector('#kirovFrom').value
+        kirTo=document.querySelector('#kirovTo').value
+    }
+    function chelnyInit() {
+        chelnyFrom=document.querySelector('#chelnyFrom').value
+        chelnyTo=document.querySelector('#chelnyTo').value
+    }
+
+</script>
+
+<script>
+    function getReport() {
+        if (izhFrom!=='' && izhTo!=='') {
+            postFunc('/common/commonList/' + 20 + '/' + izhFrom + '/' + izhTo)
+        }
+        if (kirFrom!=='' && kirTo!=='') {
+            setTimeout( postFunc('/common/commonList/' + 42 + '/' + kirFrom + '/' + kirTo), 5000)
+        }
+        if (chelnyFrom!=='' && chelnyTo!=='') {
+            setTimeout(postFunc('/common/commonList/' + 43 + '/' + chelnyFrom + '/' + chelnyTo), 5000)
+        }
+           // setTimeout(postFunc('/common/getDocs'), 5000)
+          setTimeout(refreshPage, 30000)
+
+    }
+    function delList() {
+        fetch('common/deleteAll')
+        setTimeout(refreshPage, 30000 )
+    }
+</script>
+<script>
+    // function getPeriod() {
+    //     fetch('/common/period')
+    //     .then((res) => res.json())
+    //     .then((data) => {
+    //         data.forEach(function (period) {
+    //            if (period.getFilial!==0) {
+    //                fetch('/common/commonList/'+period.filial+'/'+period.from+'/'+period.to)
+    //                .then(console.log('ok'))
+    //            }
+    //         })
+    //         }
+    //     )
+    //
+    //     return 'done'
+    // }
+</script>
+<script>
+    function postFunc(url='') {
+        fetch(url)
+    }
+    function refreshPage() {
+        document.location.reload();
+    }
+    function writeReport() {
+        postFunc('/common/getDocs')
+        setTimeout(refreshPage, 480000)
+    }
+</script>
+
+
+</body>
+</html>

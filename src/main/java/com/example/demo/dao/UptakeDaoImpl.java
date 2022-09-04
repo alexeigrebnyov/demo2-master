@@ -1,15 +1,13 @@
 package com.example.demo.dao;
 
 import com.example.demo.config.Database;
-import com.example.demo.model.Assignment;
-import com.example.demo.model.CommonAnalysis;
-import com.example.demo.model.Role;
-import com.example.demo.model.User;
+import com.example.demo.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -18,6 +16,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -167,7 +166,28 @@ public class UptakeDaoImpl implements UptakeDao {
                     "                 (select DISTINCT DATA_W693_GORMONU.ESTRADIOL from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
                     "             when LAB_METHODS.CODE='CA-125'   then\n" +
                     "                 (select DISTINCT DATA_W693_GORMONU.SA_125 from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
-                    "            end),\n" +
+                            "     when LAB_METHODS.CODE='RTH'   then \n" +
+                            "         (select DISTINCT DATA_W693_GORMONU.TTG from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
+                            "     when LAB_METHODS.CODE='FSH'   then" +
+                            "         (select DISTINCT DATA_W693_GORMONU.FSG from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )" +
+                            "    when LAB_METHODS.CODE='ATA'   then" +
+                            "         (select DISTINCT DATA_W693_GORMONU.TPO from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )" +
+                            "when LAB_METHODS.CODE='F4'   then" +
+                            "(select DISTINCT DATA_W693_GORMONU.T4SV from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )" +
+                            "when LAB_METHODS.CODE='PRL'   then" +
+                            "(select DISTINCT DATA_W693_GORMONU.PROLAKTIN_MAKRO_PROLAKTIN from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )" +
+                            "when LAB_METHODS.CODE='LH'   then" +
+                            "(select DISTINCT DATA_W693_GORMONU.LG from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )" +
+                            "when LAB_METHODS.CODE='PRG'   then" +
+                            "(select DISTINCT DATA_W693_GORMONU.PROGESTERON from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )" +
+                            "when LAB_METHODS.CODE='TES'   then" +
+                            "(select DISTINCT DATA_W693_GORMONU.ANDR_ZHEN_TOBSCH from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )" +
+                            "when LAB_METHODS.CODE='SBG'   then" +
+                            "(select DISTINCT DATA_W693_GORMONU.ANDR_ZHEN_SSSG from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )" +
+                            "when LAB_METHODS.CODE='DHS'   then" +
+                            "(select DISTINCT DATA_W693_GORMONU.ANDR_ZHEN_DGEA from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )" +
+                            "end),\n" +
+
                     "        FM_ORG.LABEL,\n" +
                     "        PATDIREC.DATE_BIO,\n" +
                     "        --DS_PARAMS.DS_PARAMS_ID,\n" +
@@ -193,13 +213,13 @@ public class UptakeDaoImpl implements UptakeDao {
                     "where\n" + GPRM +
 //                    "        VIEW_GRPPRM.GRPPRM_ID in (1836, 351) and " + " --рабочий журнал по вичам\n" +
                     " PATDIREC.QUANTITY_DONE=" + done +
-                    "\n" +
+                    "and LAB_METHODS.CODE not like '%Анализ не выполнен%'\n" +
                     "--                 LAB_METHODS.CODE='17-OH' order by PATDIREC.DATE_BIO desc\n" +
-                    "\n" +
-                    "  and " +
+                    "and\n" +
                     "PATDIREC.BIO_CODE=" + bio_code +
-                    "and PATDIREC.DATE_BIO >dateadd(day,-30,getdate())" +
-                    "and GRPPRM_ID not in (25, 339, 1837, 1895, 1924)");
+                    "and PATDIREC.DATE_BIO >dateadd(day,-30,getdate())"
+                    + "and GRPPRM_ID not in (25, 339, 1837, 1895, 1924)"
+            );
 
             while (resultSet.next()) {
                 objects.add(new Object[]{
@@ -218,10 +238,184 @@ public class UptakeDaoImpl implements UptakeDao {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return objects;
     }
 
+    public List<Object[]> getCommonData(int filial, String from, String to) {
+        List<Object[]> objects = new ArrayList<>();
+        try (Connection connection = database.getConnection()) {
+            Statement statement = connection.createStatement();
+
+            ResultSet resultSet = statement.executeQuery("select PATDIREC.PATIENTS_ID,\n" +
+                            "        dbo.fNNPlus_Patient (pat.PATIENTS_ID,1),\n" +
+                            "'mock'," +
+//                            "\n" +
+//                            "        (case\n" +
+//                            "             when LAB_METHODS.CODE='AMG'  then\n" +
+//                            "                 (select DISTINCT DATA_W693_GORMONU.AMG from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
+//                            "             when LAB_METHODS.CODE='AND' or LAB_METHODS.CODE='17-OH'  then\n" +
+//                            "                 (select DISTINCT DATA_W693_GORMONU.ANDR_ZHEN_17_ON_PROG from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
+//                            "             when LAB_METHODS.CODE='E2'   then\n" +
+//                            "                 (select DISTINCT DATA_W693_GORMONU.ESTRADIOL from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
+//                            "             when LAB_METHODS.CODE='CA-125'   then\n" +
+//                            "                 (select DISTINCT DATA_W693_GORMONU.SA_125 from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
+//                            "     when LAB_METHODS.CODE='RTH'   then \n" +
+//                            "         (select DISTINCT DATA_W693_GORMONU.TTG from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )\n" +
+//                            "     when LAB_METHODS.CODE='FSH'   then" +
+//                            "         (select DISTINCT DATA_W693_GORMONU.FSG from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )" +
+//                            "    when LAB_METHODS.CODE='ATA'   then" +
+//                            "         (select DISTINCT DATA_W693_GORMONU.TPO from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )" +
+//                            "when LAB_METHODS.CODE='F4'   then" +
+//                            "(select DISTINCT DATA_W693_GORMONU.T4SV from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )" +
+//                            "when LAB_METHODS.CODE='PRL'   then" +
+//                            "(select DISTINCT DATA_W693_GORMONU.PROLAKTIN_MAKRO_PROLAKTIN from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )" +
+//                            "when LAB_METHODS.CODE='LH'   then" +
+//                            "(select DISTINCT DATA_W693_GORMONU.LG from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )" +
+//                            "when LAB_METHODS.CODE='PRG'   then" +
+//                            "(select DISTINCT DATA_W693_GORMONU.PROGESTERON from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )" +
+//                            "when LAB_METHODS.CODE='TES'   then" +
+//                            "(select DISTINCT DATA_W693_GORMONU.ANDR_ZHEN_TOBSCH from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )" +
+//                            "when LAB_METHODS.CODE='SBG'   then" +
+//                            "(select DISTINCT DATA_W693_GORMONU.ANDR_ZHEN_SSSG from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )" +
+//                            "when LAB_METHODS.CODE='DHS'   then" +
+//                            "(select DISTINCT DATA_W693_GORMONU.ANDR_ZHEN_DGEA from DIR_ANSW DA inner join DATA_W693_GORMONU ON DA.MOTCONSU_RESP_ID=DATA_W693_GORMONU.MOTCONSU_ID where DA.MOTCONSU_RESP_ID= DIR_ANSW.MOTCONSU_RESP_ID )" +
+//                            "end),\n" +
+
+                            "        FM_ORG.LABEL,\n" +
+                            "        PATDIREC.DATE_BIO,\n" +
+                            "        --DS_PARAMS.DS_PARAMS_ID,\n" +
+                            "        --,PATDIREC.PL_EXAM_ID,\n" +
+                            "        --LAB_METHODS.LAB_METHODS_ID,\n" +
+//                    "        LAB_METHODS.CODE,\n" +
+                            "        VIEW_GRPPRM.LABEL,\n" +
+                            "        PATDIREC.BIO_CODE,\n" +
+                            "        PAT.POL,\n" +
+                            "        PAT.ADRES_PO_PROPISKE\n" +
+                            "         from  PATDIREC PATDIREC WITH(NOLOCK)  JOIN PL_EXAM PL_EXAM WITH(NOLOCK)  ON PATDIREC.PL_EXAM_ID = PL_EXAM.PL_EXAM_ID\n" +
+                            "                                                 INNER JOIN DIR_ANSW ON PATDIREC.PATDIREC_ID=DIR_ANSW.PATDIREC_ID\n" +
+                            "                                                 inner join DIR_SERV ON PATDIREC.PATDIREC_ID =DIR_SERV.PATDIREC_ID\n" +
+                            "                                                 inner JOIN FM_DEP ON PATDIREC.MEDECINS_BIO_DEP_ID=FM_DEP.FM_DEP_ID\n" +
+                            "                                                 LEFT OUTER JOIN PATIENTS PAT WITH(NOLOCK)  ON PATDIREC.PATIENTS_ID = PAT.PATIENTS_ID\n" +
+                            "                                                 INNER JOIN FM_ORG ON FM_DEP.MAIN_ORG_ID=FM_ORG.FM_ORG_ID\n" +
+                            "                                                 inner join DS_SERVPARAMS ON DIR_SERV.FM_SERV_ID=DS_SERVPARAMS.FM_SERV_ID\n" +
+                            "                                                 inner JOIN DS_PARAMS ON DS_SERVPARAMS.DS_PARAMS_ID=DS_PARAMS.DS_PARAMS_ID\n" +
+                            "                                                 JOIN LAB_METHODBIO LAB_METHODBIO WITH(NOLOCK)  ON DS_PARAMS.DS_PARAMS_ID = LAB_METHODBIO.DS_PARAMS_ID\n" +
+                            "                                                 JOIN LAB_METHODS LAB_METHODS WITH(NOLOCK)  ON LAB_METHODBIO.LAB_METHODS_ID = LAB_METHODS.LAB_METHODS_ID\n" +
+                            "                                                 LEFT OUTER JOIN VIEW_GRPPRM VIEW_GRPPRM WITH(NOLOCK)  ON DS_PARAMS.DS_PARAMS_ID = VIEW_GRPPRM.DS_PARAMS_ID\n" +
+                            "    --DS_PARAMS\n" +
+                            "where\n"  +
+                    "        VIEW_GRPPRM.GRPPRM_ID in (1836, 351, 350, 1, 338, 337, 1793, 1258, 340) and " + " --рабочий журнал по вичам\n" +
+                            " PATDIREC.QUANTITY_DONE=0 "  +
+//                            "\n" +
+//                            "and LAB_METHODS.CODE not like 'Анализ не выполнен'\n" +
+                            "and FM_ORG.FM_ORG_ID= " +filial+
+//                            "  and " +
+//                            "PATDIREC.BIO_CODE=" + bio_code +
+//                            "and PATDIREC.DATE_BIO >dateadd(day,-"+from+",getdate()) and PATDIREC.DATE_BIO <dateadd(day,-"+to+",getdate())"
+                            "and PATDIREC.DATE_BIO > '"+from+"' and PATDIREC.DATE_BIO < '"+to+"'"
+                            + "and GRPPRM_ID not in (25, 339, 1837, 1895, 1924)"
+            );
+
+            while (resultSet.next()) {
+                objects.add(new Object[]{
+                        resultSet.getObject(1),
+                        resultSet.getObject(2),
+                        resultSet.getObject(3),
+                        resultSet.getObject(4),
+                        resultSet.getObject(5),
+                        resultSet.getObject(6),
+                        resultSet.getObject(7),
+                        resultSet.getObject(8),
+                        resultSet.getObject(9),
+                });
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return objects;
+    }
+
+    public List<String> getOncoCytologyCodes(int filial, String from, String to) {
+        List<String> objects = new ArrayList<>();
+        try (Connection connection = database.getConnection()) {
+            Statement statement = connection.createStatement();
+
+            ResultSet resultSet = statement.executeQuery("select  " +
+//                    "PATDIREC.PATIENTS_ID,\n" +
+//                    "                dbo.fNNPlus_Patient (pat.PATIENTS_ID,1),\n" +
+                    "                PATDIREC.BIO_CODE\n" +
+//                    "                PATDIREC.DATE_BIO,\n" +
+//                    "                FM_ORG.LABEL,\n" +
+//                    "                'онкоцитология'\n" +
+                    "from  PATDIREC PATDIREC WITH(NOLOCK)  JOIN PL_EXAM PL_EXAM WITH(NOLOCK)  ON PATDIREC.PL_EXAM_ID = PL_EXAM.PL_EXAM_ID\n" +
+                    "                                      INNER JOIN DIR_ANSW ON PATDIREC.PATDIREC_ID=DIR_ANSW.PATDIREC_ID\n" +
+                    "                                      inner join DIR_SERV ON PATDIREC.PATDIREC_ID =DIR_SERV.PATDIREC_ID\n" +
+                    "                                      inner JOIN FM_DEP ON PATDIREC.MEDECINS_BIO_DEP_ID=FM_DEP.FM_DEP_ID\n" +
+                    "                                      LEFT OUTER JOIN PATIENTS PAT WITH(NOLOCK)  ON PATDIREC.PATIENTS_ID = PAT.PATIENTS_ID\n" +
+                    "                                      INNER JOIN FM_ORG ON FM_DEP.MAIN_ORG_ID=FM_ORG.FM_ORG_ID\n" +
+                    "where\n" +
+                    "                  PATDIREC.PL_EXAM_ID IN (7437, 11891, 9503 )\n" +
+                    "                and FM_ORG.FM_ORG_ID="+filial+"\n" +
+                    "\n" +
+//                    "  and PATDIREC.DATE_BIO >dateadd(day,-"+from+", getdate()) and PATDIREC.DATE_BIO <dateadd(day,-"+to+", getdate())"
+                            "and PATDIREC.DATE_BIO > '"+from+"' and PATDIREC.DATE_BIO < '"+to+"'"
+            );
+
+            while (resultSet.next()) {
+                objects.add(resultSet.getString(1));
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return objects;
+    }
+
+    public List<Object[]> getOncoCytology(String code, String from, String to) {
+        List<Object[]> objects = new ArrayList<>();
+        try (Connection connection = database.getConnection()) {
+            Statement statement = connection.createStatement();
+
+            ResultSet resultSet = statement.executeQuery("select  PATDIREC.PATIENTS_ID,\n" +
+                    "                dbo.fNNPlus_Patient (pat.PATIENTS_ID,1),\n" +
+                    "                PATDIREC.BIO_CODE,\n" +
+                    "                PATDIREC.DATE_BIO,\n" +
+                    "                FM_ORG.LABEL,\n" +
+                    "                case when PATDIREC.PL_EXAM_ID in (11891,9503) then 'кариотип'\n" +
+                            "                    when PATDIREC.PL_EXAM_ID in (7437) then 'онкоцитология'\n" +
+                            "                        end\n" +
+                    "from  PATDIREC PATDIREC WITH(NOLOCK)  JOIN PL_EXAM PL_EXAM WITH(NOLOCK)  ON PATDIREC.PL_EXAM_ID = PL_EXAM.PL_EXAM_ID\n" +
+                    "                                      INNER JOIN DIR_ANSW ON PATDIREC.PATDIREC_ID=DIR_ANSW.PATDIREC_ID\n" +
+                    "                                      inner join DIR_SERV ON PATDIREC.PATDIREC_ID =DIR_SERV.PATDIREC_ID\n" +
+                    "                                      inner JOIN FM_DEP ON PATDIREC.MEDECINS_BIO_DEP_ID=FM_DEP.FM_DEP_ID\n" +
+                    "                                      LEFT OUTER JOIN PATIENTS PAT WITH(NOLOCK)  ON PATDIREC.PATIENTS_ID = PAT.PATIENTS_ID\n" +
+                    "                                      INNER JOIN FM_ORG ON FM_DEP.MAIN_ORG_ID=FM_ORG.FM_ORG_ID\n" +
+                    "where\n" +
+                    "                  PATDIREC.PL_EXAM_ID IN (7437, 11891, 9503 )\n" +
+                            "and PATDIREC.QUANTITY_DONE=0" +
+//                    "                and FM_ORG.FM_ORG_ID="+
+                    "and PATDIREC.BIO_CODE="+code+" \n" +
+//                    " and PATDIREC.DATE_BIO >dateadd(day,- "+from+", getdate()) and PATDIREC.DATE_BIO <dateadd(day,- "+to+", getdate())"
+                            "and PATDIREC.DATE_BIO > '"+from+"' and PATDIREC.DATE_BIO < '"+to+"'"
+            );
+
+            while (resultSet.next()) {
+                objects.add(new Object[]{
+                        resultSet.getObject(1),
+                        resultSet.getObject(2),
+                        resultSet.getObject(3),
+                        resultSet.getObject(4),
+                        resultSet.getObject(5),
+                        resultSet.getObject(6)
+                });
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return objects;
+    }
 
     public List<Object[]> chek(String done, String bio_code, Integer GRPPRM) throws SQLException {
         List<Object[]> objects = new ArrayList<>();
@@ -424,6 +618,11 @@ public class UptakeDaoImpl implements UptakeDao {
         entityManager.persist(ca);
 
     }
+    @Transactional
+    public void saveAssigment(Assignment a) {
+        entityManager.persist(a);
+
+    }
 
     public List<CommonAnalysis> getCommon() {
 
@@ -434,6 +633,23 @@ public class UptakeDaoImpl implements UptakeDao {
     public void deleteCommon(long id) {
         CommonAnalysis ca = entityManager.find(CommonAnalysis.class, id);
         entityManager.remove(ca);
+    }
+    @Transactional
+    public void updateByLabel(String label) {
+        for (CommonAnalysis ca: getCommon()
+                .stream().filter(a->(a.getLabel().equals(label)&& !a.isStatus()))
+//                .filter(a->!a.isStatus())
+                .collect(Collectors.toList())) {
+            ca.setStatus(true);
+            entityManager.merge(ca);
+        }
+    }
+
+    @GetMapping
+    public List<CommonAnalysis> getByLabel(String label, boolean status) {
+        return getCommon().stream()
+                .filter(a->(a.getLabel().equals(label)&& a.isStatus()==status))
+                .collect(Collectors.toList());
     }
 
 //    public void deleteCommon() {
@@ -451,12 +667,10 @@ public class UptakeDaoImpl implements UptakeDao {
                             .map(Assignment::getName)
                             .collect(Collectors.toSet()));
         }
-
         indets.retainAll(commonSet);
 //        for (String s : indets) {
 //            columnIndexes.put(s, index++);
 //        }
-
         return indets;
     }
 
@@ -470,7 +684,7 @@ public class UptakeDaoImpl implements UptakeDao {
 
         List<String> columnStrings = new ArrayList<>(map).stream().sorted().collect(Collectors.toList());
 
-        int count = 0;
+        int count = 1;
         Element root = doc.createElement("report");
         Element element = doc.createElement("column");
         element.setAttribute("data", "ЭМК");
@@ -517,6 +731,9 @@ public class UptakeDaoImpl implements UptakeDao {
             e.setAttribute("data", s);
             root.appendChild(e);
         }
+        Element filial = doc.createElement("column");
+        filial.setAttribute("data","филиал");
+        root.appendChild(filial);
 
         for (CommonAnalysis ca : analyses) {
             int k = 0;
@@ -579,13 +796,46 @@ public class UptakeDaoImpl implements UptakeDao {
 //                }
 
                 root.appendChild(item);
+                Element filialValue = doc.createElement("data");
+                filialValue.setAttribute("value", ca.getLabel());
+                item.appendChild(filialValue);
             }
+
 
         }
 
         doc.appendChild(root);
         return doc;
 
+    }
+
+    @Override
+    public Document getGormDoc(List<Analysis> analyses, Set<String> indets, Document doc) {
+
+//        Element root = doc.createElement("report");
+//        Element element = doc.createElement("column");
+//        element.setAttribute("data", "ЭМК");
+//        Element elementFio = doc.createElement("column");
+//        elementFio.setAttribute("data", "ФИО");
+//        Element elementDate = doc.createElement("column");
+//        elementDate.setAttribute("data", "Дата забора");
+//        Element elementCode = doc.createElement("column");
+//        elementCode.setAttribute("data", "Кбм");
+//        Element elementCounter = doc.createElement("column");
+//        elementCounter.setAttribute("data", "№");
+//
+//        root.appendChild(element);
+//        root.appendChild(elementFio);
+//        root.appendChild(elementDate);
+//        root.appendChild(elementCode);
+//        root.appendChild(elementCounter);
+//
+//        for (Analysis a: analyses) {
+//            Element item = doc.createElement("item");
+//            if (indets.contains(a.getHiv())) {Element element1 = doc.createElement("data"); element1.setAttribute("value", "1"); item.appendChild(element1)}
+//        }
+
+        return null;
     }
 
     public List<String> getBCAsignments(String in) {
@@ -604,5 +854,9 @@ public class UptakeDaoImpl implements UptakeDao {
 
         return objects;
 
+    }
+
+    public Long getMaxId() {
+       return (Long) entityManager.createQuery("select MAX (ca.id) from CommonAnalysis ca").getSingleResult();
     }
 }
