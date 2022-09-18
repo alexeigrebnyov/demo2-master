@@ -238,6 +238,7 @@ public class ImmuliteController {
     @GetMapping("/clear")
     public void clearList() {
         analysisList.clear();
+        checkAnalysisList.clear();
     }
 
 }
