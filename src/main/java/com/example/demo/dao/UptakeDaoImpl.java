@@ -103,20 +103,7 @@ public class UptakeDaoImpl implements UptakeDao {
 
     }
 
-    @Override
-//    public User loadUserByUsername(String s) {
-//    Set<Role> roles =  new HashSet<>();
-//        roles.add(new Role("USER"));
-//        roles.add(new Role("ADMIN"));
-//        User user = new User("grebnev_a", "1072005", roles);
-//        registerUser(user);
-//
-//        users.add(user);
-//        return users
-//                .stream()
-//                .filter(n -> n.getName().equals(s)).findFirst().get();
-//    }
-
+   
     public User loadUserByUsername(String s) {
 
         User user = new User();
