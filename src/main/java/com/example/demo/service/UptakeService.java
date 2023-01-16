@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.model.Assignment;
 import com.example.demo.model.CommonAnalysis;
+import com.example.demo.model.ReqDataTransfer;
 import com.example.demo.model.User;
 import org.w3c.dom.Document;
 
@@ -13,7 +14,7 @@ import java.util.Set;
 
 public interface UptakeService {
     List<Object[]> getData(String done, String bio_code, Integer GRPPRM) throws SQLException;
-    List<Object[]> getDataGormonu(String bio_code, String done, String GPRM) throws SQLException;
+    List<String[]> getDataGormonu(String bio_code, String done, String GPRM) throws SQLException;
     List<Object[]> chek (String done, String bio_code, Integer GRPPRM) throws SQLException;
     void saveUser(String name, String password, String role);
     public List<User> getAllUsers();
@@ -30,6 +31,9 @@ public interface UptakeService {
     List<String> getOncoCytologyCodes(int filial, String from, String to);
     List<Object[]> getOncoCytology(String code, String from, String to);
     public void saveAssigment(Assignment a);
+    Integer createMotconsu(String PatientsId, String medecinsId);
+    void createPatdirec (String PatientsId,String medecinsId, String MOTCONSU_ID, int exam, int serv, int patdirec  );
+    List<CommonAnalysis> getCommonByStatus();
 
 
 }

@@ -130,6 +130,8 @@ public class XLConstructor {
             columnIfa.setAttribute("data", "SyphIFA");
             Element columnMRP = doc.createElement("column");
             columnMRP.setAttribute("data", "MRP");
+            Element columnAntiHBs = doc.createElement("column");
+            columnAntiHBs.setAttribute("data", "ANTI_HBS");
             Element columnKname = doc.createElement("column");
             columnKname.setAttribute("data", "Контенгент");
             Element columnKont = doc.createElement("column");
@@ -143,6 +145,7 @@ public class XLConstructor {
             e_root.appendChild(columnHCV);
             e_root.appendChild(columnIfa);
             e_root.appendChild(columnMRP);
+            e_root.appendChild(columnAntiHBs);
             e_root.appendChild(columnKname);
             e_root.appendChild(columnKont);
             doc.appendChild(e_root);
@@ -158,6 +161,7 @@ public class XLConstructor {
             int hcvIterator=1;
             int ifaIterator = 1;
             int mrpIterator = 1;
+            int aHBsIterator = 1;
             int totalIterator = 1;
             int count116F = (int) users
                     .stream()
@@ -245,6 +249,12 @@ public class XLConstructor {
                     mrpIterator++;
                 } else {mrp.setAttribute("value", "");}
 
+                Element aHBs = doc.createElement("data");
+                if (hiv.getRubM().equals("1")) {
+                    aHBs.setAttribute("value", String.valueOf(aHBsIterator));
+                    aHBsIterator++;
+                } else {aHBs.setAttribute("value", "");}
+
                 Element kontengent = doc.createElement("data");
                 kontengent.setAttribute("value", hiv.getKontengent());
 
@@ -290,6 +300,7 @@ public class XLConstructor {
                 item.appendChild(hcv);
                 item.appendChild(ifa);
                 item.appendChild(mrp);
+                item.appendChild(aHBs);
                 item.appendChild(kontengent);
                 item.appendChild(kont);
 
@@ -600,6 +611,10 @@ public class XLConstructor {
             columnSBG.setAttribute("data", "СССГ");
             Element columnDGA = doc.createElement("column");
             columnDGA.setAttribute("data", "ДГЭА-С");
+            Element columnPSAT = doc.createElement("column");
+            columnPSAT.setAttribute("data", "ПСАоб");
+            Element columnPSAF = doc.createElement("column");
+            columnPSAF.setAttribute("data", "ПСАсв");
             e_root.appendChild(columnId);
             e_root.appendChild(columnpatientId);
             e_root.appendChild(columnuptakeCod);
@@ -615,6 +630,8 @@ public class XLConstructor {
             e_root.appendChild(columnTes);
             e_root.appendChild(columnSBG);
             e_root.appendChild(columnDGA);
+            e_root.appendChild(columnPSAT);
+            e_root.appendChild(columnPSAF);
             doc.appendChild(e_root);
 //			if (posts.size() == 0)
 //				return;
@@ -634,6 +651,8 @@ public class XLConstructor {
             int TESIterator = 1;
             int SBGIterator = 1;
             int DGAIterator = 1;
+            int PSATIterator = 1;
+            int PSAFIterator = 1;
             int totalIterator = 1;
             for (Analysis hiv : users) {
 //                int hivNumber = hivCount - (hivCount-hivIterator);
@@ -695,7 +714,14 @@ public class XLConstructor {
                 if (hiv.getDga().equals("1")) {
                     dga.setAttribute("value", String.valueOf(DGAIterator++));
                 } else {dga.setAttribute("value", "");}
-
+                Element psat = doc.createElement("data");
+                if (hiv.getPsa_total().equals("1")) {
+                    psat.setAttribute("value", String.valueOf(PSATIterator++));
+                } else {psat.setAttribute("value", "");}
+                Element psaf = doc.createElement("data");
+                if (hiv.getPsa_free().equals("1")) {
+                    psaf.setAttribute("value", String.valueOf(PSAFIterator++));
+                } else {psaf.setAttribute("value", "");}
                 item.appendChild(id);
                 item.appendChild(patientid);
                 item.appendChild(uptakeCod);
@@ -712,6 +738,8 @@ public class XLConstructor {
                 item.appendChild(tes);
                 item.appendChild(sbg);
                 item.appendChild(dga);
+                item.appendChild(psat);
+                item.appendChild(psaf);
 
                 e_root.appendChild (item);
 

@@ -21,6 +21,12 @@ public class AllController {
         modelMap.addAttribute("user", userDetails);
             return  "hello";
     }
+    @GetMapping("/charts")
+    public String getCharts(ModelMap modelMap){
+//        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        modelMap.addAttribute("user", userDetails);
+        return  "control_charts";
+    }
 
 
 

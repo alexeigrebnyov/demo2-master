@@ -99,17 +99,31 @@ public class CommonAnalysis {
         this.status = status;
     }
 
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//        CommonAnalysis that = (CommonAnalysis) o;
+//        return Objects.equals(emc, that.emc);
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(emc);
+//    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CommonAnalysis that = (CommonAnalysis) o;
-        return Objects.equals(emc, that.emc);
+        return Objects.equals(emc, that.emc) && Objects.equals(code, that.code) && Objects.equals(assignments, that.assignments);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(emc);
+        return Objects.hash(emc, code, assignments);
     }
 
     @Override

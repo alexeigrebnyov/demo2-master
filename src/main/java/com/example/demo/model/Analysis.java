@@ -34,11 +34,31 @@ public class Analysis {
     private String ClamG;
     private String sbg;
     private String dga;
+    private String psa_free;
+    private String result_psa_free;
+    private String psa_total;
+    private String result_psa_total;
     private String code;
     private String sex;
     private String adres;
     private String gCheck;
     private String immCheck;
+    private String totalCheck;
+    private String torchCheck;
+
+    private String e2Patdirect_id;
+    private String ttgPatdirect_id;
+    private String tpoPatdirect_id;
+    private String t4Patdirect_id;
+    private String prlPatdirect_id;
+    private String lgPatdirect_id;
+    private String prgPatdirect_id;
+    private String tesPatdirect_id;
+    private String sbgPatdirect_id;
+    private String dgaPatdirect_id;
+    private String fsgPatdirect_id;
+    private String psa_free_Patdirect_id;
+    private String psa_total_Patdirect_id;
 
     public Analysis() {
     }
@@ -84,6 +104,68 @@ public class Analysis {
         this.code = code;
         this.sex = sex;
         this.adres = adres;
+
+    }
+
+    public Analysis(String emc, String fio, String kontengent, String motconsu_resp_id, String resultHiv, String resultHbsAg,
+                    String resultatHCV, String resultSyphIfa, String resultMRP, String resultRubG, String resultRubM,
+                    String resultHSP60, String resultClamA, String resultClamG, String resultDGA, String main_org_id,
+                    String label, String patdirect_id, String date_bio, String hiv, String hbsAg, String atHCV, String syphIFA,
+                    String syphMRP, String rubG, String rubM, String hsp60, String clamA, String clamG, String sbg, String dga,
+                    String code, String sex, String adres, String e2Patdirect_id, String ttgPatdirect_id, String tpoPatdirect_id,
+                    String t4Patdirect_id, String prlPatdirect_id, String lgPatdirect_id, String prgPatdirect_id, String tesPatdirect_id,
+                    String sbgPatdirect_id, String dgaPatdirect_id , String psa_free, String result_psa_free, String psa_total, String result_psa_total,
+                    String psa_free_Patdirect_id, String psa_total_Patdirect_id) {
+        this.emc = emc;
+        this.fio = fio;
+        this.kontengent = kontengent;
+        this.motconsu_resp_id = motconsu_resp_id;
+        this.resultHiv = resultHiv;
+        this.resultHbsAg = resultHbsAg;
+        this.resultatHCV = resultatHCV;
+        this.resultSyphIfa = resultSyphIfa;
+        this.resultMRP = resultMRP;
+        this.resultRubG = resultRubG;
+        this.resultRubM = resultRubM;
+        this.resultHSP60 = resultHSP60;
+        this.resultClamA = resultClamA;
+        this.resultClamG = resultClamG;
+        this.resultDGA = resultDGA;
+        this.main_org_id = main_org_id;
+        this.label = label;
+        this.patdirect_id = patdirect_id;
+        this.date_bio = date_bio;
+        this.hiv = hiv;
+        this.hbsAg = hbsAg;
+        this.atHCV = atHCV;
+        this.syphIFA = syphIFA;
+        this.syphMRP = syphMRP;
+        RubG = rubG;
+        RubM = rubM;
+        this.hsp60 = hsp60;
+        ClamA = clamA;
+        ClamG = clamG;
+        this.sbg = sbg;
+        this.dga = dga;
+        this.code = code;
+        this.sex = sex;
+        this.adres = adres;
+        this.e2Patdirect_id = e2Patdirect_id;
+        this.ttgPatdirect_id = ttgPatdirect_id;
+        this.tpoPatdirect_id = tpoPatdirect_id;
+        this.t4Patdirect_id = t4Patdirect_id;
+        this.prlPatdirect_id = prlPatdirect_id;
+        this.lgPatdirect_id = lgPatdirect_id;
+        this.prgPatdirect_id = prgPatdirect_id;
+        this.tesPatdirect_id = tesPatdirect_id;
+        this.sbgPatdirect_id = sbgPatdirect_id;
+        this.dgaPatdirect_id = dgaPatdirect_id;
+        this.psa_free=psa_free;
+        this.result_psa_free=result_psa_free;
+        this.psa_total=psa_total;
+        this.result_psa_total=result_psa_total;
+        this.psa_free_Patdirect_id=psa_free_Patdirect_id;
+        this.psa_total_Patdirect_id=psa_total_Patdirect_id;
     }
 
     public String getResultDGA() {
@@ -361,6 +443,61 @@ public class Analysis {
         ClamG = clamG;
     }
 
+    public String getFsgPatdirect_id() {
+        return fsgPatdirect_id;
+    }
+
+    public void setFsgPatdirect_id(String fsgPatdirect_id) {
+        this.fsgPatdirect_id = fsgPatdirect_id;
+    }
+
+    public String getPsa_free() {
+        return psa_free;
+    }
+
+    public void setPsa_free(String psa_free) {
+        this.psa_free = psa_free;
+    }
+
+    public String getResult_psa_free() {
+        return result_psa_free;
+    }
+
+    public void setResult_psa_free(String result_psa_free) {
+        this.result_psa_free = result_psa_free;
+    }
+
+    public String getPsa_total() {
+        return psa_total;
+    }
+
+    public void setPsa_total(String psa_total) {
+        this.psa_total = psa_total;
+    }
+
+    public String getResult_psa_total() {
+        return result_psa_total;
+    }
+
+    public void setResult_psa_total(String result_psa_total) {
+        this.result_psa_total = result_psa_total;
+    }
+
+    public String getPsa_free_Patdirect_id() {
+        return psa_free_Patdirect_id;
+    }
+
+    public void setPsa_free_Patdirect_id(String psa_free_Patdirect_id) {
+        this.psa_free_Patdirect_id = psa_free_Patdirect_id;
+    }
+
+    public String getPsa_total_Patdirect_id() {
+        return psa_total_Patdirect_id;
+    }
+
+    public void setPsa_total_Patdirect_id(String psa_total_Patdirect_id) {
+        this.psa_total_Patdirect_id = psa_total_Patdirect_id;
+    }
 
     @Override
     public String toString() {
@@ -396,6 +533,10 @@ public class Analysis {
                 ", ClamG='" + ClamG + '\'' +
                 ", SBG='" + sbg + '\'' +
                 ", DGA='" + dga + '\'' +
+                ", PSA_total='" + psa_total + '\'' +
+                ", PSA_free='" + psa_free + '\'' +
+                ", result_psa_total='" + result_psa_total + '\'' +
+                ", result_psa_free='" + result_psa_free + '\'' +
                 ", code='" + code + '\'' +
                 ", sex='" + sex + '\'' +
                 ", adres='" + adres + '\'' +
@@ -471,35 +612,35 @@ public class Analysis {
     }
 
     public boolean chekHiv() {
-        if (hiv.equals("1")){
+        if (hiv.equals("1")||hiv.equals("2")){
         try {
             return !resultHiv.equals("");
         } catch (Exception ex) {return  false;}}
        return true;
     }
     public boolean chekHbs() {
-        if (hbsAg.equals("1")){
+        if (hbsAg.equals("1")||hbsAg.equals("2")){
         try {
             return !resultHbsAg.equals("");
         } catch (Exception ex) {return  false;}}
        return true;
     }
     public boolean chekatHCV() {
-        if (atHCV.equals("1")){
+        if (atHCV.equals("1")||atHCV.equals("2")){
         try {
             return !resultatHCV.equals("");
         } catch (Exception ex) {return false;}}
        return true;
     }
     public boolean chekSyphIfa() {
-        if (syphIFA.equals("1")){
+        if (syphIFA.equals("1")||syphIFA.equals("2")){
         try {
             return !resultSyphIfa.equals("");
         } catch (Exception ex) {return  false;}}
         return true;
     }
     public boolean chek() {
-        if (syphMRP.equals("1")) {
+        if (syphMRP.equals("1")||syphMRP.equals("2")) {
             try {
                 return !resultMRP.equals("");
             } catch (Exception ex) {return false;}
@@ -509,28 +650,28 @@ public class Analysis {
     }
 
     public boolean chekRubG() {
-        if (RubG.equals("1")){
+        if (RubG.equals("1")||RubG.equals("2")){
             try {
                 return !resultRubG.equals("");
             } catch (Exception ex) {return  false;}}
         return true;
     }
     public boolean chekRubM() {
-        if (RubM.equals("1")){
+        if (RubM.equals("1")||RubM.equals("2")){
             try {
                 return !resultRubM.equals("");
             } catch (Exception ex) {return  false;}}
         return true;
     }
     public boolean chekClamG() {
-        if (ClamG.equals("1")){
+        if (ClamG.equals("1")||ClamG.equals("2")){
             try {
                 return !resultClamG.equals("");
             } catch (Exception ex) {return  false;}}
         return true;
     }
     public boolean chekClamA() {
-        if (ClamA.equals("1")){
+        if (ClamA.equals("1")||ClamA.equals("2")){
             try {
                 return !resultClamA.equals("");
             } catch (Exception ex) {return  false;}}
@@ -585,7 +726,7 @@ public class Analysis {
     }
     public boolean chekSBG() {
         try {
-            if (sbg.equals("1")){
+            if (sbg.equals("1")||sbg.equals("2")){
 
                 return !resultHSP60.equals("");
             }
@@ -595,7 +736,7 @@ public class Analysis {
 
     public boolean chekDGA() {
         try {
-            if (dga.equals("1")){
+            if (dga.equals("1")||dga.equals("2")){
 
                 return !resultDGA.equals("");
             }
@@ -620,7 +761,7 @@ public class Analysis {
     }
 
     public String getImmChek() {
-        if(chekHiv() && chekHbs() && chekatHCV() && chekSyphIfa()&& chekRubM() && chekRubG() && chekClamG() && chekClamA() && chekE2() && chekSBG()
+        if(chekHiv() && chekHbs() && chekatHCV() && chekSyphIfa()&& chekRubM() && chekRubG() && chekClamG() && chekClamA() && chek() && chekSBG()
         && chekDGA()) {return" ";}
         return "!!!!!";
     }
@@ -630,7 +771,95 @@ public class Analysis {
         return gormonuChek();
     }
 
+    public String getTotalCheck() {
+        return totalChek();
+    }
+
+    public String getTorchCheck() {
+        return torchChek();
+    }
+
     public void setGCheck(String gCheck) {
         this.gCheck = gCheck;
+    }
+
+    public String getE2Patdirect_id() {
+        return e2Patdirect_id;
+    }
+
+    public void setE2Patdirect_id(String e2Patdirect_id) {
+        this.e2Patdirect_id = e2Patdirect_id;
+    }
+
+    public String getTtgPatdirect_id() {
+        return ttgPatdirect_id;
+    }
+
+    public void setTtgPatdirect_id(String ttgPatdirect_id) {
+        this.ttgPatdirect_id = ttgPatdirect_id;
+    }
+
+    public String getTpoPatdirect_id() {
+        return tpoPatdirect_id;
+    }
+
+    public void setTpoPatdirect_id(String tpoPatdirect_id) {
+        this.tpoPatdirect_id = tpoPatdirect_id;
+    }
+
+    public String getT4Patdirect_id() {
+        return t4Patdirect_id;
+    }
+
+    public void setT4Patdirect_id(String t4Patdirect_id) {
+        this.t4Patdirect_id = t4Patdirect_id;
+    }
+
+    public String getPrlPatdirect_id() {
+        return prlPatdirect_id;
+    }
+
+    public void setPrlPatdirect_id(String prlPatdirect_id) {
+        this.prlPatdirect_id = prlPatdirect_id;
+    }
+
+    public String getLgPatdirect_id() {
+        return lgPatdirect_id;
+    }
+
+    public void setLgPatdirect_id(String lgPatdirect_id) {
+        this.lgPatdirect_id = lgPatdirect_id;
+    }
+
+    public String getPrgPatdirect_id() {
+        return prgPatdirect_id;
+    }
+
+    public void setPrgPatdirect_id(String prgPatdirect_id) {
+        this.prgPatdirect_id = prgPatdirect_id;
+    }
+
+    public String getTesPatdirect_id() {
+        return tesPatdirect_id;
+    }
+
+    public void setTesPatdirect_id(String tesPatdirect_id) {
+        this.tesPatdirect_id = tesPatdirect_id;
+    }
+
+    public String getSbgPatdirect_id() {
+        return sbgPatdirect_id;
+    }
+
+    public void setSbgPatdirect_id(String sbgPatdirect_id) {
+        this.sbgPatdirect_id = sbgPatdirect_id;
+    }
+
+    public String getDgaPatdirect_id() {
+        return dgaPatdirect_id;
+    }
+
+    public void setDgaPatdirect_id(String dgaPatdirect_id) {
+        this.dgaPatdirect_id = dgaPatdirect_id;
     }
 }

@@ -27,13 +27,11 @@
 
         <nav class="nav col-md-12" >
             <a class="nav-link" th:href="@{/}">Главная</a>
-            <a class="nav-link " th:href="@{/code}">ВИЧ</a>
-            <a class="nav-link active" href="#" >TORCH</a>
+            <a class="nav-link " th:href="@{/vichi}">ВИЧ</a>
+            <a class="nav-link active" th:href="@{/torchi}">TORCH</a>
             <a class="nav-link " th:href="@{/proofCode}" >Подтверждающие</a>
             <a class="nav-link " th:href="@{/divrefresh}" >Ручной ввод</a>
             <a class="nav-link " th:href="@{/gormonu}" >Гормоны ИФА</a>
-            <a class="nav-link " th:href="@{/chek}" >Результаты ВИЧ</a>
-            <a class="nav-link " th:href="@{/chekTorch}" >Результаты TORCH</a>
             <a class="nav-link " th:href="@{/reportPage}" >Забор филиалы</a>
 
 
@@ -44,15 +42,17 @@
 <!--                <h1>Анализы в Казань</h1>-->
                 <!-- Nav tabs -->
                 <div class="tab-content">
+                    <div class="fixed-top">
                             <div class="float-right">
 <!--                                <form name="writeForm" id="writeForm" th:action="@{/writeTorch}" method="post">-->
                                     <input type="submit" class="btn btn-primary" onclick="fetch('/immulite/writeGormonu')" value="Сформировать списки">
-                                    <input type="submit" class="btn btn-success" onclick="exp()" value="Выдать результаты" >
+                                    <input type="submit" id="but" class="btn btn-success" onclick="exp()" value="Выдать результаты" >
                                     <input type="submit" class="btn btn-danger" onclick="clearList()" value="Очистить список">
 <!--                                    <input type="hidden" name="redir" id="redirTorch" value="redirect:/codeTorch">-->
 <!--                                </form>-->
 
                             </div>
+                    </div>
                             <div class="bg-white">
                                 <br>
                             </div>
@@ -121,35 +121,39 @@
                                                 <td >${analys.fio}</td>
                                                 <td >${analys.date_bio}</td>
                                                 <td >${analys.code}</td>
-                                                <td >${analys.hiv}</td>
-                                                <td >${analys.hbsAg}</td>
-                                                <td >${analys.atHCV}</td>
-                                                <td >${analys.syphIFA}</td>
-                                                <td >${analys.rubM}</td>
-                                                <td >${analys.rubG}</td>
-                                                <td >${analys.clamG}</td>
-                                                <td >${analys.syphMRP}</td>
-                                                <td >${analys.clamA}</td>
-                                                <td >${analys.sbg}</td>
-                                                <td >${analys.dga}</td>
+                                                <td >${analys.hiv==='1'?analys.hiv:''}</td>
+                                                <td >${analys.hbsAg==='1'?analys.hbsAg:''}</td>
+                                                <td >${analys.atHCV==='1'?analys.atHCV:''}</td>
+                                                <td >${analys.syphIFA==='1'?analys.syphIFA:''}</td>
+                                                <td >${analys.rubM==='1'?analys.rubM:''}</td>
+                                                <td >${analys.rubG==='1'?analys.rubG:''}</td>
+                                                <td >${analys.clamG==='1'?analys.clamG:''}</td>
+                                                <td >${analys.syphMRP==='1'?analys.syphMRP:''}</td>
+                                                <td >${analys.clamA==='1'?analys.clamA:''}</td>
+                                                <td >${analys.sbg==='1'?analys.sbg:''}</td>
+                                                <td >${analys.dga==='1'?analys.dga:''}</td>
+                                                <td >${analys.psa_total==='1'?analys.psa_total:''}</td>
+                                                <td >${analys.psa_free==='1'?analys.psa_free:''}</td>
                                                 <td >${analys.label}</td>
                                                 <td ><button class="btn-danger" onclick="dele(${analys.emc})">Удалить</button></td>
                                                 // <td class="font-weight-bold text-danger">${analys.immChek}</td>
                                                     </tr>`
-                        // console.log(row)
+                        // console.log(analys.sex)
                         setDiv(row)
                         count++})
 
                 }))
-        window.scrollBy(0, 2)
+        window.scrollBy(0, window.innerHeight)
     }
 
 </script>
 <script>
 
     function exp() {
+        setButtonDisable()
         fetch('/update/runImmulite')
-        setTimeout(getDoneList, 30000)
+        setTimeout(getDoneList, 40000)
+        setTimeout(setButtonEnable, 40000)
 
     }
 
@@ -167,6 +171,11 @@
     function getDoneList() {
         let rowDone = ''
         let count = 1
+        let lower = 67
+        let upperTTG = '>15,750'
+
+
+
 
 
         // if (succes === 1) {
@@ -174,17 +183,28 @@
                 .then((res) => res.json()
                     .then((data) => {
                         data.forEach(function (analys) {
+                            let upper = analys.sex===1? 700:540
+
+                            let cifra = parseInt(analys.resultRubG)
+                            let ttdVal= analys.resultatHCV
+                            let ttg =  (ttdVal === upperTTG)? `<td class=" font-weight-bold text-danger">${analys.resultatHCV!=null?analys.resultatHCV:''}</td>`:`<td >${analys.resultatHCV!=null?analys.resultatHCV:''}</td>`
+                            let prl = cifra>upper? `<td class=" font-weight-bold text-danger">${analys.resultRubG!=null?analys.resultRubG:''}</td>`:`<td >${analys.resultRubG!=null?analys.resultRubG:''}</td>`
+                            // console.log(ttdVal)
+                            // console.log(ttdVal === upperTTG)
+
                             rowDone += `<tr>    <td>${count}</td>
                                                 <td >${analys.emc}</td>
                                                 <td >${analys.fio}</td>
                                                 <td >${analys.date_bio}</td>
                                                 <td >${analys.code}</td>
                                                 <td >${analys.resultHiv!=null?analys.resultHiv:''}</td>
-                                                <td >${analys.resultHbsAg!=null?analys.resultHbsAg:''}</td>
-                                                <td >${analys.resultatHCV!=null?analys.resultatHCV:''}</td>
+                                                <td >${analys.resultHbsAg!=null?analys.resultHbsAg:''}</td>`
+                                                +ttg+`
+
                                                 <td >${analys.resultSyphIfa!=null?analys.resultSyphIfa:''}</td>
-                                                   <td >${analys.resultRubM!=null?analys.resultRubM:''}</td>
-                                                   <td >${analys.resultRubG!=null?analys.resultRubG:''}</td>
+                                                   <td >${analys.resultRubM!=null?analys.resultRubM:''}</td>`
+                                                    +prl+`
+
                                                     <td >${analys.resultClamG!=null?analys.resultClamG:''}</td>
                                                     <td >${analys.resultMRP!=null?analys.resultMRP:''}</td>
                                                     <td >${analys.resultClamA!=null?analys.resultClamA:''}</td>
@@ -198,7 +218,6 @@
                             count++
                         })
                     }))
-        window.scrollBy(0, 2)
         // }
     }
 </script>
@@ -275,6 +294,8 @@
                                 <th>TES</th>
                                 <th>СССГ</th>
                                 <th>DGA-S</th>
+                                <th>ПСАоб</th>
+                                <th>ПСАсв</th>
                                 <th>Филиал</th>
                                 <th>Статус</th>
 <!--                                <th>Статус</th>-->
@@ -295,12 +316,13 @@
     }
 </script>
 
-<!--<script>-->
-<!--    $( function() {-->
-<!--        if ( $( '#proofCode' ).val() !== '' ) {-->
-<!--            $( '#codeForm' ).submit();-->
-<!--        }-->
-<!--    });-->
-<!--</script>-->
+<script>
+    function setButtonEnable() {
+        document.getElementById('but').disabled = false;
+    }
+    function setButtonDisable() {
+        document.getElementById('but').disabled = true;
+    }
+</script>
 </body>
 </html>

@@ -198,13 +198,27 @@ public class UptakeController {
         return "proofCode";
     }
     @GetMapping("/gormonu")
-    public String getGorm() {
+    public String getGorm(ModelMap map) {
+        map.addAttribute("user", getUserName());
         return "byCodeGormonu";
     }
 
     @GetMapping("/immulite")
-    public String getImmulite() {
+    public String getImmulite(ModelMap map) {
+        map.addAttribute("user", getUserName());
         return "byCodeImmulite";
+    }
+
+    @GetMapping("/vichi")
+    public String getVich(ModelMap map) {
+        map.addAttribute("user", getUserName());
+        return "byCodeVich";
+    }
+
+    @GetMapping("/torchi")
+    public String getTorch(ModelMap map) {
+        map.addAttribute("user", getUserName());
+        return "byCodeRestTorch";
     }
 
     @GetMapping("/commonPost")
@@ -353,6 +367,70 @@ public class UptakeController {
 
 
     }
+    public void writeVich(List<Analysis> list) throws IOException, XML2SpreadSheetError {
+        List<Analysis> dist = list
+                .stream()
+                .distinct()
+                .collect(Collectors.toList());
+
+//        String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+
+        deleteAllFilesFolder("//192.168.7.100/ifa/МРП");
+        try(
+                FileOutputStream fos=new FileOutputStream("//192.168.7.100/ifa/МРП/HIVList.txt", true);
+                FileOutputStream fosB=new FileOutputStream("//192.168.7.100/ifa/МРП/HBsList.txt", true);
+                FileOutputStream fosC=new FileOutputStream("//192.168.7.100/ifa/МРП/HCVList.txt", true);
+                FileOutputStream fosSyf=new FileOutputStream("//192.168.7.100/ifa/МРП/SyfList.txt", true);
+                FileOutputStream fosMRP=new FileOutputStream("//192.168.7.100/ifa/МРП/MRPList.txt", true);
+                FileOutputStream fosAntiHBs=new FileOutputStream("//192.168.7.100/ifa/МРП/AntiHBsList.txt", true);
+        ) {
+            for (Analysis data:
+                    dist) {
+                if (data.getHiv().equals("1")) {
+                    String item =getUserName()+" "+ data.getEmc()+ System.lineSeparator();
+                    fos.write(item.getBytes());
+//                    System.out.println(data.getHiv());
+                }
+                if (data.getHbsAg().equals("1")) {
+                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
+
+                    fosB.write(item.getBytes());
+                }
+                if (data.getAtHCV().equals("1")) {
+                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
+                    fosC.write(item.getBytes());
+                }
+                if (data.getSyphIFA().equals("1")) {
+                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
+                    fosSyf.write(item.getBytes());
+                }
+                if (data.getSyphMRP().equals("1")) {
+                    String item =getUserName()+" "+  data.getEmc()+" "+ "-" + System.lineSeparator();
+                    fosMRP.write(item.getBytes());
+                }
+                if (data.getRubM().equals("1")) {
+                    String item =getUserName()+" "+  data.getEmc()+" "+ "-" + System.lineSeparator();
+                    fosAntiHBs.write(item.getBytes());
+                }
+
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+        XLConstructor.writeXML(dist);
+        XLConstructor.xml2XLSX("//192.168.7.100/ifa/ifaList/report.xlsx");
+        RequestEntity request = RequestEntity
+                .get("http://"+ Constants.SERVERENDPOINT+"/update/openVich").build();
+        ResponseEntity<String> response = template.exchange(request, String.class);
+        deleteAllFilesFolder("//192.168.7.100/ifa/СИФИЛИС");
+        deleteAllFilesFolder("//192.168.7.100/ifa/Гепатит С");
+        deleteAllFilesFolder("//192.168.7.100/ifa/Гепатит В");
+        deleteAllFilesFolder("//192.168.7.100/ifa/ВИЧ");
+
+
+
+    }
+
     @PostMapping(value = "/writeProof")
     public String writeProof(@RequestParam (value = "redir") String redirect,
                              @RequestParam ("count") String count) throws IOException, XML2SpreadSheetError {
@@ -415,6 +493,11 @@ public class UptakeController {
         RequestEntity request = RequestEntity
                 .get("http://"+Constants.SERVERENDPOINT+"/update/openProof").build();
         ResponseEntity<String> response = template.exchange(request, String.class);
+        deleteAllFilesFolder("//192.168.7.100/ifa/Гепатит С подтверждающий");
+        deleteAllFilesFolder("//192.168.7.100/ifa/ВИЧ подтверждающий");
+        deleteAllFilesFolder("//192.168.7.100/ifa/СИФИЛИС подтверждающий");
+        deleteAllFilesFolder("//192.168.7.100/ifa/СИФИЛИС подтверждающий");
+        deleteAllFilesFolder("//192.168.7.100/ifa/Гепатит В подтверждающий");
 
         return redirect;
 
@@ -474,8 +557,71 @@ public class UptakeController {
         RequestEntity request = RequestEntity
                 .get("http://"+Constants.SERVERENDPOINT+"/update/openTorch").build();
         ResponseEntity<String> response = template.exchange(request, String.class);
+        deleteAllFilesFolder("//192.168.7.100/ifa/rubG");
+        deleteAllFilesFolder("//192.168.7.100/ifa/rubM");
+        deleteAllFilesFolder("//192.168.7.100/ifa/хламG");
+        deleteAllFilesFolder("//192.168.7.100/ifa/хламA");
+        deleteAllFilesFolder("//192.168.7.100/ifa/хламHSP");
 
         return redirect;
+
+
+    }
+
+    public void writeRestTorch(List<Analysis> list) throws IOException, XML2SpreadSheetError {
+        List<Analysis> dist = list
+                .stream()
+                .distinct()
+                .collect(Collectors.toList());
+
+//        String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+
+        deleteAllFilesFolder("//192.168.7.100/ifa/torch");
+        try(
+                FileOutputStream fosB=new FileOutputStream("//192.168.7.100/ifa/torch/RubGList.txt", true);
+                FileOutputStream fosC=new FileOutputStream("//192.168.7.100/ifa/torch/RubMList.txt", true);
+                FileOutputStream fos=new FileOutputStream("//192.168.7.100/ifa/torch/ChlamGList.txt", true);
+                FileOutputStream fosSyf=new FileOutputStream("//192.168.7.100/ifa/torch/ChlamAList.txt", true);
+                FileOutputStream fosHSP=new FileOutputStream("//192.168.7.100/ifa/torch/HSP60List.txt", true);
+        ) {
+
+
+            for (Analysis data:
+                    dist) {
+                if (data.getRubG().equals("1")) {
+                    String item =getUserName()+" "+ data.getEmc()+ System.lineSeparator();
+                    fosB.write(item.getBytes());
+//                    System.out.println(data.getHiv());
+                }
+                if (data.getRubM().equals("1")) {
+                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
+
+                    fosC.write(item.getBytes());
+                }
+                if (data.getClamG().equals("1")) {
+                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
+                    fos.write(item.getBytes());
+                }
+                if (data.getClamA().equals("1")) {
+                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
+                    fosSyf.write(item.getBytes());
+                }
+                if (data.getHSP60().equals("1")) {
+                    String item =getUserName()+" "+  data.getEmc()+" "+  System.lineSeparator();
+                    fosHSP.write(item.getBytes());
+                }
+
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+        XLConstructor.writeTORCHXML(dist);
+        XLConstructor.xml2XLSX("//192.168.7.100/ifa/ifaList/TorchReport.xlsx");
+        RequestEntity request = RequestEntity
+                .get("http://"+Constants.SERVERENDPOINT+"/update/openTorch").build();
+        ResponseEntity<String> response = template.exchange(request, String.class);
+
+
 
 
     }
@@ -527,6 +673,9 @@ public class UptakeController {
         RequestEntity request = RequestEntity
                 .get("http://"+Constants.SERVERENDPOINT+"/update/openGormonu").build();
         ResponseEntity<String> response = template.exchange(request, String.class);
+        deleteAllFilesFolder("//192.168.7.100/ifa/17-OH");
+        deleteAllFilesFolder("//192.168.7.100/ifa/CA125");
+        deleteAllFilesFolder("//192.168.7.100/ifa/AMG");
 
 
 
@@ -541,6 +690,7 @@ public class UptakeController {
 //        String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
 
         deleteAllFilesFolder("//192.168.7.100/ifa/Имммулайт");
+
         try(
                 FileOutputStream fosB=new FileOutputStream("//192.168.7.100/ifa/Имммулайт/E2List.txt", true);
                 FileOutputStream fosC=new FileOutputStream("//192.168.7.100/ifa/Имммулайт/FSGList.txt", true);
@@ -553,48 +703,57 @@ public class UptakeController {
                 FileOutputStream fosTes=new FileOutputStream("//192.168.7.100/ifa/Имммулайт/TESTList.txt", true);
                 FileOutputStream fosSBG=new FileOutputStream("//192.168.7.100/ifa/Имммулайт/SBGList.txt", true);
                 FileOutputStream fosDGA=new FileOutputStream("//192.168.7.100/ifa/Имммулайт/DGAList.txt", true);
+                FileOutputStream fosPSAT=new FileOutputStream("//192.168.7.100/ifa/Имммулайт/PSATList.txt", true);
+                FileOutputStream fosPSAF=new FileOutputStream("//192.168.7.100/ifa/Имммулайт/PSAFList.txt", true);
         ) {
 
 
             for (Analysis data:
                     dist) {
-                String item =getUserName()+" "+ data.getEmc()+ System.lineSeparator();
+                String item =getUserName()+" "+ data.getEmc();
                 if (data.getHiv().equals("1")) {
-                    fosB.write(item.getBytes());
+                    fosB.write((item+" "+data.getSex()+" "+data.getE2Patdirect_id()+ System.lineSeparator()).getBytes());
 //                    System.out.println(data.getHiv());
                 }
                 if (data.getHbsAg().equals("1")) {
-                    fosC.write(item.getBytes());
+                    fosC.write((item+" "+data.getSex()+" "+data.getFsgPatdirect_id()+ System.lineSeparator()).getBytes());
                 }
                 if (data.getAtHCV().equals("1")) {
-                    fos.write(item.getBytes());
+                    fos.write((item+" "+data.getSex()+" "+data.getTtgPatdirect_id()+ System.lineSeparator()).getBytes());
                 }
                 if (data.getSyphIFA().equals("1")) {
-                    fosSyf.write(item.getBytes());
+                    fosSyf.write((item+" "+data.getTpoPatdirect_id()+ System.lineSeparator()).getBytes());
                 }
 
                 if (data.getRubM().equals("1")) {
-                    fosT4.write(item.getBytes());
+                    fosT4.write((item+" "+data.getT4Patdirect_id()+ System.lineSeparator()).getBytes());
                 }
 
                 if (data.getRubG().equals("1")) {
-                    fosPRL.write(item.getBytes());
+                    fosPRL.write((item+" "+data.getSex()+" "+data.getPrlPatdirect_id()+ System.lineSeparator()).getBytes());
                 }
                 if (data.getClamG().equals("1")) {
-                    fosLG.write(item.getBytes());
+                    fosLG.write((item+" "+data.getSex()+" "+data.getLgPatdirect_id()+ System.lineSeparator()).getBytes());
                 }
                 if (data.getSyphMRP().equals("1")) {
-                    fosPRG.write(item.getBytes());
+                    fosPRG.write((item+" "+data.getPrgPatdirect_id()+ System.lineSeparator()).getBytes());
                 }
                 if (data.getClamA().equals("1")) {
-                    fosTes.write(item.getBytes());
+                    fosTes.write((item+" "+data.getSex()+" "+data.getTesPatdirect_id()+System.lineSeparator()).getBytes());
                 }
                 if (data.getSbg().equals("1")) {
-                    fosSBG.write(item.getBytes());
+                    fosSBG.write((item+ " "+data.getSex()+" "+data.getSbgPatdirect_id()+System.lineSeparator()).getBytes());
                 }
                 if (data.getDga().equals("1")) {
-                    fosDGA.write(item.getBytes());
+                    fosDGA.write((item+ " "+data.getSex()+" "+data.getDgaPatdirect_id()+System.lineSeparator()).getBytes());
                 }
+                if (data.getPsa_total().equals("1")) {
+                    fosPSAT.write((item+ " "+data.getPsa_total_Patdirect_id()+System.lineSeparator()).getBytes());
+                }
+                if (data.getPsa_free().equals("1")) {
+                    fosPSAF.write((item+" "+data.getPsa_free_Patdirect_id()+System.lineSeparator()).getBytes());
+                }
+
 
 
             }
@@ -606,6 +765,16 @@ public class UptakeController {
         RequestEntity request = RequestEntity
                 .get("http://"+Constants.SERVERENDPOINT+"/update/openImm").build();
         ResponseEntity<String> response = template.exchange(request, String.class);
+        deleteAllFilesFolder("//192.168.7.100/ifa/PRL");
+        deleteAllFilesFolder("//192.168.7.100/ifa/TPO");
+        deleteAllFilesFolder("//192.168.7.100/ifa/T4");
+        deleteAllFilesFolder("//192.168.7.100/ifa/ТТГ");
+        deleteAllFilesFolder("//192.168.7.100/ifa/ЛГ");
+        deleteAllFilesFolder("//192.168.7.100/ifa/E2");
+        deleteAllFilesFolder("//192.168.7.100/ifa/TES");
+        deleteAllFilesFolder("//192.168.7.100/ifa/SBG");
+        deleteAllFilesFolder("//192.168.7.100/ifa/DGA");
+
 
 
 
@@ -754,7 +923,7 @@ public class UptakeController {
                     } catch (Exception ignored) {
                     }
 
-                    try { int i = 0;
+                    try {
                         if (data1[2] != null) {
                                 analysis.setKontengent(data1[2].toString());}
                         else {

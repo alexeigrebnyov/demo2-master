@@ -77,7 +77,7 @@ public class CommonController {
 
 
 //         new CommonAnalysis();
-       List<Object[]> objects= uptakeService.getDataGormonu(requestData.code, requestData.done, requestData.gprm);
+       List<String[]> objects= uptakeService.getDataGormonu(requestData.code, requestData.done, requestData.gprm);
         RequestEntity request = RequestEntity
                 .get("http://"+ requestData.server+"/update/setcode").build();
         ResponseEntity<String> response = template.exchange(request, String.class);
@@ -117,7 +117,7 @@ public class CommonController {
 
 
             Set<Assignment> assignment = new HashSet<>();
-            List<Object[]> objects = uptakeService.getDataGormonu(code, "0", gprm);
+            List<String[]> objects = uptakeService.getDataGormonu(code, "0", gprm);
             try {
 
 
@@ -273,7 +273,7 @@ public class CommonController {
 //        Document docGorm = null;
 
         List<Document> documents = new ArrayList<>();
-        List<CommonAnalysis> commonAnalyses = uptakeService.getCommon().stream().distinct().collect(Collectors.toList());
+        List<CommonAnalysis> commonAnalyses = uptakeService.getCommonByStatus().stream().distinct().collect(Collectors.toList());
 //        Set<CommonAnalysis> analysisSet = new HashSet<>(commonAnalyses);
 //        analysisSet.forEach(System.out::println);
         List<Set<String>> commonList = List.of(indets,torch, vich, bc, ifaGorm, coaguloGramma, erAg, cytolog, kario);

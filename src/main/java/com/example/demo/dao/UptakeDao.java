@@ -1,9 +1,6 @@
 package com.example.demo.dao;
 
-import com.example.demo.model.Analysis;
-import com.example.demo.model.Assignment;
-import com.example.demo.model.CommonAnalysis;
-import com.example.demo.model.User;
+import com.example.demo.model.*;
 import org.springframework.stereotype.Repository;
 import org.w3c.dom.Document;
 
@@ -16,7 +13,7 @@ import java.util.Set;
 @Repository
 public interface UptakeDao {
     List<Object[]> getData(String done,String bio_code, Integer GRPPRM) throws SQLException;
-    List<Object[]> getDataGormonu(String bio_code,  String done, String GPRM) throws SQLException;
+    List<String[]> getDataGormonu(String bio_code, String done, String GPRM) throws SQLException;
     List<Object[]> chek (String done,String bio_code, Integer GRPPRM) throws SQLException;
     User loadUserByUsername(String s);
     void saveUser(String name, String password, String role);
@@ -35,5 +32,8 @@ public interface UptakeDao {
     List<String> getOncoCytologyCodes(int filial, String from, String to);
     List<Object[]> getOncoCytology(String code, String from, String to);
     public void saveAssigment(Assignment a);
+    Integer createMotconsu(String PatientsId, String medecinsId);
+    void createPatdirec (String PatientsId,String medecinsId, String MOTCONSU_ID, int exam, int serv, int patdirec );
+    List<CommonAnalysis> getCommonByStatus();
 
 }

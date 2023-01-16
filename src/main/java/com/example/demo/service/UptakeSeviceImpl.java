@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.dao.UptakeDao;
 import com.example.demo.model.Assignment;
 import com.example.demo.model.CommonAnalysis;
+import com.example.demo.model.ReqDataTransfer;
 import com.example.demo.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ public class UptakeSeviceImpl implements UptakeService {
     }
 
     @Override
-    public List<Object[]> getDataGormonu(String bio_code,  String done, String GPRM) throws SQLException {
+    public List<String[]> getDataGormonu(String bio_code, String done, String GPRM) throws SQLException {
         return uptakeDao.getDataGormonu(bio_code,  done, GPRM);
     }
 
@@ -115,6 +116,21 @@ public class UptakeSeviceImpl implements UptakeService {
     @Override
     public void saveAssigment(Assignment a) {
         uptakeDao.saveAssigment(a);
+    }
+
+    @Override
+    public Integer createMotconsu(String PatientsId, String medecinsId) {
+        return uptakeDao.createMotconsu(PatientsId, medecinsId);
+    }
+
+    @Override
+    public void createPatdirec(String PatientsId, String medecinsId, String MOTCONSU_ID, int exam, int serv, int patdirec ) {
+        uptakeDao.createPatdirec(PatientsId, medecinsId, MOTCONSU_ID, exam, serv, patdirec);
+    }
+
+    @Override
+    public List<CommonAnalysis> getCommonByStatus() {
+        return uptakeDao.getCommonByStatus();
     }
 
 

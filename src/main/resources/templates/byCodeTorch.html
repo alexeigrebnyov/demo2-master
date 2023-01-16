@@ -27,7 +27,7 @@
 
         <nav class="nav col-md-12" >
             <a class="nav-link" th:href="@{/}">Главная</a>
-            <a class="nav-link " th:href="@{/code}">ВИЧ</a>
+            <a class="nav-link " th:href="@{/vichi}">ВИЧ</a>
             <a class="nav-link active" href="#" >TORCH</a>
             <a class="nav-link " th:href="@{/proofCode}" >Подтверждающие</a>
             <a class="nav-link " th:href="@{/divrefresh}" >Ручной ввод</a>
@@ -45,6 +45,7 @@
 <!--                <h1>Анализы в Казань</h1>-->
                 <!-- Nav tabs -->
                 <div class="tab-content">
+                    <div class="fixed-top">
                             <div class="float-right">
                                 <form name="writeForm" id="writeForm" th:action="@{/writeTorch}" method="post">
                                     <input type="submit" class="btn btn-primary" value="Сформировать списки">
@@ -52,6 +53,7 @@
                                 </form>
 
                             </div>
+                    </div>
                             <div class="bg-white">
                                 <br>
                             </div>
@@ -151,13 +153,14 @@
                                 })
 
                                 setTimeout("location.reload(true)", 1000)
+                                window.scrollBy(0, window.innerHeight)
                             }
 
 
                         })
                     }
                 ))
-        window.scrollBy(0, 2)
+
 
     }
     $( (function () {

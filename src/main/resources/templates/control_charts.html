@@ -8,6 +8,7 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/css/bootstrap.min.css" integrity="sha384-DhY6onE6f3zzKbjUPRc2hOzGAdEf4/Dz+WJwBvEYL/lkkIsI3ihufq9hk9K4lVoK" crossorigin="anonymous">
         <!-- JavaScript Bundle with Popper.js -->
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/js/bootstrap.bundle.min.js" integrity="sha384-BOsAfwzjNJHrJ8cZidOg56tcQWfp6y72vEJ8xQ9w6Quywb24iOsW913URv1IS4GD" crossorigin="anonymous"></script>
+        <script src="https://cdn.plot.ly/plotly-2.17.1.min.js"></script>
         <link rel="icon" href="spring_leaf_plant_nature_leaves_garden_environment_icon_133309.ico">
     <title>Title</title>
 </head>
@@ -24,12 +25,15 @@
                 <a class="nav-link " th:href="@{/reportPage}" >Забор филиалы</a>
 
                 <a class="nav-link" th:href="@{/chek}">Результаты</a>
-                <a class="nav-link" th:href="@{/charts}">КК</a>
 
 
             </nav>
             <div class="col-md-10" style="background-color: #F8F8FF">
                 <div class="container-fluid">
+
+                    <button onclick="getChartMap()">Chart</button>
+                    <div id="tester" style="width:600px;height:250px;"></div>
+
 
 <!--            <table class="table table-striped" border="1">-->
 <!--                <tr>-->
@@ -51,5 +55,45 @@
         </div>
     </div>
 Hello!
+    <script>
+        function getPlot(m_1, m_2) {
+            TESTER = document.getElementById('tester');
+            Plotly.newPlot( TESTER, [{
+                x: m_1,
+                y: m_2 }], {
+                margin: { t: 0 } } );
+        }
+
+    </script>
+<script>
+    l_1 = []
+    l_2 = []
+    function getChartMap () {
+
+    fetch('/chart/getChart')
+    .then((res)=>res.json()
+        .then((data)=> {
+          map=  new Map(Object.entries(data))
+            iterator=map.keys()
+            // while (!iterator.next().done) {
+            //   k=iterator.next().value
+            //     // console.log(iterator.next().value)
+            //     l_1.push(k)
+            //     l_2.push(map.get(k))
+            // }
+            for (let i = 0; i < map.size; i++) {
+                k=iterator.next().value
+                l_1.push(k)
+                l_2.push(map.get(k))
+            }
+    }))
+        // console.log(l_1)
+        // console.log(l_2)
+        getPlot(l_1,l_2)
+
+
+
+    }
+</script>
 </body>
 </html>

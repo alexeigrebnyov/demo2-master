@@ -63,12 +63,14 @@
 <!--                            </div>-->
 <!--                            <br>-->
 <!--                            <h4>ВИЧ, Геп В, С, СИФ</h4>-->
+                            <div class="fixed-top">
                             <div class="float-right">
                                 <form name="writeForm" id="writeForm" th:action="@{/write}" method="post">
                                     <input type="submit" class="btn btn-primary" value="Сформировать списки">
                                     <input type="hidden" name="redir" id="redirProof" value="redirect:/code">
                                 </form>
 
+                            </div>
                             </div>
                             <div class="bg-white">
                                 <br>
@@ -200,13 +202,15 @@
                                 })
 
                                 setTimeout("location.reload(true)", 1000)
+                                window.scrollBy(0, window.innerHeight)
                             }
 
 
                         })
                     }
                 ))
-        window.scrollBy(0, 2)
+
+
 
     }
     $( (function () {
