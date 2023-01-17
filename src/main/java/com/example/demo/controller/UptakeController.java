@@ -218,13 +218,13 @@ public class UptakeController {
 
 //        String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
 
-        deleteAllFilesFolder("//192.168.7.100/ifa/МРП");
+        deleteAllFilesFolder("");
         try(
-                FileOutputStream fos=new FileOutputStream("//192.168.7.100/ifa/МРП/HIVList.txt", true);
-                FileOutputStream fosB=new FileOutputStream("//192.168.7.100/ifa/МРП/HBsList.txt", true);
-                FileOutputStream fosC=new FileOutputStream("//192.168.7.100/ifa/МРП/HCVList.txt", true);
-                FileOutputStream fosSyf=new FileOutputStream("//192.168.7.100/ifa/МРП/SyfList.txt", true);
-                FileOutputStream fosMRP=new FileOutputStream("//192.168.7.100/ifa/МРП/MRPList" +
+                FileOutputStream fos=new FileOutputStream("", true);
+                FileOutputStream fosB=new FileOutputStream("", true);
+                FileOutputStream fosC=new FileOutputStream("", true);
+                FileOutputStream fosSyf=new FileOutputStream("", true);
+                FileOutputStream fosMRP=new FileOutputStream("" +
 //                        ""+date+"" +
                         ".txt", true);
                 ) {
@@ -278,10 +278,10 @@ public class UptakeController {
 
         deleteAllFilesFolder("//192.168.7.100/ifa/подтверждающие");
         try(
-                FileOutputStream fosB=new FileOutputStream("//192.168.7.100/ifa/подтверждающие/HBsProofList.txt", true);
-                FileOutputStream fosC=new FileOutputStream("//192.168.7.100/ifa/подтверждающие/HCVProofList.txt", true);
-                FileOutputStream fos=new FileOutputStream("//192.168.7.100/ifa/подтверждающие/HIVProofList.txt", true);
-                FileOutputStream fosSyf=new FileOutputStream("//192.168.7.100/ifa/подтверждающие/SyfProofList.txt", true);
+                FileOutputStream fosB=new FileOutputStream("", true);
+                FileOutputStream fosC=new FileOutputStream("", true);
+                FileOutputStream fos=new FileOutputStream("", true);
+                FileOutputStream fosSyf=new FileOutputStream("", true);
         ) {
 
 
@@ -477,7 +477,7 @@ public class UptakeController {
     }
     @PostMapping(value = "/exportresult")
     public String exportResult() {
-        File expres = new File("C:/Users/ifa.NNPLUS/IFA.jar");
+        File expres = new File("C:/Users/IFA.jar");
         DesktopApi.open(expres);
         return "redirect:/chek";
     }
