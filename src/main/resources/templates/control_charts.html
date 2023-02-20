@@ -9,6 +9,7 @@
         <!-- JavaScript Bundle with Popper.js -->
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/js/bootstrap.bundle.min.js" integrity="sha384-BOsAfwzjNJHrJ8cZidOg56tcQWfp6y72vEJ8xQ9w6Quywb24iOsW913URv1IS4GD" crossorigin="anonymous"></script>
         <script src="https://cdn.plot.ly/plotly-2.17.1.min.js"></script>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
         <link rel="icon" href="spring_leaf_plant_nature_leaves_garden_environment_icon_133309.ico">
     <title>Title</title>
 </head>
@@ -31,8 +32,48 @@
             <div class="col-md-10" style="background-color: #F8F8FF">
                 <div class="container-fluid">
 
-                    <button onclick="getChartMap()">Chart</button>
-                    <div id="tester" style="width:600px;height:250px;"></div>
+<!--                    <button onclick="getMeasureValues()">Chart</button>-->
+<!--                    <button onclick="getChartByTestandLot('/'+$( '#lotFrom' ).val(),'','','tester1')">LotChart</button>-->
+<!--                    <button onclick="saveLotTester()">Lot</button>-->
+<!--                    <button onclick="saveTest()">Test</button>-->
+<!--                    <button onclick="saveMeasure()">Measure</button>-->
+<!--                    <button onclick="getChartByTestandLot('/'+$( '#lotFrom' ).val(),'/'+$( '#testFrom' ).val(),'', 'tester')">LotTestChart</button>-->
+<!--                    <button onclick="getChartByTestandLot('','','/date/'+$( '#dateFrom' ).val().replace(' ','T'), 'tester')">DateFromTestChart</button>-->
+<!--                    <button onclick="getChartByTestandLot('','','/date/'+$( '#dateFrom' ).val().replace(' ','T')+' '+$( '#dateTo' ).val().replace(' ','T')-->
+<!--                    , 'tester')">DateFromToChart</button>-->
+<!--                    <button onclick="getElByname('date')">GetByName</button>-->
+                    <div id="dateFromDiv">
+                        <input id="dateFrom" name="date" type="text" list="dateData1" onchange="getChartByDateFrom('getmeasurelistsByDateFrom/'+document.getElementById('dateFrom').value.replace(' ','T')+' '+
+                            document.getElementById('dateTo').value.replace(' ','T'), '','','/date/'+$( '#dateFrom' ).val().replace(' ','T'), 'tester')">
+                        <input id="dateTo" name="date" type="text" list="dateData1"
+                               onchange="getChartByDateFrom('getmeasurelistsByDateFrom/'+document.getElementById('dateFrom').value.replace(' ','T')+' '+
+                            document.getElementById('dateTo').value.replace(' ','T'), '','','/date/'+$( '#dateFrom' ).val().replace(' ','T')
+                            +' '+$( '#dateTo' ).val().replace(' ','T'), 'tester')">
+                        <input id="lotFrom" type="text" list="lotData"
+                               onchange="getChartByDateFrom('getmeasurelistsByLot/'+document.getElementById('lotFrom').value,'/'+$( '#lotFrom' ).val(),'','', 'tester')">
+                        <input id="testFrom" type="text" list="testData"
+                               onchange="getChartByTestandLot('/'+$( '#lotFrom' ).val(),'/'+$( '#testFrom' ).val(),'', 'tester1')">
+                    </div>
+<!--                    <button onclick="getDataLists('getmeasurelistsByLot/'+document.getElementById('lotFrom').value)">FilterByLot</button>-->
+<!--                    <button onclick="getDataLists('getmeasurelistsByTest/'+document.getElementById('testFrom').value)">FilterByTest</button>-->
+<!--                    <button onclick="getDataLists('getmeasurelistsByDateFrom/'+document.getElementById('dateFrom').value.replace(' ','T')+' '+-->
+<!--                            document.getElementById('dateTo').value.replace(' ','T'))">MeasureByDate</button>-->
+                    <button onclick="clearLists()">Clear</button>
+
+<!--                    <input id="lotFrom" type="text" list="lotData">-->
+<!--                    <input id="testFrom" type="text" >-->
+                    <div id="tester" style="width:90%;height:90%;"></div>
+                    <div id="tester1" style="width:90%;height:90%;"></div>
+
+
+                    <div id="dalists">
+                        <datalist id="dateData1">
+                            <option>2023-02-02T11:50:55</option>
+                        </datalist>
+                        <datalist id="dateData2"></datalist>
+                        <datalist id="lotData"></datalist>
+                        <datalist id="testData"></datalist>
+                    </div>
 
 
 <!--            <table class="table table-striped" border="1">-->
@@ -55,20 +96,11 @@
         </div>
     </div>
 Hello!
-    <script>
-        function getPlot(m_1, m_2) {
-            TESTER = document.getElementById('tester');
-            Plotly.newPlot( TESTER, [{
-                x: m_1,
-                y: m_2 }], {
-                margin: { t: 0 } } );
-        }
-
-    </script>
 <script>
-    l_1 = []
-    l_2 = []
+
     function getChartMap () {
+        l_1 = []
+        l_2 = []
 
     fetch('/chart/getChart')
     .then((res)=>res.json()
@@ -86,14 +118,194 @@ Hello!
                 l_1.push(k)
                 l_2.push(map.get(k))
             }
+           data=[ {
+                x: l_1,
+                y: l_2,
+                mode: 'lines+markers',
+                type: 'scatter'
+                },
+               {
+                   x: l_1,
+                   y: [4,4,4,4],
+                   mode: 'lines+markers',
+                   type: 'scatter'
+               }]
+            layout = {
+                title: 'Scroll and Zoom',
+                showlegend: false
+            };
+            TESTER = document.getElementById('tester');
+            Plotly.newPlot( TESTER, data ,layout, {
+                margin: { t: 50, l:50}, }, {scrollZoom: true}, {editable: true});
     }))
         // console.log(l_1)
         // console.log(l_2)
-        getPlot(l_1,l_2)
+        // getPlot(l_1,l_2)
 
 
 
     }
+    function saveLotTester() {
+        fetch("/qc/savelot",
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                method: 'POST',
+                body: JSON.stringify({
+                    "name": "BioTest",
+                    "lot": "111111",
+                    "dateFrom": "2022-07-16 00:00",
+                    "dateTo": "2023-07-16 00:00",
+                    "number": "4",
+                    "measureList": null,
+                    "inuse": "1"
+                })
+
+            }
+        )
+    }
+    function saveTest() {
+        fetch("/qc/savetest",
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                method: 'POST',
+                body: JSON.stringify({
+                    "name": "IFAKit",
+                    "lot": "222222",
+                    "dateFrom": "2022-07-16 00:00",
+                    "dateTo": "2023-07-16 00:00",
+                    "number": "4",
+                    "measureList": null,
+                    "inuse": "1"
+                })
+
+            }
+        )
+    }
+    let count=0
+    function saveMeasure() {
+        fetch("/qc/savemeasure",
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                method: 'POST',
+                body: JSON.stringify({
+                    "measure_type": "TORCH",
+                    "measure_date":  $( '#dateFrom' ).val().replaceAll('T',' '),
+                    "measure_val": "0,275"
+                })
+
+            }
+        )
+    }
+
 </script>
+<script>
+    function getMeasureValues() {
+        dates=[]
+        values=[]
+        m_1=new Map()
+        fetch("/qc/getLotMeasure/BioTest")
+        .then( (res)=>res.json()
+            .then((data)=>{
+                data.forEach(function (measure) {
+                    dates.push(measure.measure_date)
+                    values.push(parseFloat(measure.measure_val.replaceAll(',','.')))
+                    // m_1.put(measure.getTest, measure.measure_date)
+                    console.log(measure)
+                    // console.log(measure.measure_val)
+
+                })
+               let mean = values.reduce((acc, curr)=>{
+                        return acc + curr
+                    }, 0) / values.length;
+                let mean_range = values.map((k)=>{
+                    return mean
+                })
+                let s_1=values.map((k)=>{
+                    return mean-dev(values)
+                })
+                // console.log(m_1)
+
+
+                    // console.log('dates'+' '+dates)
+                    data=[ {
+                        x: dates,
+                        y: values,
+                        mode: 'lines+markers',
+                        type: 'scatter'
+                    },
+                        {
+                            x: dates,
+                            y: mean_range,
+                            mode: 'lines+markers',
+                            type: 'scatter'
+                        },
+                        {
+                            x: dates,
+                            y: s_1,
+                            mode: 'lines+markers',
+                            type: 'scatter'
+                        }
+                    ]
+                    layout = {
+                        title: 'Scroll and Zoom',
+                        showlegend: false
+                    };
+                    TESTER = document.getElementById('tester');
+                    Plotly.newPlot( TESTER, data ,layout, {
+                        margin: { t: 50, l:50}, }, {scrollZoom: true}, {editable: true});
+            }
+            )
+
+        )
+
+
+    }
+
+</script>
+    <script>
+        // Javascript program to calculate the standard deviation of an array
+        function dev(arr){
+            // Creating the mean with Array.reduce
+            let mean = arr.reduce((acc, curr)=>{
+                return acc + curr
+            }, 0) / arr.length;
+
+            // Assigning (value - mean) ^ 2 to every array item
+            arr = arr.map((k)=>{
+                return (k - mean) ** 2
+            })
+
+            // Calculating the sum of updated array
+            let sum = arr.reduce((acc, curr)=> acc + curr, 0);
+
+            // Calculating the variance
+            let variance = sum / arr.length
+
+            // Returning the standard deviation
+            return Math.sqrt(sum / arr.length)
+        }
+
+        // console.log(dev([1, 2, 3, 4, 5]))
+        // console.log(dev([23, 4, 6, 457, 65, 7, 45, 8]))
+    </script>
+
+
+<script src="dataLists.js"></script>
+<script src="plotting.js"></script>
+    <script>
+        setTimeout(
+            getChartByDateFrom('getmeasurelistsByDateFrom/2023-02-04T00:00', '/111111', '/444444', 'tester1'), 2000
+        )
+    </script>
+
 </body>
 </html>
