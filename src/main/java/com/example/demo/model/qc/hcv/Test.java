@@ -1,8 +1,6 @@
-package com.example.demo.model.qc;
+package com.example.demo.model.qc.hcv;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -50,6 +48,7 @@ public class Test {
         this.measureList = measureList;
         this.inuse = inuse;
     }
+
 
     public Long getId() {
         return id;

@@ -162,6 +162,15 @@ public class UpdateController implements UniversalController {
                     analysis.setAtHCV("");
                 }
                 }
+                if (o[5].equals("1502")) {
+                    analysis.setSyphIFA("1");
+                    if (o[2] != null) {
+                        analysis.setResultSyphIfa(o[2]);
+                    }
+                } else { if (analysis.getSyphIFA() == null) {
+                    analysis.setSyphIFA("");
+                }
+                }
 //                if (o[5].toString().equals("Эстрадиол(Е2)")) {
 //                    analysis.setSyphIFA("1");
 //                    if (o[2] != null) {
@@ -171,7 +180,7 @@ public class UpdateController implements UniversalController {
 //                    analysis.setSyphIFA("");
 //                }
 
-                analysis.setSyphIFA("");
+//                analysis.setSyphIFA("");
                 analysis.setRubM("");
                 analysis.setRubG("");
                 analysis.setClamG("");

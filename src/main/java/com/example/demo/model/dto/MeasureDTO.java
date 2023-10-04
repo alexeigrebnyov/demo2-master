@@ -1,15 +1,5 @@
 package com.example.demo.model.dto;
 
-import com.example.demo.model.qc.Lot;
-import com.example.demo.model.qc.Test;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.Objects;
-
 
 public class MeasureDTO {
 

@@ -9,7 +9,7 @@
     <!-- JavaScript Bundle with Popper.js -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/js/bootstrap.bundle.min.js" integrity="sha384-BOsAfwzjNJHrJ8cZidOg56tcQWfp6y72vEJ8xQ9w6Quywb24iOsW913URv1IS4GD" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<!--    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>-->
 <!--    <meta http-equiv="refresh" content="1">-->
     <title>Title</title>
 </head>
@@ -48,13 +48,16 @@
                             <div class="float-right">
 <!--                                <form name="writeForm" id="writeForm" th:action="@{/writeTorch}" method="post">-->
                                     <input type="submit" class="btn btn-primary" onclick="fetch('/vich/writeGormonu')" value="Сформировать списки">
-                                    <input type="submit" id="but" class="btn btn-success" onclick="exp()" value="Выдать результаты" >
+                                    <input type="submit" id="but" class="btn btn-success" onclick="getByDate()" value="Выдать результаты" >
                                     <input type="submit" class="btn btn-danger" onclick="clearList()" value="Очистить список">
+<!--                                    <input type="submit" class="btn btn-danger" onclick="getByDate()" value="test">-->
 <!--                                    <input type="hidden" name="redir" id="redirTorch" value="redirect:/codeTorch">-->
 <!--                                </form>-->
 
                             </div>
+
                     </div>
+                    <div id="warn"></div>
                             <div class="bg-white">
                                 <br>
                             </div>
@@ -292,6 +295,7 @@
         // b.disabled = false;
     }
 </script>
+<script src="warner.js"></script>
 
 <!--<script>-->
 <!--    $( function() {-->

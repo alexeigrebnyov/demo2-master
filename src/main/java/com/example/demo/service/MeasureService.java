@@ -1,10 +1,11 @@
 package com.example.demo.service;
 
 import com.example.demo.dao.MeasureRepo;
-import com.example.demo.model.qc.Measure;
+import com.example.demo.model.qc.hcv.Measure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -28,5 +29,7 @@ public class MeasureService {
     public List<Measure> findByLot_Lot(String lot_Lot) {
         return measureRepo.findByLot_Lot(lot_Lot);
     }
+    public LocalDate findByMeasure_date() {
+        return measureRepo.findMaxId();}
 
 }

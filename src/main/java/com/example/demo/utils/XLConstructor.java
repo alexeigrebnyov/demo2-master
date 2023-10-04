@@ -472,6 +472,8 @@ public class XLConstructor {
             columnresult.setAttribute("data", "17-OH");
             Element columnHCV = doc.createElement("column");
             columnHCV.setAttribute("data", "CA-125");
+            Element columnADN = doc.createElement("column");
+            columnADN.setAttribute("data", "Андростендион");
 //            Element columnIfa = doc.createElement("column");
 //            columnIfa.setAttribute("data", "E2");
             e_root.appendChild(columnId);
@@ -481,6 +483,7 @@ public class XLConstructor {
             e_root.appendChild(columnnumber);
             e_root.appendChild(columnresult);
             e_root.appendChild(columnHCV);
+            e_root.appendChild(columnADN);
 //            e_root.appendChild(columnIfa);
             doc.appendChild(e_root);
 //			if (posts.size() == 0)
@@ -525,11 +528,11 @@ public class XLConstructor {
                     hcv.setAttribute("value", String.valueOf(hcvIterator));
                     hcvIterator++;
                 } else {hcv.setAttribute("value", "");}
-//                Element ifa = doc.createElement("data");
-//                if (hiv.getSyphIFA().equals("1")) {
-//                    ifa.setAttribute("value", String.valueOf(ifaIterator));
-//                    ifaIterator++;
-//                } else {ifa.setAttribute("value", "");}
+                Element ifa = doc.createElement("data");
+                if (hiv.getSyphIFA().equals("1")) {
+                    ifa.setAttribute("value", String.valueOf(ifaIterator));
+                    ifaIterator++;
+                } else {ifa.setAttribute("value", "");}
 
 
                 item.appendChild(id);
@@ -539,7 +542,7 @@ public class XLConstructor {
                 item.appendChild(number);
                 item.appendChild(result);
                 item.appendChild(hcv);
-//                item.appendChild(ifa);
+                item.appendChild(ifa);
 
                 e_root.appendChild (item);
 

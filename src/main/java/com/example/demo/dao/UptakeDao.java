@@ -1,6 +1,7 @@
 package com.example.demo.dao;
 
 import com.example.demo.model.*;
+import com.example.demo.model.qc.achtv.AchtvCounter;
 import org.springframework.stereotype.Repository;
 import org.w3c.dom.Document;
 
@@ -35,5 +36,5 @@ public interface UptakeDao {
     Integer createMotconsu(String PatientsId, String medecinsId);
     void createPatdirec (String PatientsId,String medecinsId, String MOTCONSU_ID, int exam, int serv, int patdirec );
     List<CommonAnalysis> getCommonByStatus();
-
+    List<AchtvCounter> getACHTVData(String end) throws SQLException;
 }

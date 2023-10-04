@@ -639,7 +639,7 @@ public class UptakeController {
                 FileOutputStream fosB=new FileOutputStream("//192.168.7.100/ifa/Гормоны/AMGList.txt", true);
                 FileOutputStream fosC=new FileOutputStream("//192.168.7.100/ifa/Гормоны/17List.txt", true);
                 FileOutputStream fos=new FileOutputStream("//192.168.7.100/ifa/Гормоны/CAList.txt", true);
-//                FileOutputStream fosSyf=new FileOutputStream("//192.168.7.100/ifa/Гормоны/E2List.txt", true);
+                FileOutputStream fosSyf=new FileOutputStream("//192.168.7.100/ifa/Гормоны/ANDList.txt", true);
         ) {
 
 
@@ -659,10 +659,10 @@ public class UptakeController {
                     String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
                     fos.write(item.getBytes());
                 }
-//                if (data.getSyphIFA().equals("1")) {
-//                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
-//                    fosSyf.write(item.getBytes());
-//                }
+                if (data.getSyphIFA().equals("1")) {
+                    String item =getUserName()+" "+  data.getEmc()+" "+data.getSex()+ System.lineSeparator();
+                    fosSyf.write(item.getBytes());
+                }
 
             }
         } catch (Exception ex) {
@@ -676,6 +676,7 @@ public class UptakeController {
         deleteAllFilesFolder("//192.168.7.100/ifa/17-OH");
         deleteAllFilesFolder("//192.168.7.100/ifa/CA125");
         deleteAllFilesFolder("//192.168.7.100/ifa/AMG");
+        deleteAllFilesFolder("//192.168.7.100/ifa/AND");
 
 
 
@@ -1204,5 +1205,10 @@ public class UptakeController {
     public static void deleteAllFilesFolder(String path) {
         for (File myFile : Objects.requireNonNull(new File(path).listFiles()))
             if (myFile.isFile()) myFile.delete();
+    }
+
+    @GetMapping("/achtv")
+    public String getACHTV() {
+        return "achtv_charts";
     }
 }

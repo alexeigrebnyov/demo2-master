@@ -5,7 +5,33 @@ let testData = document.getElementById("testData");
 let dateFromDiv = document.getElementById("dateFromDiv");
 
 
-function getDataLists(dateFrom='') {
+function getInUse() {
+    let  uses=document.getElementById("inuser")
+    let opt = ''
+    fetch("/qc/getInUse")
+        .then((res)=>res.json())
+        .then((data)=>{
+            uses.innerHTML=` 
+                         <input type="hidden" id="lotseries" value="${data[0]}">
+                         <input type="hidden" id="testseries" value="${data[1]}">
+                         <input type="hidden" id="lotname" value="${data[2]}">
+                         <input type="hidden" id="testname" value="${data[3]}">
+                        `
+            // console.log('data '+data)
+            // console.log('usesVals '+uses)
+
+            }
+        )
+}
+getInUse()
+function hideSlicer() {
+    $( '#slicelabel' ).hide()
+    $( '#inputSlice' ).hide()
+
+}
+hideSlicer()
+// console.log('uses '+uses)
+function getDataLists(dateFrom='', skip=true) {
     // let dateDatafrom = document.getElementById("dateData1");
     // let dateDatato = document.getElementById("dateData2");
     // let lotData = document.getElementById("lotData");
@@ -28,35 +54,53 @@ function getDataLists(dateFrom='') {
             });
             setIterator=set.values()
             testIterator=testSet.values()
-            for (let i = 0; i < set.size; i++) {
-                lot+=`<option value="`+setIterator.next().value+`"`+ `></option>`
 
-            }
-            for (let i = 0; i < testSet.size; i++) {
-                test+=`<option value="`+testIterator.next().value+`"`+ `></option>`
+                for (let i = 0; i < set.size; i++) {
+                    lot += `<option value="` + setIterator.next().value + `"` + `></option>`
 
-            }
+                }
+
+
+                for (let i = 0; i < testSet.size; i++) {
+                    test += `<option value="` + testIterator.next().value + `"` + `></option>`
+
+                }
+
 
             // dateFromDiv.innerHTML=`<input id="dateFrom" type="text" list="dateData1">`
        dateDatafrom.innerHTML=dateDatafromval
-       lotData.innerHTML=lot
+            if (skip) {
+                lotData.innerHTML = lot
+            }
         testData.innerHTML=test
         })
-}function test(test=''){
-    console.log(test)
+    // if (document.getElementById("lotFrom").value===''||document.getElementById("testFrom").value==='') {
+    //     document.getElementById("lotFrom").value=document.getElementById("lotseries").value
+    //     document.getElementById("testFrom").value=document.getElementById("testseries").value
+    //
+    // }
 }
-function getElByname(name='') {
+// function test(test=''){
+//     console.log(test)
+// }
+// function getElByname(name='') {
+//
+//     console.log(document.getElementsByName(name)[0].value)
+//
 
-    console.log(document.getElementsByName(name)[0].value)
+function getChartByTestandLot(lot='', test='', date='', div_name='', slice=0){
+    title=document.getElementById("testname").value+' серия'+test.replaceAll('/','')
+    if (div_name==='tester') {
+        $( '#slicelabel' ).show()
+        $( '#inputSlice' ).show()
+        title=''
+    }
 
-}
-function getChartByTestandLot(lot='', test='', date='', div_name=''){
     dataList=[]
-
     plot_labels=[]
     controls=[]
-    lot=lot==='/'?'/test':lot
-    fetch('/qc/getmeasuremap'+lot+test+date)
+    lot1=lot==='/'?'/test':lot
+    fetch('/qc/getmeasuremap'+lot1+test+date)
         .then((res)=> res.json()
             .then((data)=>{
                 // console.log(data)
@@ -83,7 +127,7 @@ function getChartByTestandLot(lot='', test='', date='', div_name=''){
 
                     // console.log('k: '+k)
                     l_measure=mapTest.get(k)
-                    console.log('l_measure: '+l_measure)
+                    // console.log('l_measure: '+l_measure)
                     plot_labels.push(k)
                     for (let z=0; z<l_measure.length; z++) {
                         f= parseFloat(l_measure.at(z).measure_val.replaceAll(',','.'))
@@ -112,31 +156,32 @@ function getChartByTestandLot(lot='', test='', date='', div_name=''){
                     )
 
                 }
-                total_val= total_val.slice(-0)
-                total_dates= total_dates.slice(-0)
-                let mean = total_val.reduce((acc, curr)=>{
+                // total_val= total_val
+                sliced=total_val.slice(slice)
+                // total_dates= total_dates
+                let mean = sliced.reduce((acc, curr)=>{
                     return acc + curr
-                }, 0) / total_val.length;
+                }, 0) / sliced.length;
                 let mean_range = total_val.map((k)=>{
                     return mean
                 })
                 let s_1=total_val.map((k)=>{
-                    return mean-dev(total_val)
+                    return mean-dev(sliced)
                 })
                 let s_2=total_val.map((k)=>{
-                    return mean-2*dev(total_val)
+                    return mean-2*dev(sliced)
                 })
                 let s_3=total_val.map((k)=>{
-                    return mean-3*dev(total_val)
+                    return mean-3*dev(sliced)
                 })
                 let spl1=total_val.map((k)=>{
-                    return mean+dev(total_val)
+                    return mean+dev(sliced)
                 })
                 let spl2=total_val.map((k)=>{
-                    return mean+2*dev(total_val)
+                    return mean+2*dev(sliced)
                 })
                 let spl3=total_val.map((k)=>{
-                    return mean+3*dev(total_val)
+                    return mean+3*dev(sliced)
                 })
                 dataList.push(
                     {
@@ -219,9 +264,11 @@ function getChartByTestandLot(lot='', test='', date='', div_name=''){
 
 
                 )
-                test_info= test.length>0?' AT/AgHIV'+test:''
+                // dataList.push(getControlNumbers(lot, test, date))
+                // test_info= test.length>0?' AT/AgHIV'+test:''
                 layout = {
-                    title: 'ОП BioTest серия '+lot+test_info,
+                    title: document.getElementById("lotname").value+' серия '+lot.replaceAll('/','')+' '
+                        +title,
                     legend: {
                         y: 1.0,
                         x: 0.0,
@@ -236,31 +283,75 @@ function getChartByTestandLot(lot='', test='', date='', div_name=''){
                 TESTER = document.getElementById(div_name);
                 Plotly.newPlot( TESTER, dataList ,layout, {
                     margin: { t: 50, l:50}, }, {scrollZoom: true}, {editable: true});
-                console.log(dataList)
+                // console.log(dataList)
                 // console.log(iteratorTestkey)
             }))
 
 }
-function getChartByDateFrom(dateF='', lot='', test='', date='', div_name='') {
-    getDataLists(dateF)
-    getChartByTestandLot(lot, test, date, div_name)
+function getChartByDateFrom(dateF='', skip=true, lot='', test='', date='', div_name='', slice=0) {
+    getDataLists(dateF, skip)
+    getChartByTestandLot(lot, test, date, div_name, slice)
 }
 function clearLists () {
-    dateFromDiv.innerHTML=` <input id="dateFrom" name="date" type="text" list="dateData1" onchange="getChartByDateFrom('getmeasurelistsByDateFrom/'+document.getElementById('dateFrom').value.replace(' ','T')+' '+
-                            document.getElementById('dateTo').value.replace(' ','T'), '','','/date/'+$( '#dateFrom' ).val().replace(' ','T'), 'tester')">
-                        <input id="dateTo" name="date" type="text" list="dateData1"
+    dateFromDiv.innerHTML=`<div class="d-flex flex-row">
+                        <div style="font-weight: bold; border-bottom:solid darkblue; border-top: solid darkblue; border-left:solid darkblue;  background-color: bisque" >Фильтр</div>
+                            <div class="p-2" style="border-bottom:solid darkblue; border-top: solid darkblue; background-color: bisque ">
+                        <label for="dateFrom" style="vertical-align: top; float: top; display: block; font-weight: bold" >Дата с:</label>
+                        <input  id="dateFrom" name="date" type="text" list="dateData1" size="10" onchange="getChartByDateFrom('getmeasurelistsByDateFrom/'+document.getElementById('dateFrom').value.replace(' ','T')+' '+
+                            document.getElementById('dateTo').value.replace(' ','T'), true, '','','/date/'+$( '#dateFrom' ).val().replace(' ','T'), 'tester', document.getElementById('inputSlice').value)">
+                            </div>
+                            <div class="p-2"style="border-bottom:solid darkblue; border-top: solid darkblue; background-color: bisque ">
+                        <label for="dateTo" style="vertical-align: top; float: top; display: block;font-weight: bold">Дата по:</label>
+                        <input id="dateTo" name="date" type="text" list="dateData1" size="10"
                                onchange="getChartByDateFrom('getmeasurelistsByDateFrom/'+document.getElementById('dateFrom').value.replace(' ','T')+' '+
-                            document.getElementById('dateTo').value.replace(' ','T'), '','','/date/'+$( '#dateFrom' ).val().replace(' ','T')
-                            +' '+$( '#dateTo' ).val().replace(' ','T'), 'tester')">
-                        <input id="lotFrom" type="text" list="lotData"
-                               onchange="getChartByDateFrom('getmeasurelistsByLot/'+document.getElementById('lotFrom').value,'/'+$( '#lotFrom' ).val(),'','', 'tester')">
-                        <input id="testFrom" type="text" list="testData"
-                               onchange="getChartByTestandLot('/'+$( '#lotFrom' ).val(),'/'+$( '#testFrom' ).val(),'', 'tester1')">`
-    getDataLists('getmeasurelistsByDateFrom/2023-02-04T00:00')
+                            document.getElementById('dateTo').value.replace(' ','T'), true, '','','/date/'+$( '#dateFrom' ).val().replace(' ','T')
+                            +' '+$( '#dateTo' ).val().replace(' ','T'), 'tester', document.getElementById('inputSlice').value)">
+                            </div>
+                        <div class="p-2" style="border-bottom:solid darkblue; border-top: solid darkblue; background-color: bisque ">
+                        <label for="lotFrom" style="vertical-align: top; float: top; display: block;font-weight: bold">Контроль:</label>
+                        <input id="lotFrom" type="text" list="lotData" size="10"
+                               onchange="getChartByDateFrom('getmeasurelistsByLot/'+document.getElementById('lotFrom').value, false,'/'+$( '#lotFrom' ).val(),'','', 'tester', document.getElementById('inputSlice').value)">
+                        </div>
+                        <div class="p-2" style="border-bottom:solid darkblue; border-top: solid darkblue; border-right:solid darkblue; background-color: bisque ">
+                        <label for="testFrom" style="vertical-align: top; float: top; display: block;font-weight: bold">Тест:</label>
+                        <input id="testFrom" type="text" list="testData" size="10"
+                               onchange="getChartByTestandLot('/'+$( '#lotFrom' ).val(),'/'+$( '#testFrom' ).val(),'', 'tester1', document.getElementById('inputSlice1').value)">
+                        </div>
+                            <div class="p-2 col-md-5"></div>
+                            <div style="font-weight: bold; border-bottom:solid firebrick; border-top: solid firebrick; border-left:solid firebrick; background-color:palegoldenrod">Добавить</div>
+                            <div class="p-2" style="border-bottom:solid firebrick; border-top: solid firebrick; background-color:palegoldenrod">
+                                <input type="submit" data-target="#jsModalBox_lot" class="btn btn-primary" data-toggle="modal" name="modalopen" id="modalopen" value="Контроль"
+                                       onclick="initLotModalValues('getLotinuse','savelot', 'getTopLot/')">
+                            </div>
+                            <div class="p-2" style="border-bottom:solid firebrick; border-top: solid firebrick; background-color:palegoldenrod">
+                                <input type="submit" data-target="#jsModalBox_lot" class="btn btn-success" data-toggle="modal" name="modalopen" id="modaltestopen" value="Тест"
+                                       onclick="initLotModalValues('getTestinuse', 'savetest', 'getTopTest/')">
+                            </div>
+
+                            <div id="addData" class="p-2 col-md-3" style="border-bottom:solid firebrick; border-top: solid firebrick; border-right:solid firebrick; background-color:palegoldenrod">
+                                <button class="btn btn-info" onclick="addData()">Данные</button>
+                            </div>
+
+                        </div>`
+    // getDataLists('getmeasurelistsByDateFrom/2023-02-04T00:00')
+    getChartByDateFrom('getmeasurelistsByDateFrom/2021-08-04T00:00', true,'/'+document.getElementById("lotseries").value,
+        '/'+document.getElementById("testseries").value, '','tester1',0)
 }
 function getFirst() {
-    setTimeout(
-    getChartByDateFrom('getmeasurelistsByDateFrom/2023-02-04T00:00', '/111111', '/444444', 'tester1'), 500
-    )
+
+    getChartByDateFrom('getmeasurelistsByDateFrom/2021-08-04T00:00', true,'/'+document.getElementById("lotseries").value,
+        '/'+document.getElementById("testseries").value, '','tester1', 0)
 }
-getFirst()
+
+function addData() {
+    fetch("/qc/saveLoadedMeasures").then()
+    getInUse()
+    setTimeout(
+    getFirst, 1000)
+}
+
+
+
+
+setTimeout(
+    getFirst, 1000)

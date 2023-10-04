@@ -1,0 +1,124 @@
+package com.example.demo.model.qc.syph;
+
+import com.example.demo.model.qc.hiv.HIVAgLot;
+import com.example.demo.model.qc.hiv.HIVAgTest;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.Objects;
+
+@Entity
+@Table(name = "syphmeasure", uniqueConstraints = {@UniqueConstraint(columnNames = {"id"})})
+public class SyphMeasure {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column
+    private String measure_type;
+
+    @Column
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime measure_date;
+    @Column
+    private String measure_val;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "syphlot_fk")
+    @JsonBackReference(value = "measure-lot")
+    private SyphLot lot;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "syphtest_fk")
+    @JsonBackReference(value = "measure-test")
+    private SyphTest test;
+
+    public SyphMeasure() {
+    }
+
+    public SyphMeasure(Long id, String measure_type, LocalDateTime measure_date, String measure_val, SyphLot lot, SyphTest test) {
+        this.id = id;
+        this.measure_type = measure_type;
+        this.measure_date = measure_date;
+        this.measure_val = measure_val;
+        this.lot = lot;
+        this.test = test;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getMeasure_type() {
+        return measure_type;
+    }
+
+    public void setMeasure_type(String measure_type) {
+        this.measure_type = measure_type;
+    }
+
+    public LocalDateTime getMeasure_date() {
+        return measure_date;
+    }
+
+    public void setMeasure_date(LocalDateTime measure_date) {
+        this.measure_date = measure_date;
+    }
+
+    public String getMeasure_val() {
+        return measure_val;
+    }
+
+    public void setMeasure_val(String measure_val) {
+        this.measure_val = measure_val;
+    }
+
+    public SyphLot getLot() {
+        return lot;
+    }
+
+    public void setLot(SyphLot lot) {
+        this.lot = lot;
+    }
+
+    public SyphTest getTest() {
+        return test;
+    }
+
+    public void setTest(SyphTest test) {
+        this.test = test;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SyphMeasure measure = (SyphMeasure) o;
+        return getId().equals(measure.getId()) && Objects.equals(getMeasure_type(), measure.getMeasure_type()) && Objects.equals(getMeasure_date(), measure.getMeasure_date());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getMeasure_type(), getMeasure_date());
+    }
+
+    @Override
+    public String toString() {
+        return "SyphMeasure{" +
+                "id=" + id +
+                ", measure_type='" + measure_type + '\'' +
+                ", measure_date=" + measure_date +
+                ", measure_val='" + measure_val + '\'' +
+                ", lot=" + lot.getLot() +
+                ", test=" + test.getLot() +
+                '}';
+    }
+}
+

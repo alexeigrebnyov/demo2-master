@@ -1,14 +1,11 @@
-package com.example.demo.model.qc;
+package com.example.demo.model.qc.hcv;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,6 +27,9 @@ public class Lot {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime dateTo;
+
+
+
     @Column
     private int number;
     @OneToMany(fetch = FetchType.LAZY, mappedBy ="lot", cascade = CascadeType.DETACH)

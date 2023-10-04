@@ -1,4 +1,4 @@
-package com.example.demo.model.qc;
+package com.example.demo.model.qc.hiv;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -9,8 +9,8 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "measure", uniqueConstraints = {@UniqueConstraint(columnNames = {"id"})})
-public class Measure {
+@Table(name = "hivAgmeasure", uniqueConstraints = {@UniqueConstraint(columnNames = {"id"})})
+public class HIVAgMeasure {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,19 +25,19 @@ public class Measure {
     private String measure_val;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lot_fk")
+    @JoinColumn(name = "hivAglot_fk")
     @JsonBackReference(value = "measure-lot")
-    private Lot lot;
+    private HIVAgLot lot;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "test_fk")
+    @JoinColumn(name = "hivAgtest_fk")
     @JsonBackReference(value = "measure-test")
-    private Test test;
+    private HIVAgTest test;
 
-    public Measure() {
+    public HIVAgMeasure() {
     }
 
-    public Measure(Long id, String measure_type, LocalDateTime measure_date, String measure_val, Lot lot, Test test) {
+    public HIVAgMeasure(Long id, String measure_type, LocalDateTime measure_date, String measure_val, HIVAgLot lot, HIVAgTest test) {
         this.id = id;
         this.measure_type = measure_type;
         this.measure_date = measure_date;
@@ -78,19 +78,19 @@ public class Measure {
         this.measure_val = measure_val;
     }
 
-    public Lot getLot() {
+    public HIVAgLot getLot() {
         return lot;
     }
 
-    public void setLot(Lot lot) {
+    public void setLot(HIVAgLot lot) {
         this.lot = lot;
     }
 
-    public Test getTest() {
+    public HIVAgTest getTest() {
         return test;
     }
 
-    public void setTest(Test test) {
+    public void setTest(HIVAgTest test) {
         this.test = test;
     }
 
@@ -98,7 +98,7 @@ public class Measure {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Measure measure = (Measure) o;
+        HIVAgMeasure measure = (HIVAgMeasure) o;
         return getId().equals(measure.getId()) && Objects.equals(getMeasure_type(), measure.getMeasure_type()) && Objects.equals(getMeasure_date(), measure.getMeasure_date());
     }
 
@@ -109,7 +109,7 @@ public class Measure {
 
     @Override
     public String toString() {
-        return "Measure{" +
+        return "HIVAbMeasure{" +
                 "id=" + id +
                 ", measure_type='" + measure_type + '\'' +
                 ", measure_date=" + measure_date +

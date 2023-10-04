@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:form="http://www.w3.org/1999/html">
+    <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <html lang="en">
+    <!-- CSS only -->
+    <head>
+    <meta charset="UTF-8">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/css/bootstrap.min.css" integrity="sha384-DhY6onE6f3zzKbjUPRc2hOzGAdEf4/Dz+WJwBvEYL/lkkIsI3ihufq9hk9K4lVoK" crossorigin="anonymous">
+        <!-- JavaScript Bundle with Popper.js -->
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/js/bootstrap.bundle.min.js" integrity="sha384-BOsAfwzjNJHrJ8cZidOg56tcQWfp6y72vEJ8xQ9w6Quywb24iOsW913URv1IS4GD" crossorigin="anonymous"></script>
+        <script src="https://cdn.plot.ly/plotly-2.17.1.min.js"></script>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+    <title>Title</title>
+</head>
+<body>
+    <div>
+        <div class="row" style="height: 100vh">
+
+            <div class="col-md-12" style="background-color: #F8F8FF">
+                <div class="container-fluid">
+                    <div id="inuser" >
+
+                    </div>
+
+                    <div class="fixed-top" style="margin-left: 3%; ">
+                        <nav class="nav col-md-11" style="background-color: cadetblue">
+                            <a class="nav-link" style="color: ghostwhite" th:href="@{/charts}">ВЛК ГЕП С</a>
+                            <a class="nav-link" style="color: ghostwhite"  th:href="@{/hbscharts}">ВЛК HBbAg</a>
+                            <a class="nav-link active" style="color: ghostwhite"  href="#">ВЛК ВИЧ-АТ</a>
+                            <a class="nav-link" style="color: ghostwhite"  th:href="@{/hivagcharts}">ВЛК ВИЧ-АГ</a>
+                            <a class="nav-link" style="color: ghostwhite"  th:href="@{/syphcharts}">ВЛК Сифилис</a>
+                            <a class="nav-link" style="color: ghostwhite"  th:href="@{/}">Главная</a>
+                            <a class="nav-link" style="color: ghostwhite" th:href="@{/logout}"> Выйти </a>
+                        </nav>
+
+
+                        <div id="dateFromDiv" class="form-group col-md-6" >
+                        <div class="d-flex flex-row">
+                        <div style="font-weight: bold; border-bottom:solid darkblue; border-top: solid darkblue; border-left:solid darkblue;  background-color: bisque" >Фильтр</div>
+                            <div class="p-2" style="border-bottom:solid darkblue; border-top: solid darkblue; background-color: bisque ">
+                        <label for="dateFrom" style="vertical-align: top; float: top; display: block; font-weight: bold" >Дата с:</label>
+                        <input  id="dateFrom" name="date" type="text" list="dateData1" size="10" onchange="getChartByDateFrom('getmeasurelistsByDateFrom/'+document.getElementById('dateFrom').value.replace(' ','T')+' '+
+                            document.getElementById('dateTo').value.replace(' ','T'), true, '','','/date/'+$( '#dateFrom' ).val().replace(' ','T'), 'tester', document.getElementById('inputSlice').value)">
+                            </div>
+                            <div class="p-2"style="border-bottom:solid darkblue; border-top: solid darkblue; background-color: bisque ">
+                        <label for="dateTo" style="vertical-align: top; float: top; display: block;font-weight: bold">Дата по:</label>
+                        <input id="dateTo" name="date" type="text" list="dateData1" size="10"
+                               onchange="getChartByDateFrom('getmeasurelistsByDateFrom/'+document.getElementById('dateFrom').value.replace(' ','T')+' '+
+                            document.getElementById('dateTo').value.replace(' ','T'), true, '','','/date/'+$( '#dateFrom' ).val().replace(' ','T')
+                            +' '+$( '#dateTo' ).val().replace(' ','T'), 'tester', document.getElementById('inputSlice').value)">
+                            </div>
+                        <div class="p-2" style="border-bottom:solid darkblue; border-top: solid darkblue; background-color: bisque ">
+                        <label for="lotFrom" style="vertical-align: top; float: top; display: block;font-weight: bold">Контроль:</label>
+                        <input id="lotFrom" type="text" list="lotData" size="10"
+                               onchange="getChartByDateFrom('getmeasurelistsByLot/'+document.getElementById('lotFrom').value, false,'/'+$( '#lotFrom' ).val(),'','', 'tester', document.getElementById('inputSlice').value)">
+                        </div>
+                        <div class="p-2" style="border-bottom:solid darkblue; border-top: solid darkblue; border-right:solid darkblue; background-color: bisque ">
+                        <label for="testFrom" style="vertical-align: top; float: top; display: block;font-weight: bold">Тест:</label>
+                        <input id="testFrom" type="text" list="testData" size="10"
+                               onchange="getChartByTestandLot('/'+$( '#lotFrom' ).val(),'/'+$( '#testFrom' ).val(),'', 'tester1', document.getElementById('inputSlice1').value)">
+                        </div>
+                            <div class="p-2 col-md-5"></div>
+                            <div style="font-weight: bold; border-bottom:solid firebrick; border-top: solid firebrick; border-left:solid firebrick; background-color:palegoldenrod">Добавить</div>
+                            <div class="p-2" style="border-bottom:solid firebrick; border-top: solid firebrick; background-color:palegoldenrod">
+                                <input type="submit" data-target="#jsModalBox_lot" class="btn btn-primary" data-toggle="modal" name="modalopen" id="modalopen" value="Контроль"
+                                       onclick="initLotModalValues('getLotinuse','savelot', 'getTopLot/')">
+                            </div>
+                            <div class="p-2" style="border-bottom:solid firebrick; border-top: solid firebrick; background-color:palegoldenrod">
+                                <input type="submit" data-target="#jsModalBox_lot" class="btn btn-success" data-toggle="modal" name="modalopen" id="modaltestopen" value="Тест"
+                                       onclick="initLotModalValues('getTestinuse', 'savetest', 'getTopTest/')">
+                            </div>
+
+                            <div id="addData" class="p-2 col-md-3" style="border-bottom:solid firebrick; border-top: solid firebrick; border-right:solid firebrick; background-color:palegoldenrod">
+                                <button class="btn btn-info"  onclick="addData()">Данные</button>
+                            </div>
+
+                        </div>
+
+                        </div>
+                            <button class="btn btn-danger" style="margin-left: 33%" onclick="clearLists()">Очистить</button>
+<!--                        </div>-->
+                        <br>
+
+
+                    </div>
+
+                    <div id="testerSlice" style=" margin-top: 15%">
+                        <label id="slicelabel"  for="inputSlice" style="font-weight: bold; margin-left: 81%">Контрольные границы</label>
+                        <input type="number"   id="inputSlice" list="sliceData" style="margin-left: 81%; background-color: mistyrose;"
+                        onchange="$( '#lotFrom' ).val()!==''?getChartByTestandLot('/'+$( '#lotFrom' ).val(),'','', 'tester', document.getElementById('inputSlice').value)
+                        :getChartByTestandLot('','','/date/'+$( '#dateFrom' ).val().replace(' ','T')
+                        +' '+$( '#dateTo' ).val().replace(' ','T'), 'tester', document.getElementById('inputSlice').value)">
+                    <div id="tester" style="width:90%;height:90%; margin-left: 3%"></div>
+                    </div>
+
+                    <div>
+                        <label for="inputSlice1" style="font-weight: bold; margin-left: 81%">Контрольные границы</label>
+                        <input type="number" id="inputSlice1" list="sliceData" style="margin-left: 81%; background-color: mistyrose"
+                               onchange="$( '#testFrom' ).val()!==''&&$( '#lotFrom' )!==''?
+                               getChartByTestandLot('/'+$( '#lotFrom' ).val(),'/'+$( '#testFrom' ).val(),'', 'tester1', document.getElementById('inputSlice1').value)
+                                :getChartByTestandLot('/'+$( '#lotseries' ).val(),'/'+$( '#testseries' ).val(),'', 'tester1', document.getElementById('inputSlice1').value)">
+                    <div id="tester1" style="width:90%;height:90%;margin-top: auto; margin-left: 3%"></div>
+                    </div>
+
+
+                    <div id="dalists">
+                        <datalist id="dateData1">
+                            <option>2023-02-02T11:50:55</option>
+                        </datalist>
+                        <datalist id="dateData2"></datalist>
+                        <datalist id="lotData"></datalist>
+                        <datalist id="testData"></datalist>
+                    </div>
+                    <div id="sliceList">
+                        <datalist id="sliceData">
+                            <option value="20"></option>
+                            <option value="-20"></option>
+                        </datalist>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="jsModalBox_lot" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog"  style="font-weight: bold ">
+
+        <div class="modal-dialog flex-content" role="document">
+            <div class="modal-content">
+                <!-- Заголовок модального окна -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Контрольный материал/Тест</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" >×</button>
+                </div>
+                <!-- Основное содержимое модального окна -->
+                <div class="modal-body text-start  font-weight-bold">
+
+                        <div class="form-row justify-content-start">
+
+                            <div class="row " >
+
+                                <div class="form-group col-md-4" id="seriyadiv1"></div>
+                                <!--                            <input type="checkbox" name="nomer1chek" id="nomer1chek">-->
+                                <div class="form-group col-md-4" id="nomerdiv1"></div>
+                            </div>
+
+                            <div class="row" >
+                                <!--                            <input type="checkbox" name="kem1chek" id="kem1chek">-->
+                                <div class="form-group col-md-10" id="kemdiv1"></div>
+                                <!--                            <input type="checkbox" name="kogda1chek" id="kogda1chek">-->
+                                <div class="form-group col-md-4" id="kogdadiv1"></div>
+                            </div>
+                            <div class="row" >
+                                <!--                            <input type="checkbox" name="nom1chek" id="nom1chek">-->
+                                <div class="form-group col-md-4" id="nomdiv1"></div>
+                                <!--                            <input type="checkbox" name="prenom1chek" id="prenom1chek">-->
+                                <div class="form-group col-md-4" id="prenomdiv1"></div>
+                                <!--                            <input type="checkbox" name="patronym1chek" id="patronym1chek">-->
+                            </div>
+                            <div id="saver"></div>
+
+                            <br>
+                        </div>
+
+
+                <!-- Футер модального окна -->
+                <div class="modal-footer">
+
+                    <button type="submit" class="btn btn-primary" onclick="saveLotTester()" data-dismiss="modal">Добавить</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+
+
+
+            </div>
+        </div>
+    </div>
+
+Hello!
+<!--<script>-->
+
+
+
+<!--    function saveTest() {-->
+<!--        fetch("/qc/savetest",-->
+<!--            {-->
+<!--                headers: {-->
+<!--                    'Accept': 'application/json',-->
+<!--                    'Content-Type': 'application/json'-->
+<!--                },-->
+<!--                method: 'POST',-->
+<!--                body: JSON.stringify({-->
+<!--                    "name": "IFAKit",-->
+<!--                    "lot": "222222",-->
+<!--                    "dateFrom": "2022-07-16 00:00",-->
+<!--                    "dateTo": "2023-07-16 00:00",-->
+<!--                    "number": "4",-->
+<!--                    "measureList": null,-->
+<!--                    "inuse": "1"-->
+<!--                })-->
+
+<!--            }-->
+<!--        )-->
+<!--    }-->
+<!--    let count=0-->
+
+<!--</script>-->
+    <script>
+        // Javascript program to calculate the standard deviation of an array
+        function dev(arr){
+            // Creating the mean with Array.reduce
+            let mean = arr.reduce((acc, curr)=>{
+                return acc + curr
+            }, 0) / arr.length;
+
+            // Assigning (value - mean) ^ 2 to every array item
+            arr = arr.map((k)=>{
+                return (k - mean) ** 2
+            })
+
+            // Calculating the sum of updated array
+            let sum = arr.reduce((acc, curr)=> acc + curr, 0);
+
+            // Calculating the variance
+            let variance = sum / arr.length
+
+            // Returning the standard deviation
+            return Math.sqrt(sum / arr.length)
+        }
+
+        // console.log(dev([1, 2, 3, 4, 5]))
+        // console.log(dev([23, 4, 6, 457, 65, 7, 45, 8]))
+    </script>
+
+
+<script src="hivabdataLists.js"></script>
+<script src="hivabmodalWindow.js"></script>
+
+</body>
+</html>

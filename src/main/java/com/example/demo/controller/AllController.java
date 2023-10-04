@@ -22,12 +22,29 @@ public class AllController {
             return  "hello";
     }
     @GetMapping("/charts")
-    public String getCharts(ModelMap modelMap){
+    public String getCharts(){
 //        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 //        modelMap.addAttribute("user", userDetails);
         return  "control_charts";
     }
+    @GetMapping("/hbscharts")
+    public String getHBsCharts(){
+        return  "hbs_ag_charts";
+    }
 
+    @GetMapping("/hivabcharts")
+    public String getHIVAbCharts(){
+        return  "hiv_ab_charts";
+    }
 
+    @GetMapping("/hivagcharts")
+    public String getHIVAgCharts(){
+        return  "hiv_ag_charts";
+    }
+
+    @GetMapping("/syphcharts")
+    public String getSyphCharts(){
+        return  "syph_charts";
+    }
 
 }
