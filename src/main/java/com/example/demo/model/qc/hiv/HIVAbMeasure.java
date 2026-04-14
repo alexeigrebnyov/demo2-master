@@ -1,7 +1,6 @@
 package com.example.demo.model.qc.hiv;
 
-import com.example.demo.model.qc.hbs.HBsAgLot;
-import com.example.demo.model.qc.hbs.HBsAgTest;
+import com.example.demo.model.real.InterMeasure;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -12,7 +11,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "hivAbmeasure", uniqueConstraints = {@UniqueConstraint(columnNames = {"id"})})
-public class HIVAbMeasure {
+public class HIVAbMeasure implements InterMeasure {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,6 +21,7 @@ public class HIVAbMeasure {
     @Column
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+//    @JsonFormat(pattern = "yyyy-MM-ddTHH:mm:ss")
     private LocalDateTime measure_date;
     @Column
     private String measure_val;

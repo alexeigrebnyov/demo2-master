@@ -1,7 +1,6 @@
 package com.example.demo.model.qc.syph;
 
-import com.example.demo.model.qc.hiv.HIVAgLot;
-import com.example.demo.model.qc.hiv.HIVAgTest;
+import com.example.demo.model.real.InterMeasure;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -12,7 +11,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "syphmeasure", uniqueConstraints = {@UniqueConstraint(columnNames = {"id"})})
-public class SyphMeasure {
+public class SyphMeasure implements InterMeasure {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

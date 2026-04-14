@@ -35,6 +35,7 @@ public class Test {
     @Column
     private String inuse;
 
+
     public Test() {
     }
 

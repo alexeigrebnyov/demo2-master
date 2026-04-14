@@ -40,15 +40,12 @@
                         <div style="font-weight: bold; border-bottom:solid darkblue; border-top: solid darkblue; border-left:solid darkblue;  background-color: bisque" >Фильтр</div>
                             <div class="p-2" style="border-bottom:solid darkblue; border-top: solid darkblue; background-color: bisque ">
                         <label for="dateFrom" style="vertical-align: top; float: top; display: block; font-weight: bold" >Дата с:</label>
-                        <input  id="dateFrom" name="date" type="text" list="dateData1" size="10" onchange="getChartByDateFrom('getmeasurelistsByDateFrom/'+document.getElementById('dateFrom').value.replace(' ','T')+' '+
-                            document.getElementById('dateTo').value.replace(' ','T'), true, '','','/date/'+$( '#dateFrom' ).val().replace(' ','T'), 'tester', document.getElementById('inputSlice').value)">
+                        <input  id="dateFrom" name="date" type="date"  size="10" onchange="getChartByDateFrom('getmeasurelistsByDateFrom/', true, '','','/date/', 'tester', document.getElementById('inputSlice').value)">
                             </div>
                             <div class="p-2"style="border-bottom:solid darkblue; border-top: solid darkblue; background-color: bisque ">
                         <label for="dateTo" style="vertical-align: top; float: top; display: block;font-weight: bold">Дата по:</label>
-                        <input id="dateTo" name="date" type="text" list="dateData1" size="10"
-                               onchange="getChartByDateFrom('getmeasurelistsByDateFrom/'+document.getElementById('dateFrom').value.replace(' ','T')+' '+
-                            document.getElementById('dateTo').value.replace(' ','T'), true, '','','/date/'+$( '#dateFrom' ).val().replace(' ','T')
-                            +' '+$( '#dateTo' ).val().replace(' ','T'), 'tester', document.getElementById('inputSlice').value)">
+                        <input id="dateTo" name="date" type="date"  size="10"
+                               onchange="getChartByDateFrom('getmeasurelistsByDateFrom/', true, '','','/date/', 'tester', document.getElementById('inputSlice').value)">
                             </div>
                         <div class="p-2" style="border-bottom:solid darkblue; border-top: solid darkblue; background-color: bisque ">
                         <label for="lotFrom" style="vertical-align: top; float: top; display: block;font-weight: bold">Контроль:</label>
@@ -88,18 +85,14 @@
                     <div id="testerSlice" style=" margin-top: 15%">
                         <label id="slicelabel"  for="inputSlice" style="font-weight: bold; margin-left: 81%">Контрольные границы</label>
                         <input type="number"   id="inputSlice" list="sliceData" style="margin-left: 81%; background-color: mistyrose;"
-                        onchange="$( '#lotFrom' ).val()!==''?getChartByTestandLot('/'+$( '#lotFrom' ).val(),'','', 'tester', document.getElementById('inputSlice').value)
-                        :getChartByTestandLot('','','/date/'+$( '#dateFrom' ).val().replace(' ','T')
-                        +' '+$( '#dateTo' ).val().replace(' ','T'), 'tester', document.getElementById('inputSlice').value)">
+                        onchange="buildChart(currAllData, this.value, '/'+$( '#lotFrom' ).val(), 'tester'); title=''">
                     <div id="tester" style="width:90%;height:90%; margin-left: 3%"></div>
                     </div>
 
                     <div>
                         <label for="inputSlice1" style="font-weight: bold; margin-left: 81%">Контрольные границы</label>
                         <input type="number" id="inputSlice1" list="sliceData" style="margin-left: 81%; background-color: mistyrose"
-                               onchange="$( '#testFrom' ).val()!==''&&$( '#lotFrom' )!==''?
-                               getChartByTestandLot('/'+$( '#lotFrom' ).val(),'/'+$( '#testFrom' ).val(),'', 'tester1', document.getElementById('inputSlice1').value)
-                                :getChartByTestandLot('/'+$( '#lotseries' ).val(),'/'+$( '#testseries' ).val(),'', 'tester1', document.getElementById('inputSlice1').value)">
+                               onchange="buildChart(currData, this.value, '/'+$( '#testFrom' ).val(), 'tester1')">
                     <div id="tester1" style="width:90%;height:90%;margin-top: auto; margin-left: 3%"></div>
                     </div>
 

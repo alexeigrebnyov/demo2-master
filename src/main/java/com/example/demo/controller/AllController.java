@@ -47,4 +47,40 @@ public class AllController {
         return  "syph_charts";
     }
 
+    @GetMapping("/protcharts")
+    public String getProtCharts(){
+        return  "protein_charts";
+    }
+
+    @GetMapping("/amgcharts")
+    public String getAMGCharts(){
+        return  "amg_charts";
+    }
+
+    @GetMapping("/hydrocharts")
+    public String getHydroCharts(){
+        return  "hydro_charts";
+    }
+
+    @GetMapping("/pTimeByValue")
+    public String getPTimeChartsByValue(){
+        return  "ptTime_by_value";
+    }
+
+    @GetMapping("/fibrByValue")
+    public String getFibrChartsByValue(){
+        return  "fibr_by_value";
+    }
+
+    @GetMapping("/glukozaExpress")
+    public String getGlukozaExpressValue(){return  "glukoza_express";}
+
+    @GetMapping("/testFragmentacii")
+    public String getTestFragmentaciiValue(){return  "test_fragmentacii";}
+
+    @GetMapping("/controli")
+    public String getControli(){
+        return  "controli";
+    }
+
 }

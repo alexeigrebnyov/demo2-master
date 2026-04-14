@@ -8,8 +8,7 @@ import com.example.demo.utils.Constants;
 //import com.example.demo.utils.Test;
 import com.example.demo.utils.XLConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -26,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -377,46 +377,95 @@ public class UptakeController {
 
         deleteAllFilesFolder("//192.168.7.100/ifa/МРП");
         try(
-                FileOutputStream fos=new FileOutputStream("//192.168.7.100/ifa/МРП/HIVList.txt", true);
-                FileOutputStream fosB=new FileOutputStream("//192.168.7.100/ifa/МРП/HBsList.txt", true);
-                FileOutputStream fosC=new FileOutputStream("//192.168.7.100/ifa/МРП/HCVList.txt", true);
-                FileOutputStream fosSyf=new FileOutputStream("//192.168.7.100/ifa/МРП/SyfList.txt", true);
-                FileOutputStream fosMRP=new FileOutputStream("//192.168.7.100/ifa/МРП/MRPList.txt", true);
-                FileOutputStream fosAntiHBs=new FileOutputStream("//192.168.7.100/ifa/МРП/AntiHBsList.txt", true);
+//                FileOutputStream fos=new FileOutputStream("//192.168.7.100/ifa/МРП/HIVList.txt", true);
+//                FileOutputStream fosB=new FileOutputStream("//192.168.7.100/ifa/МРП/HBsList.txt", true);
+//                FileOutputStream fosC=new FileOutputStream("//192.168.7.100/ifa/МРП/HCVList.txt", true);
+//                FileOutputStream fosSyf=new FileOutputStream("//192.168.7.100/ifa/МРП/SyfList.txt", true);
+                FileOutputStream fosMRP=new FileOutputStream("//192.168.7.100/ifa/МРП/MRPList.txt", true)
+//                FileOutputStream fosAntiHBs=new FileOutputStream("//192.168.7.100/ifa/МРП/AntiHBsList.txt", true);
+               ;
         ) {
+            String user = getUserName();
+            LocalDate toDay = LocalDate.now();
+            StringBuilder hivTask = new StringBuilder("{" +
+                            "\"name\": "+ "\"ВИЧ"+toDay
+                    +"\", "+"\"barcodes\": {");
+            int hivCount =1;
+
+        StringBuilder hcvTask = new StringBuilder("{" +
+                "\"name\": "+ "\"ГепС"+toDay
+                +"\", "+"\"barcodes\": {");
+        int hcvCount =1;
+
+        StringBuilder hbsTask = new StringBuilder("{" +
+                "\"name\": "+ "\"ГепВ"+toDay
+                +"\", "+"\"barcodes\": {");
+        int hbsCount =1;
+
+        StringBuilder syphTask = new StringBuilder("{" +
+                "\"name\": "+ "\"Сиф"+toDay
+                +"\", "+"\"barcodes\": {");
+        int syphCount =1;
+
             for (Analysis data:
                     dist) {
                 if (data.getHiv().equals("1")) {
-                    String item =getUserName()+" "+ data.getEmc()+ System.lineSeparator();
-                    fos.write(item.getBytes());
+//                    String item =getUserName()+" "+ data.getEmc()+ System.lineSeparator();
+//                    fos.write(item.getBytes());
 //                    System.out.println(data.getHiv());
+                   StringBuilder sb= hivCount>1?hivTask.append(", \"T").append(hivCount++).append("\": \"").append(user)
+                                               .append(" ").append(data.getEmc()).append("\""):
+                                                hivTask.append("\"T").append(hivCount++).append("\": \"").append(user)
+                                                .append(" ").append(data.getEmc()).append("\"");
                 }
                 if (data.getHbsAg().equals("1")) {
-                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
+//                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
 
-                    fosB.write(item.getBytes());
+//                    fosB.write(item.getBytes());
+                    StringBuilder sb= hbsCount>1?hbsTask.append(", \"T").append(hbsCount++).append("\": \"").append(user)
+                                                .append(" ").append(data.getEmc()).append("\""):
+                                                hbsTask.append("\"T").append(hbsCount++).append("\": \"").append(user)
+                                                .append(" ").append(data.getEmc()).append("\"");
+
                 }
                 if (data.getAtHCV().equals("1")) {
-                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
-                    fosC.write(item.getBytes());
+
+//                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
+//                    fosC.write(item.getBytes());
+                    StringBuilder sb= hcvCount>1? hcvTask.append(", \"T").append(hcvCount++).append("\": \"").append(user)
+                                                .append(" ").append(data.getEmc()).append("\""):
+                                                hcvTask.append("\"T").append(hcvCount++).append("\": \"").append(user)
+                                                .append(" ").append(data.getEmc()).append("\"");
                 }
                 if (data.getSyphIFA().equals("1")) {
-                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
-                    fosSyf.write(item.getBytes());
+
+                    StringBuilder sb= syphCount>1? syphTask.append(", \"T").append(syphCount++).append("\": \"").append(user)
+                                                .append(" ").append(data.getEmc()).append("\""):
+                                                syphTask.append("\"T").append(syphCount++).append("\": \"").append(user)
+                                                .append(" ").append(data.getEmc()).append("\"");
+
+
+//                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
+//                    fosSyf.write(item.getBytes(, ));
                 }
                 if (data.getSyphMRP().equals("1")) {
                     String item =getUserName()+" "+  data.getEmc()+" "+ "-" + System.lineSeparator();
                     fosMRP.write(item.getBytes());
                 }
-                if (data.getRubM().equals("1")) {
-                    String item =getUserName()+" "+  data.getEmc()+" "+ "-" + System.lineSeparator();
-                    fosAntiHBs.write(item.getBytes());
-                }
+//                if (data.getRubM().equals("1")) {
+//                    String item =getUserName()+" "+  data.getEmc()+" "+ "-" + System.lineSeparator();
+//                    fosAntiHBs.write(item.getBytes());
+//                }
 
             }
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-        }
+        hivTask.append("}}");
+        hcvTask.append("}}");
+        hbsTask.append("}}");
+        syphTask.append("}}");
+        sendTask(hivTask.toString());
+        sendTask(hcvTask.toString());
+        sendTask(hbsTask.toString());
+        sendTask(syphTask.toString());
         XLConstructor.writeXML(dist);
         XLConstructor.xml2XLSX("//192.168.7.100/ifa/ifaList/report.xlsx");
         RequestEntity request = RequestEntity
@@ -426,6 +475,13 @@ public class UptakeController {
         deleteAllFilesFolder("//192.168.7.100/ifa/Гепатит С");
         deleteAllFilesFolder("//192.168.7.100/ifa/Гепатит В");
         deleteAllFilesFolder("//192.168.7.100/ifa/ВИЧ");
+
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+
+
+
 
 
 
@@ -577,49 +633,121 @@ public class UptakeController {
 //        String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
 
         deleteAllFilesFolder("//192.168.7.100/ifa/torch");
-        try(
-                FileOutputStream fosB=new FileOutputStream("//192.168.7.100/ifa/torch/RubGList.txt", true);
-                FileOutputStream fosC=new FileOutputStream("//192.168.7.100/ifa/torch/RubMList.txt", true);
-                FileOutputStream fos=new FileOutputStream("//192.168.7.100/ifa/torch/ChlamGList.txt", true);
-                FileOutputStream fosSyf=new FileOutputStream("//192.168.7.100/ifa/torch/ChlamAList.txt", true);
-                FileOutputStream fosHSP=new FileOutputStream("//192.168.7.100/ifa/torch/HSP60List.txt", true);
-        ) {
+        try
+//                (
+//                FileOutputStream fosB=new FileOutputStream("//192.168.7.100/ifa/torch/RubGList.txt", true);
+//                FileOutputStream fosC=new FileOutputStream("//192.168.7.100/ifa/torch/RubMList.txt", true);
+//                FileOutputStream fos=new FileOutputStream("//192.168.7.100/ifa/torch/ChlamGList.txt", true);
+//                FileOutputStream fosSyf=new FileOutputStream("//192.168.7.100/ifa/torch/ChlamAList.txt", true);
+//                FileOutputStream fosHSP=new FileOutputStream("//192.168.7.100/ifa/torch/HSP60List.txt", true);
+//        )
+        {
+
+            String user = getUserName();
+            LocalDate toDay = LocalDate.now();
+            StringBuilder rubGTask = new StringBuilder("{" +
+                    "\"name\": "+ "\"RubG"+toDay
+                    +"\", "+"\"barcodes\": {");
+            int rubGCount =1;
+
+            StringBuilder rubMTask = new StringBuilder("{" +
+                    "\"name\": "+ "\"rubM"+toDay
+                    +"\", "+"\"barcodes\": {");
+            int rubMCount =1;
+
+            StringBuilder clamGTask = new StringBuilder("{" +
+                    "\"name\": "+ "\"ClamG"+toDay
+                    +"\", "+"\"barcodes\": {");
+            int clamGCount =1;
+
+            StringBuilder clamATask = new StringBuilder("{" +
+                    "\"name\": "+ "\"clamA"+toDay
+                    +"\", "+"\"barcodes\": {");
+            int clamACount =1;
+
+            StringBuilder hspTask = new StringBuilder("{" +
+                    "\"name\": "+ "\"hsp"+toDay
+                    +"\", "+"\"barcodes\": {");
+            int hspCount =1;
 
 
             for (Analysis data:
                     dist) {
                 if (data.getRubG().equals("1")) {
-                    String item =getUserName()+" "+ data.getEmc()+ System.lineSeparator();
-                    fosB.write(item.getBytes());
+//                    String item =getUserName()+" "+ data.getEmc()+ System.lineSeparator();
+//                    fosB.write(item.getBytes());
 //                    System.out.println(data.getHiv());
+                    StringBuilder sb= rubGCount>1?rubGTask.append(", \"T").append(rubGCount++).append("\": \"").append(user)
+                                                .append(" ").append(data.getEmc()).append("\""):
+                                                rubGTask.append("\"T").append(rubGCount++).append("\": \"").append(user)
+                                                .append(" ").append(data.getEmc()).append("\"");
+
                 }
                 if (data.getRubM().equals("1")) {
-                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
 
-                    fosC.write(item.getBytes());
+
+//                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
+//
+//                    fosC.write(item.getBytes());
+                    StringBuilder sb= rubMCount>1?rubMTask.append(", \"T").append(rubMCount++).append("\": \"").append(user)
+                                                .append(" ").append(data.getEmc()).append("\""):
+                                                rubMTask.append("\"T").append(rubMCount++).append("\": \"").append(user)
+                                                .append(" ").append(data.getEmc()).append("\"");
+
+
                 }
                 if (data.getClamG().equals("1")) {
-                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
-                    fos.write(item.getBytes());
+//                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
+//                    fos.write(item.getBytes());
+
+                    StringBuilder sb= clamGCount>1? clamGTask.append(", \"T").append(clamGCount++).append("\": \"").append(user)
+                                                    .append(" ").append(data.getEmc()).append("\""):
+                                                    clamGTask.append("\"T").append(clamGCount++).append("\": \"").append(user)
+                                                    .append(" ").append(data.getEmc()).append("\"");
+
                 }
                 if (data.getClamA().equals("1")) {
-                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
-                    fosSyf.write(item.getBytes());
+//                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
+//                    fosSyf.write(item.getBytes());
+
+                    StringBuilder sb= clamACount>1? clamATask.append(", \"T").append(clamACount++).append("\": \"").append(user)
+                                                    .append(" ").append(data.getEmc()).append("\""):
+                                                    clamATask.append("\"T").append(clamACount++).append("\": \"").append(user)
+                                                    .append(" ").append(data.getEmc()).append("\"");
+
                 }
                 if (data.getHSP60().equals("1")) {
-                    String item =getUserName()+" "+  data.getEmc()+" "+  System.lineSeparator();
-                    fosHSP.write(item.getBytes());
+//                    String item =getUserName()+" "+  data.getEmc()+" "+  System.lineSeparator();
+//                    fosHSP.write(item.getBytes());
+
+                    StringBuilder sb= hspCount>1? hspTask.append(", \"T").append(hspCount++).append("\": \"").append(user)
+                                                .append(" ").append(data.getEmc()).append("\""):
+                                                hspTask.append("\"T").append(hspCount++).append("\": \"").append(user)
+                                                .append(" ").append(data.getEmc()).append("\"");
+
                 }
 
             }
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-        }
+
+        rubMTask.append("}}");
+        rubGTask.append("}}");
+        clamATask.append("}}");
+        clamGTask.append("}}");
+        hspTask.append("}}");
+        sendTask(rubMTask.toString());
+        sendTask(rubGTask.toString());
+        sendTask(clamATask.toString());
+        sendTask(clamGTask.toString());
+        sendTask(hspTask.toString());
         XLConstructor.writeTORCHXML(dist);
         XLConstructor.xml2XLSX("//192.168.7.100/ifa/ifaList/TorchReport.xlsx");
         RequestEntity request = RequestEntity
                 .get("http://"+Constants.SERVERENDPOINT+"/update/openTorch").build();
         ResponseEntity<String> response = template.exchange(request, String.class);
+
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
 
 
 
@@ -635,36 +763,69 @@ public class UptakeController {
 //        String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
 
         deleteAllFilesFolder("//192.168.7.100/ifa/Гормоны");
-        try(
-                FileOutputStream fosB=new FileOutputStream("//192.168.7.100/ifa/Гормоны/AMGList.txt", true);
-                FileOutputStream fosC=new FileOutputStream("//192.168.7.100/ifa/Гормоны/17List.txt", true);
-                FileOutputStream fos=new FileOutputStream("//192.168.7.100/ifa/Гормоны/CAList.txt", true);
-                FileOutputStream fosSyf=new FileOutputStream("//192.168.7.100/ifa/Гормоны/ANDList.txt", true);
-        ) {
+        try
+//                (
+//                FileOutputStream fosB=new FileOutputStream("//192.168.7.100/ifa/Гормоны/AMGList.txt", true); HIV
+//                FileOutputStream fosC=new FileOutputStream("//192.168.7.100/ifa/Гормоны/17List.txt", true); HBS
+//                FileOutputStream fos=new FileOutputStream("//192.168.7.100/ifa/Гормоны/CAList.txt", true);
+//                FileOutputStream fosSyf=new FileOutputStream("//192.168.7.100/ifa/Гормоны/ANDList.txt", true);
+//        )
+        {
+
+            String user = getUserName();
+            LocalDate toDay = LocalDate.now();
+            StringBuilder aMGTask = new StringBuilder("{" +
+                    "\"name\": "+ "\"AMG"+toDay
+                    +"\", "+"\"barcodes\": {");
+            int aMGCount =1;
+
+            StringBuilder androTask = new StringBuilder("{" +
+                    "\"name\": "+ "\"17OH"+toDay
+                    +"\", "+"\"barcodes\": {");
+            int androCount =1;
+
+
 
 
             for (Analysis data:
                     dist) {
                 if (data.getHiv().equals("1")) {
-                    String item =getUserName()+" "+ data.getEmc()+ System.lineSeparator();
-                    fosB.write(item.getBytes());
+//                    String item =getUserName()+" "+ data.getEmc()+ System.lineSeparator();
+//                    fosB.write(item.getBytes());
 //                    System.out.println(data.getHiv());
+
+                    StringBuilder sb= aMGCount>1?aMGTask.append(", \"T").append(aMGCount++).append("\": \"").append(user)
+                            .append(" ").append(data.getEmc()).append("\""):
+                            aMGTask.append("\"T").append(aMGCount++).append("\": \"").append(user)
+                                    .append(" ").append(data.getEmc()).append("\"");
                 }
                 if (data.getHbsAg().equals("1")) {
-                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
+//                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
+//
+//                    fosC.write(item.getBytes());
+                    StringBuilder sb= androCount>1?androTask.append(", \"T").append(androCount++).append("\": \"").append(user)
+                            .append(" ").append(data.getEmc()).append("\""):
+                            androTask.append("\"T").append(androCount++).append("\": \"").append(user)
+                                    .append(" ").append(data.getEmc()).append("\"");
 
-                    fosC.write(item.getBytes());
                 }
-                if (data.getAtHCV().equals("1")) {
-                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
-                    fos.write(item.getBytes());
-                }
-                if (data.getSyphIFA().equals("1")) {
-                    String item =getUserName()+" "+  data.getEmc()+" "+data.getSex()+ System.lineSeparator();
-                    fosSyf.write(item.getBytes());
-                }
+//                if (data.getAtHCV().equals("1")) {
+//                    String item =getUserName()+" "+  data.getEmc()+ System.lineSeparator();
+//                    fos.write(item.getBytes());
+//                }
+//                if (data.getSyphIFA().equals("1")) {
+//                    String item =getUserName()+" "+  data.getEmc()+" "+data.getSex()+ System.lineSeparator();
+//                    fosSyf.write(item.getBytes());
+//                }
 
             }
+
+            aMGTask.append("}}");
+            androTask.append("}}");
+            sendTask(aMGTask.toString());
+            sendTask(androTask.toString());
+
+
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
@@ -1210,5 +1371,15 @@ public class UptakeController {
     @GetMapping("/achtv")
     public String getACHTV() {
         return "achtv_charts";
+    }
+
+    private String sendTask(String payload) {
+        RestTemplate template = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> requestentity= new HttpEntity<>(payload, headers);
+        ResponseEntity<String> response = template.postForEntity("http://192.168.30.104:80/api/v2/worksheets",
+                requestentity, String.class);
+        return response.getBody();
     }
 }

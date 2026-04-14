@@ -2,6 +2,8 @@ package com.example.demo.dao;
 
 import com.example.demo.config.Database;
 import com.example.demo.model.*;
+import com.example.demo.model.qc.CounterByValue;
+import com.example.demo.model.qc.GlukozaExpress;
 import com.example.demo.model.qc.achtv.AchtvCounter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -120,10 +122,10 @@ public class UptakeDaoImpl implements UptakeDao {
                     " LEFT OUTER JOIN VIEW_GRPPRM VIEW_GRPPRM WITH(NOLOCK)  ON DS_PARAMS.DS_PARAMS_ID = VIEW_GRPPRM.DS_PARAMS_ID \n" +
                     "--DS_PARAMS \n" +
                     "where \n" +
-                    "VIEW_GRPPRM.GRPPRM_ID =" + GRPPRM + " --рабочий журнал по вичам\n" +
+                    " VIEW_GRPPRM.GRPPRM_ID =" + GRPPRM + " --рабочий журнал по вичам\n" +
                     done +
-                    "and  PATDIREC.BIO_CODE= -- код забора\n" + bio_code +
-                    "and PATDIREC.DATE_BIO >dateadd(day,-PL_EXAM.VAL_PERIOD,getdate()) --\n" +
+                    " and  PATDIREC.BIO_CODE= -- код забора\n" + bio_code +
+                    " and PATDIREC.DATE_BIO >dateadd(day,-PL_EXAM.VAL_PERIOD,getdate()) --\n" +
                     " --and FM_DEP.MAIN_ORG_ID=20 --филиал выполнивший забор биоматериала");
 
             while (resultSet.next()) {
@@ -1225,4 +1227,215 @@ public class UptakeDaoImpl implements UptakeDao {
             return achtvCounters;
         }
     }
+
+    public List<CounterByValue> getACHTVDataByValue(String end, String dataFrom, String dataTo) throws SQLException {
+        List<CounterByValue> achtvCountersByValue = new ArrayList<>();
+
+        try (Connection connection = database.getConnection()) {
+            Statement st = connection.createStatement();
+
+            ResultSet rst = st.executeQuery("declare @table table (datecons date, valueParam float, analizator varchar(25))\n" +
+                    "declare\n" +
+                    "    @dateFrom date='"+dataFrom+"',\n" +
+                    "    @dateTo date='"+dataTo+"',\n" +
+                    "    @data_cons datetime,\n" +
+                    "    @valueACHTV float=0,\n" +
+                    "    @analizator varchar(25)\n" +
+                    " declare DATA cursor local for\n" +
+                    " select DS_RESTESTS.RES_DATE, (convert(float,replace(DS_RESTESTS.VAL,',','.'))) REZULTAT, DS_PRMGRP.LABEL\n" +
+                    " from DS_RESTESTS with(nolock) left join LAB_METHODS with (nolock) on DS_RESTESTS.LAB_METHODS_ID = LAB_METHODS.LAB_METHODS_ID\n" +
+                    "      left join DS_PARAMS with (nolock) on DS_PARAMS.DS_PARAMS_ID = LAB_METHODS.DS_PARAMS_ID\n" +
+                    "      left join DS_PRMGRP with (nolock) on DS_PARAMS.DS_PRMGRP_ID = DS_PRMGRP.DS_PRMGRP_ID\n" +
+                    " where DS_RESTESTS.LAB_METHODS_ID in (51,2942) and DS_RESTESTS.RES_DATE>=@dateFrom and DS_RESTESTS.RES_DATE<=@dateTo and DS_RESTESTS.STATE=0 and DS_RESTESTS.RES_TYPE='D'\n" +
+                    " order by (convert(varchar(max), DS_RESTESTS.RES_DATE,104))\n" +
+                    "\n" +
+                    " open DATA\n" +
+                    " fetch next from DATA into\n" +
+                    "    @data_cons, @valueACHTV, @analizator\n" +
+                    " while @@fetch_status=0\n" +
+                    "    begin\n" +
+                    "        insert into @table values (@data_cons, @valueACHTV, @analizator)\n" +
+                    "    fetch next from DATA into\n" +
+                    "    @data_cons, @valueACHTV, @analizator\n" +
+                    "    end\n" +
+                    " close DATA\n" +
+                    " deallocate DATA \n" +
+                    end);
+            while (rst.next()) {
+                achtvCountersByValue.add(new CounterByValue(rst.getDate(1).toLocalDate(), rst.getFloat(2), rst.getString(3)));
+            }
+            return achtvCountersByValue;
+        }
+    }
+    public List<CounterByValue> getPtimeDataByValue(String end, String dataFrom, String dataTo) throws SQLException {
+        List<CounterByValue> pTimeCounterByValues = new ArrayList<>();
+
+        try (Connection connection = database.getConnection()) {
+            Statement st = connection.createStatement();
+
+            ResultSet rst = st.executeQuery("declare @table table (datecons date, valueParam float, analizator varchar(25))\n" +
+                    "declare\n" +
+                    "    @dateFrom date='"+dataFrom+"',\n" +
+                    "    @dateTo date='"+dataTo+"',\n" +
+                    "    @data_cons datetime,\n" +
+                    "    @valuePTime float=0,\n" +
+                    "    @analizator varchar(25)\n" +
+                    " declare DATA cursor local for\n" +
+                    " select DS_RESTESTS.RES_DATE, (convert(float,replace(DS_RESTESTS.VAL,',','.'))) REZULTAT, DS_PRMGRP.LABEL\n" +
+                    " from DS_RESTESTS with(nolock) left join LAB_METHODS with (nolock) on DS_RESTESTS.LAB_METHODS_ID = LAB_METHODS.LAB_METHODS_ID\n" +
+                    "      left join DS_PARAMS with (nolock) on DS_PARAMS.DS_PARAMS_ID = LAB_METHODS.DS_PARAMS_ID\n" +
+                    "      left join DS_PRMGRP with (nolock) on DS_PARAMS.DS_PRMGRP_ID = DS_PRMGRP.DS_PRMGRP_ID\n" +
+                    " where DS_RESTESTS.LAB_METHODS_ID in (41,1640,2936) and DS_RESTESTS.RES_DATE>=@dateFrom and DS_RESTESTS.RES_DATE<=@dateTo and DS_RESTESTS.STATE=0 and DS_RESTESTS.RES_TYPE='D'\n" +
+                    " order by (convert(varchar(max), DS_RESTESTS.RES_DATE,104))\n" +
+                    "\n" +
+                    " open DATA\n" +
+                    " fetch next from DATA into\n" +
+                    "    @data_cons, @valuePTime, @analizator\n" +
+                    " while @@fetch_status=0\n" +
+                    "    begin\n" +
+                    "        insert into @table values (@data_cons, @valuePTime, @analizator)\n" +
+                    "    fetch next from DATA into\n" +
+                    "    @data_cons, @valuePTime, @analizator\n" +
+                    "    end\n" +
+                    " close DATA\n" +
+                    " deallocate DATA \n" +
+                    end);
+            while (rst.next()) {
+                pTimeCounterByValues.add(new CounterByValue(rst.getDate(1).toLocalDate(), rst.getFloat(2), rst.getString(3)));
+            }
+            return pTimeCounterByValues;
+        }
+    }
+    public List<CounterByValue> getFibrDataByValue(String end, String dataFrom, String dataTo) throws SQLException {
+        List<CounterByValue> fibrCountervByValues = new ArrayList<>();
+
+        try (Connection connection = database.getConnection()) {
+            Statement st = connection.createStatement();
+
+            ResultSet rst = st.executeQuery("declare @table table (datecons date, valueParam float, analizator varchar(25))\n" +
+                    "declare\n" +
+                    "    @dateFrom date='"+dataFrom+"',\n" +
+                    "    @dateTo date='"+dataTo+"',\n" +
+                    "    @data_cons datetime,\n" +
+                    "    @valueFibr float=0,\n" +
+                    "    @analizator varchar(25)\n" +
+                    " declare DATA cursor local for\n" +
+                    " select DS_RESTESTS.RES_DATE, (convert(float,replace(DS_RESTESTS.VAL,',','.'))) REZULTAT, DS_PRMGRP.LABEL\n" +
+                    " from DS_RESTESTS with(nolock) left join LAB_METHODS with (nolock) on DS_RESTESTS.LAB_METHODS_ID = LAB_METHODS.LAB_METHODS_ID\n" +
+                    "      left join DS_PARAMS with (nolock) on DS_PARAMS.DS_PARAMS_ID = LAB_METHODS.DS_PARAMS_ID\n" +
+                    "      left join DS_PRMGRP with (nolock) on DS_PARAMS.DS_PRMGRP_ID = DS_PRMGRP.DS_PRMGRP_ID\n" +
+                    " where DS_RESTESTS.LAB_METHODS_ID in (62,816,1643,2946) and DS_RESTESTS.RES_DATE>=@dateFrom and DS_RESTESTS.RES_DATE<=@dateTo and DS_RESTESTS.STATE=0 and DS_RESTESTS.RES_TYPE='D'\n" +
+                    " order by (convert(varchar(max), DS_RESTESTS.RES_DATE,104))\n" +
+                    "\n" +
+                    " open DATA\n" +
+                    " fetch next from DATA into\n" +
+                    "    @data_cons, @valueFibr, @analizator\n" +
+                    " while @@fetch_status=0\n" +
+                    "    begin\n" +
+                    "        insert into @table values (@data_cons, @valueFibr, @analizator)\n" +
+                    "    fetch next from DATA into\n" +
+                    "    @data_cons, @valueFibr, @analizator\n" +
+                    "    end\n" +
+                    " close DATA\n" +
+                    " deallocate DATA \n" +
+                    end);
+            while (rst.next()) {
+                fibrCountervByValues.add(new CounterByValue(rst.getDate(1).toLocalDate(), rst.getFloat(2), rst.getString(3)));
+            }
+            return fibrCountervByValues;
+        }
+    }
+    public List<GlukozaExpress> getGlukozaExpressValue (String end, String dataFrom, String dataTo) throws SQLException {
+        List<GlukozaExpress> glukozaExpressValue = new ArrayList<>();
+
+        try (Connection connection = database.getConnection()) {
+            Statement st = connection.createStatement();
+
+            ResultSet rst = st.executeQuery("declare @table table (datecons date, valueParam float, filial varchar(25), serNumber varchar(25))\n" +
+                    "declare\n" +
+                    "    @dateFrom date='"+dataFrom+"',\n" +
+                    "    @dateTo date='"+dataTo+"',\n" +
+                    "    @data_cons datetime,\n" +
+                    "    @valueGA float=0,\n" +
+                    "    @filial varchar(25),\n"+
+                    "    @serNumber varchar(25)\n" +
+                    " declare DATA cursor local for\n" +
+                    " SELECT distinct (convert(date, DATA_BIOCH_BLOOD_ANALYSIS.DATE_CONSULTATION)) DATE_ZAP, \n" +
+                    " (sum(DATA_BIOCH_BLOOD_ANALYSIS.GLYUKOZA)/count(DATA181_ID)), FM_ORG.CODE, SPR_GLUKOMETR.SER_NUMBER\n" +
+                    "FROM  MOTCONSU MOTCONSU WITH(NOLOCK)  LEFT OUTER JOIN MEDECINS MEDECINS WITH(NOLOCK)  ON MOTCONSU.MEDECINS_CREATE_ID = MEDECINS.MEDECINS_ID\n" +
+                    "JOIN DATA_BIOCH_BLOOD_ANALYSIS DATA_BIOCH_BLOOD_ANALYSIS WITH(NOLOCK)  ON MOTCONSU.MOTCONSU_ID = DATA_BIOCH_BLOOD_ANALYSIS.MOTCONSU_ID\n" +
+                    "LEFT OUTER JOIN SPR_GLUKOMETR SPR_GLUKOMETR WITH(NOLOCK)  ON DATA_BIOCH_BLOOD_ANALYSIS.GLYUKOMETR_SSYLKA = SPR_GLUKOMETR.SPR_GLUKOMETR_ID\n" +
+                    "LEFT OUTER JOIN FM_DEP FM_DEP WITH(NOLOCK)  ON MOTCONSU.FM_DEP_ID = FM_DEP.FM_DEP_ID\n" +
+                    "JOIN FM_ORG FM_ORG WITH(NOLOCK)  ON FM_DEP.MAIN_ORG_ID = FM_ORG.FM_ORG_ID\n" +
+                    "WHERE (MOTCONSU.MODELS_ID in (722,818)) and SPR_GLUKOMETR.SER_NUMBER is not null\n" +
+                    "and convert(date, DATA_BIOCH_BLOOD_ANALYSIS.DATE_CONSULTATION)>=convert(date,@dateFrom)\n" +
+                    "and convert(date, DATA_BIOCH_BLOOD_ANALYSIS.DATE_CONSULTATION)<=convert(date,@dateTo)\n" +
+                    "group by convert(date, DATA_BIOCH_BLOOD_ANALYSIS.DATE_CONSULTATION), FM_ORG.CODE, SPR_GLUKOMETR.SER_NUMBER\n" +
+                    "order by FM_ORG.CODE,convert(date, DATA_BIOCH_BLOOD_ANALYSIS.DATE_CONSULTATION)\n" +
+                    "\n" +
+                    " open DATA\n" +
+                    " fetch next from DATA into\n" +
+                    "    @data_cons, @valueGA, @filial, @serNumber\n" +
+                    " while @@fetch_status=0\n" +
+                    "    begin\n" +
+                    "        insert into @table values (@data_cons, @valueGA, @filial, @serNumber)\n" +
+                    "    fetch next from DATA into\n" +
+                    "    @data_cons, @valueGA, @filial, @serNumber\n" +
+                    "    end\n" +
+                    " close DATA\n" +
+                    " deallocate DATA \n" +
+                    end);
+            while (rst.next()) {
+                glukozaExpressValue.add(new GlukozaExpress(rst.getDate(1).toLocalDate(), rst.getFloat(2), rst.getString(3),rst.getString(4)));
+            }
+            return glukozaExpressValue;
+        }
+    }
+    public List<GlukozaExpress> getTestFragmentaciiValue (String end, String dataFrom, String dataTo) throws SQLException {
+        List<GlukozaExpress> testFragmentaciiValue = new ArrayList<>();
+
+        try (Connection connection = database.getConnection()) {
+            Statement st = connection.createStatement();
+
+            ResultSet rst = st.executeQuery("declare @table table (datecons date, valueParam float, filial varchar(25), FIO_LAB varchar(25))\n" +
+                    "declare\n" +
+                    "    @dateFrom date='"+dataFrom+"',\n" +
+                    "    @dateTo date='"+dataTo+"',\n" +
+                    "    @data_cons datetime,\n" +
+                    "    @valueGA float=0,\n" +
+                    "    @filial varchar(25),\n"+
+                    "    @FIOlab varchar(25)\n" +
+                    " declare DATA cursor local for\n" +
+                    " SELECT convert(date,DATA_W693_SPERM_DIAGNOST.DATE_CONSULTATION) DATA_ZAP,  \n" +
+                    " DATA_W693_SPERM_DIAGNOST.DNK_FRAGMENTACIYA_SPERMY1 PARAM,\n" +
+                    " FM_ORG.CODE FILIAL,\n" +
+                    " [dbo].[fNNPlus_Medecin_FIO](MEDECINS.MEDECINS_ID) FIO_LAB\n" +
+                    " FROM DATA_W693_SPERM_DIAGNOST WITH(NOLOCK) JOIN MOTCONSU WITH(NOLOCK) ON DATA_W693_SPERM_DIAGNOST.MOTCONSU_ID = MOTCONSU.MOTCONSU_ID\n" +
+                    " LEFT OUTER JOIN MEDECINS MEDECINS WITH(NOLOCK)  ON MOTCONSU.MEDECINS_CREATE_ID = MEDECINS.MEDECINS_ID\n" +
+                    " LEFT OUTER JOIN FM_DEP FM_DEP WITH(NOLOCK)  ON MOTCONSU.FM_DEP_ID = FM_DEP.FM_DEP_ID\n" +
+                    " JOIN FM_ORG FM_ORG WITH(NOLOCK)  ON FM_DEP.MAIN_ORG_ID = FM_ORG.FM_ORG_ID\n" +
+                    " WHERE MOTCONSU.MODELS_ID=1198 \n" +
+                    " and convert(date, DATA_W693_SPERM_DIAGNOST.DATE_CONSULTATION)>=convert(date,@dateFrom)\n" +
+                    " and convert(date, DATA_W693_SPERM_DIAGNOST.DATE_CONSULTATION)<=convert(date,@dateTo)\n" +
+                    " and DATA_W693_SPERM_DIAGNOST.DNK_FRAGMENTACIYA_SPERMY1 is not null\n" +
+                    "\n" +
+                    " open DATA\n" +
+                    " fetch next from DATA into\n" +
+                    "    @data_cons, @valueGA, @filial, @FIOlab\n" +
+                    " while @@fetch_status=0\n" +
+                    "    begin\n" +
+                    "        insert into @table values (@data_cons, @valueGA, @filial, @FIOlab)\n" +
+                    "    fetch next from DATA into\n" +
+                    "    @data_cons, @valueGA, @filial, @FIOlab\n" +
+                    "    end\n" +
+                    " close DATA\n" +
+                    " deallocate DATA \n" +
+                    end);
+            while (rst.next()) {
+                testFragmentaciiValue.add(new GlukozaExpress(rst.getDate(1).toLocalDate(), rst.getFloat(2), rst.getString(3),rst.getString(4)));
+            }
+            return testFragmentaciiValue;
+        }
+    }
+
 }

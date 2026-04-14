@@ -1,15 +1,19 @@
 package com.example.demo.utils;
 
 import com.example.demo.model.dto.*;
+import com.example.demo.model.qc.amg.AMGMeasure;
 import com.example.demo.model.qc.hbs.HBsAgMeasure;
 import com.example.demo.model.qc.hcv.Measure;
 import com.example.demo.model.qc.hiv.HIVAbMeasure;
 import com.example.demo.model.qc.hiv.HIVAgMeasure;
+import com.example.demo.model.qc.hydroxyprog.HydroMeasure;
+import com.example.demo.model.qc.hydroxyprog.HydroTest;
 import com.example.demo.model.qc.syph.SyphMeasure;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 
 @Service
 public class MappingUtils {
@@ -68,6 +72,36 @@ public class MappingUtils {
         dto.setMeasure_val(entity.getMeasure_val());
         return dto;
     }
+
+    public static AMGMeasureDTO mapToAMGMeasureDto(AMGMeasure entity){
+        AMGMeasureDTO dto = new AMGMeasureDTO();
+        dto.setId(entity.getId());
+        dto.setLot(entity.getLot().getLot());
+        dto.setTest(entity.getTest().getLot());
+        dto.setMeasure_type(entity.getMeasure_type());
+        dto.setMeasure_date(dateFormat.format(Timestamp.valueOf(entity.getMeasure_date())));
+        dto.setMeasure_val(entity.getMeasure_val());
+        return dto;
+    }
+    public static HydroMeasureDTO mapToHydroMeasureDto(HydroMeasure entity){
+        HydroMeasureDTO dto = new HydroMeasureDTO();
+        try {
+            dto.setId(entity.getId());
+            dto.setLot(entity.getLot().getLot());
+            dto.setTest(entity.getTest().getLot());
+            dto.setMeasure_type(entity.getMeasure_type());
+            dto.setMeasure_date(dateFormat.format(Timestamp.valueOf(entity.getMeasure_date())));
+            dto.setMeasure_val(entity.getMeasure_val());
+        } catch (Exception e) {
+            System.out.println(entity.getId());
+
+
+        }
+
+
+        return dto;
+    }
+
     //из dto в entity
 //    public Measure mapToMeasureEntity(MeasureDTO dto){
 //        Measure entity = new Measure();

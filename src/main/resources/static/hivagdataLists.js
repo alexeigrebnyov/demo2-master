@@ -290,7 +290,6 @@ function getChartByTestandLot(lot='', test='', date='', div_name='', slice=0){
 
 }
 function getChartByDateFrom(dateF='', skip=true, lot='', test='', date='', div_name='', slice=0) {
-    getDataLists(dateF, skip)
     getChartByTestandLot(lot, test, date, div_name, slice)
 }
 function clearLists () {

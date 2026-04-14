@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Analysis;
+import com.example.demo.model.real.QCServiceAgregator;
 import com.example.demo.service.UptakeService;
 import com.example.demo.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +27,15 @@ public class TorchController implements UniversalController{
     List<Analysis> dist = new ArrayList<>();
     RestTemplate template = new RestTemplate();
 
+    private QCServiceAgregator agregator;
+
+
+
     @Autowired
-    public TorchController (UptakeService uptakeService, UptakeController uptakeController) {
+    public TorchController(UptakeService uptakeService, UptakeController uptakeController, QCServiceAgregator agregator) {
         this.uptakeService=uptakeService;
         this.uptakeController=uptakeController;
+        this.agregator = agregator;
     }
 
     @Override
@@ -59,7 +65,11 @@ public class TorchController implements UniversalController{
 
     @Override
     @GetMapping("/run")
-    public void exportResult() throws InterruptedException {
+    public void exportResult() throws InterruptedException, IOException {
+
+        agregator.realRParse();
+        Thread.sleep(3000);
+
         RequestEntity request = RequestEntity
                 .get("http://"+Constants.SERVERENDPOINT+"/update/runTORCH").build();
         ResponseEntity<String> response = template.exchange(request, String.class);

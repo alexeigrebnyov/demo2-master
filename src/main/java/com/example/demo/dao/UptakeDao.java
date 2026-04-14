@@ -1,6 +1,8 @@
 package com.example.demo.dao;
 
 import com.example.demo.model.*;
+import com.example.demo.model.qc.CounterByValue;
+import com.example.demo.model.qc.GlukozaExpress;
 import com.example.demo.model.qc.achtv.AchtvCounter;
 import org.springframework.stereotype.Repository;
 import org.w3c.dom.Document;
@@ -37,4 +39,10 @@ public interface UptakeDao {
     void createPatdirec (String PatientsId,String medecinsId, String MOTCONSU_ID, int exam, int serv, int patdirec );
     List<CommonAnalysis> getCommonByStatus();
     List<AchtvCounter> getACHTVData(String end) throws SQLException;
+
+    List<CounterByValue> getACHTVDataByValue(String end, String dataFrom, String dataTo) throws SQLException;
+    List<CounterByValue> getPtimeDataByValue(String end, String dataFrom, String dataTo) throws SQLException;
+    List<CounterByValue> getFibrDataByValue(String end, String dataFrom, String dataTo) throws SQLException;
+    List<GlukozaExpress> getGlukozaExpressValue(String end, String dataFrom, String dataTo) throws SQLException;
+    List<GlukozaExpress> getTestFragmentaciiValue(String end, String dataFrom, String dataTo) throws SQLException;
 }

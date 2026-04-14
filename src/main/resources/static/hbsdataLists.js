@@ -47,6 +47,7 @@ function getDataLists(dateFrom='', skip=true) {
         .then((data) => {
 
             data.forEach(function (some) {
+                
                 dateDatafromval+=`<option value="${some.measure_date}" ></option>`
                 set.add(some.lot)
                 testSet.add(some.test)

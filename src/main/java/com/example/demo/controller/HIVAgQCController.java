@@ -1,17 +1,17 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.dto.HIVAbMeasureDTO;
 import com.example.demo.model.dto.HIVAgMeasureDTO;
 import com.example.demo.model.json.CriteriaData;
 import com.example.demo.model.qc.hiv.*;
+import com.example.demo.model.real.QCServiceAgregator;
 import com.example.demo.service.*;
-import com.example.demo.utils.InputUtils;
 import com.example.demo.utils.MappingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -25,12 +25,14 @@ public class HIVAgQCController {
   private HIVAgLotService lotService;
   private HIVAgTestService testService;
   private HIVAgMeasureService measureService;
+  private QCServiceAgregator agregator;
 
     @Autowired
-    public HIVAgQCController(HIVAgLotService lotService, HIVAgTestService testService, HIVAgMeasureService measureService) {
+    public HIVAgQCController(HIVAgLotService lotService, HIVAgTestService testService, HIVAgMeasureService measureService, QCServiceAgregator agregator) {
         this.lotService = lotService;
         this.testService = testService;
         this.measureService = measureService;
+        this.agregator = agregator;
     }
     @GetMapping("/getLotinuse")
     public HIVAgLot getByInUse() {
@@ -119,6 +121,9 @@ public class HIVAgQCController {
 
     @GetMapping("/getmeasuremap/date/{date}")
     public Map<String,List<HIVAgMeasure>> getMeasuresByDate(@PathVariable(name = "date") String date) {
+        System.out.println(date);
+
+
         String[] dates =date.split(" ");
         Map<String, List<HIVAgMeasure>> testMap = new HashMap<>();
         measureService.findAll()
@@ -273,42 +278,43 @@ public class HIVAgQCController {
     }
 
     @GetMapping("/saveLoadedMeasures")
-    public void saveLoadedMeasures() {
-        File folderPSAt = new File("\\\\192.168.7.100\\ifa\\ВЛК\\HIVAg");
-        File[] listOfFilesPSAt = folderPSAt.listFiles();
-        for (int i = 0; i < (listOfFilesPSAt != null ? listOfFilesPSAt.length : 0); i++) {
-            if (listOfFilesPSAt[i].isFile()) {
-                Map<String, LocalDateTime> map = InputUtils.analizHIVAg(folderPSAt + "\\" + listOfFilesPSAt[i].getName());
-//                for (String val:map.keySet()) {
-//                    HIVAgMeasure m = new HIVAgMeasure();
-//                    m.setMeasure_date(map.get(val));
-//                    m.setMeasure_val(val);
-//                    m.setMeasure_type("HIVAg");
-//                    saveTest(m);
+    public void saveLoadedMeasures() throws IOException {
+        agregator.realRParse();
+//        File folderPSAt = new File("\\\\192.168.7.100\\ifa\\ВЛК\\HIVAg");
+//        File[] listOfFilesPSAt = folderPSAt.listFiles();
+//        for (int i = 0; i < (listOfFilesPSAt != null ? listOfFilesPSAt.length : 0); i++) {
+//            if (listOfFilesPSAt[i].isFile()) {
+//                Map<String, LocalDateTime> map = InputUtils.analizHIVAg(folderPSAt + "\\" + listOfFilesPSAt[i].getName());
+////                for (String val:map.keySet()) {
+////                    HIVAgMeasure m = new HIVAgMeasure();
+////                    m.setMeasure_date(map.get(val));
+////                    m.setMeasure_val(val);
+////                    m.setMeasure_type("HIVAg");
+////                    saveTest(m);
+////                }
+//
+//                map.entrySet().stream()
+//                        .sorted(Map.Entry.comparingByValue())
+//                        .forEach(mp-> {
+//                            HIVAgMeasure m = new HIVAgMeasure();
+//                            m.setMeasure_date(mp.getValue());
+//                            m.setMeasure_val(mp.getKey());
+//                            m.setMeasure_type("HIVAg");
+//                            saveTest(m);
+//                        });
+//
+//                /*Переносим файл в другую папку*/
+//                File filePSAt = new File(folderPSAt + "\\" + listOfFilesPSAt[i].getName());
+//                // Destination directory
+//                File dirPSAt = new File("\\\\192.168.7.100\\ifa\\Backup\\ВЛК\\HIVAg");
+//                // Move file to new directory
+//                boolean success = filePSAt.renameTo(new File(dirPSAt, filePSAt.getName()
+//                        .replaceAll(".txt","_")+LocalDate.now()+".txt"));
+//                if (!success) {
+//                    System.out.print("not good");
 //                }
-
-                map.entrySet().stream()
-                        .sorted(Map.Entry.comparingByValue())
-                        .forEach(mp-> {
-                            HIVAgMeasure m = new HIVAgMeasure();
-                            m.setMeasure_date(mp.getValue());
-                            m.setMeasure_val(mp.getKey());
-                            m.setMeasure_type("HIVAg");
-                            saveTest(m);
-                        });
-
-                /*Переносим файл в другую папку*/
-                File filePSAt = new File(folderPSAt + "\\" + listOfFilesPSAt[i].getName());
-                // Destination directory
-                File dirPSAt = new File("\\\\192.168.7.100\\ifa\\Backup\\ВЛК\\HIVAg");
-                // Move file to new directory
-                boolean success = filePSAt.renameTo(new File(dirPSAt, filePSAt.getName()
-                        .replaceAll(".txt","_")+LocalDate.now()+".txt"));
-                if (!success) {
-                    System.out.print("not good");
-                }
-            }
-        }
+//            }
+//        }
     }
 
     @GetMapping("/writeTests")

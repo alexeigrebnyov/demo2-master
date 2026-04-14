@@ -47,12 +47,14 @@
                             <div class="float-right" >
 <!--                                <form name="writeForm" id="writeForm" th:action="@{/writeTorch}" method="post">-->
                                     <input type="submit" class="btn btn-primary" onclick="fetch('/update/writeGormonu')" value="Сформировать списки">
-                                    <input type="submit" id="but" class="btn btn-success" onclick="exp()" value="Выдать результаты">
+                                    <input type="submit" id="but" class="btn btn-success" onclick="getAMGByDate()" value="Выдать результаты">
                                     <input type="submit" class="btn btn-danger" onclick="clearList()" value="Очистить список">
 <!--                                    <input type="hidden" name="redir" id="redirTorch" value="redirect:/codeTorch">-->
 <!--                                </form>-->
                             </div>
                         </div>
+
+                    <div id="warn"></div>
 
                             <div class="bg-white">
                                 <br>
@@ -282,5 +284,6 @@
         document.getElementById('but').disabled = true;
     }
 </script>
+<script src="amgwarner.js"></script>
 </body>
 </html>

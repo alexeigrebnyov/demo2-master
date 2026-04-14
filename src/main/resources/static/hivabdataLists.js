@@ -3,6 +3,8 @@ let dateDatato = document.getElementById("dateData2");
 let lotData = document.getElementById("lotData");
 let testData = document.getElementById("testData");
 let dateFromDiv = document.getElementById("dateFromDiv");
+let currData = []
+let currAllData = []
 
 
 function getInUse() {
@@ -37,7 +39,7 @@ function getDataLists(dateFrom='', skip=true) {
     // let lotData = document.getElementById("lotData");
     // let testData = document.getElementById("tesData");
     // let dateFromDiv = document.getElementById("dateFromDiv");
-    let dateDatafromval=''
+    // let dateDatafromval=''
     let lot=''
     let test=''
     let dateDatatoval=''
@@ -47,7 +49,7 @@ function getDataLists(dateFrom='', skip=true) {
         .then((data) => {
 
             data.forEach(function (some) {
-                dateDatafromval+=`<option value="${some.measure_date}" ></option>`
+                // dateDatafromval+=`<option value="${some.measure_date}" ></option>`
                 set.add(some.lot)
                 testSet.add(some.test)
 
@@ -68,7 +70,7 @@ function getDataLists(dateFrom='', skip=true) {
 
 
             // dateFromDiv.innerHTML=`<input id="dateFrom" type="text" list="dateData1">`
-       dateDatafrom.innerHTML=dateDatafromval
+       // dateDatafrom.innerHTML=dateDatafromval
             if (skip) {
                 lotData.innerHTML = lot
             }
@@ -97,216 +99,226 @@ function getChartByTestandLot(lot='', test='', date='', div_name='', slice=0){
         title=''
     }
 
-    dataList=[]
-    plot_labels=[]
-    controls=[]
     lot1=lot==='/'?'/test':lot
     fetch('/hivabqc/getmeasuremap'+lot1+test+date)
         .then((res)=> res.json()
             .then((data)=>{
-                // console.log(data)
-                mapTest=  new Map(Object.entries(data))
-                // mapLot=  new Map(Object.entries(data.at(1)))
-                iteratorTestkey=mapTest.keys()
-                iteratorTestval=mapTest.values()
-                total_val=[]
-                total_dates=[]
-
-                // console.log('iterator: '+iteratorTestkey)
-                // while (!iterator.next().done) {
-                //   k=iterator.next().value
-                //     // console.log(iterator.next().value)
-                //     l_1.push(k)
-                //     l_2.push(map.get(k))
-                // }
-
-                for (let i = 0; i < mapTest.size; i++) {
-                    l_dates=[]
-                    l_vals=[]
-
-                    k=iteratorTestkey.next().value
-
-                    // console.log('k: '+k)
-                    l_measure=mapTest.get(k)
-                    // console.log('l_measure: '+l_measure)
-                    plot_labels.push(k)
-                    for (let z=0; z<l_measure.length; z++) {
-                        f= parseFloat(l_measure.at(z).measure_val.replaceAll(',','.'))
-                        d=l_measure.at(z).measure_date
-                        l_dates.push(d)
-                        l_vals.push(f)
-                        total_val.push(f)
-                        total_dates.push(d)
-                        // console.log('l_measure.at(i): '+l_measure.at(z))
-                    }
-
-                    // total_val.push(l_vals)
-
-
-                    dataList.push(
-                        {
-                            x: l_dates,
-                            y: l_vals,
-                            mode: 'markers',
-                            marker: {
-                                size: 15
-                            },
-                            type: 'scatter',
-                            name: k
-                        }
-                    )
-
-                }
-                // total_val= total_val
-                sliced=total_val.slice(slice)
-                // total_dates= total_dates
-                let mean = sliced.reduce((acc, curr)=>{
-                    return acc + curr
-                }, 0) / sliced.length;
-                let mean_range = total_val.map((k)=>{
-                    return mean
-                })
-                let s_1=total_val.map((k)=>{
-                    return mean-dev(sliced)
-                })
-                let s_2=total_val.map((k)=>{
-                    return mean-2*dev(sliced)
-                })
-                let s_3=total_val.map((k)=>{
-                    return mean-3*dev(sliced)
-                })
-                let spl1=total_val.map((k)=>{
-                    return mean+dev(sliced)
-                })
-                let spl2=total_val.map((k)=>{
-                    return mean+2*dev(sliced)
-                })
-                let spl3=total_val.map((k)=>{
-                    return mean+3*dev(sliced)
-                })
-                dataList.push(
-                    {
-                        x: total_dates,
-                        y: mean_range,
-                        mode: 'lines',
-                        line: {
-                            color: 'rgb(7, 35, 197)',
-                            width: 3
-                        },
-                        type: 'scatter',
-                        name: 'X'
-                    },
-                    {
-                        x: total_dates,
-                        y: s_1,
-                        mode: 'lines',
-                        line: {
-                            color: 'rgb(68, 216, 0)',
-                            width: 3
-                        },
-                        type: 'scatter',
-                        name: '-S'
-                    },
-                    {
-                        x: total_dates,
-                        y: s_2,
-                        mode: 'lines',
-                        line: {
-                            color: 'rgb(227, 212, 6)',
-                            width: 3
-                        },
-                        type: 'scatter',
-                        name: '-2S'
-                    },
-                    {
-                        x: total_dates,
-                        y: s_3,
-                        mode: 'lines',
-                        line: {
-                            color: 'rgb(227, 35, 6)',
-                            width: 3
-                        },
-                        type: 'scatter',
-                        name: '-3S'
-                    },
-                    {
-                        x: total_dates,
-                        y: spl1,
-                        mode: 'lines',
-                        line: {
-                            color: 'rgb(68, 216, 0)',
-                            width: 3
-                        },
-                        type: 'scatter',
-                        name: '+S'
-                    },
-                    {
-                        x: total_dates,
-                        y: spl2,
-                        mode: 'lines',
-                        line: {
-                            color: 'rgb(227, 212, 6)',
-                            width: 3
-                        },
-                        type: 'scatter',
-                        name: '+2S'
-                    },
-                    {
-                        x: total_dates,
-                        y: spl3,
-                        mode: 'lines',
-                        line: {
-                            color: 'rgb(227, 35, 6)',
-                            width: 3
-                        },
-                        type: 'scatter',
-                        name: '+3S'
-                    }
-
-
-                )
-                // dataList.push(getControlNumbers(lot, test, date))
-                // test_info= test.length>0?' AT/AgHIV'+test:''
-                layout = {
-                    title: document.getElementById("lotname").value+' серия '+lot.replaceAll('/','')+' '
-                        +title,
-                    legend: {
-                        y: 1.0,
-                        x: 0.0,
-                        traceorder: 'normal',
-                        font: {size: 16},
-                        orientation: "h"
-
-                        // yref: 'paper'
-                    },
-                    showlegend: false
-                };
-                TESTER = document.getElementById(div_name);
-                Plotly.newPlot( TESTER, dataList ,layout, {
-                    margin: { t: 50, l:50}, }, {scrollZoom: true}, {editable: true});
-                // console.log(dataList)
-                // console.log(iteratorTestkey)
+                if (div_name==='tester1') {
+                    currData = data
+                } else {currAllData=data}
+               setTimeout(()=>{ buildChart(div_name==='tester1'?currData:currAllData, slice, lot, div_name)}, 1000)
             }))
 
 }
+function buildChart(arr=[], slice=0, lot='', div_name='') {
+    dataList=[]
+    plot_labels=[]
+    controls=[]
+
+    // console.log(arr)
+    mapTest=  new Map(Object.entries(arr))
+    // mapLot=  new Map(Object.entries(data.at(1)))
+    iteratorTestkey=mapTest.keys()
+    iteratorTestval=mapTest.values()
+    total_val=[]
+    total_dates=[]
+
+    // console.log('iterator: '+iteratorTestkey)
+    // while (!iterator.next().done) {
+    //   k=iterator.next().value
+    //     // console.log(iterator.next().value)
+    //     l_1.push(k)
+    //     l_2.push(map.get(k))
+    // }
+
+    for (let i = 0; i < mapTest.size; i++) {
+        l_dates=[]
+        l_vals=[]
+
+        k=iteratorTestkey.next().value
+
+        // console.log('k: '+k)
+        l_measure=mapTest.get(k)
+        // console.log('l_measure: '+l_measure)
+        plot_labels.push(k)
+        for (let z=0; z<l_measure.length; z++) {
+            f= parseFloat(l_measure.at(z).measure_val.replaceAll(',','.'))
+            d=l_measure.at(z).measure_date
+            l_dates.push(d)
+            l_vals.push(f)
+            total_val.push(f)
+            total_dates.push(d)
+            // console.log('l_measure.at(i): '+l_measure.at(z))
+        }
+
+        // total_val.push(l_vals)
+
+
+        dataList.push(
+            {
+                x: l_dates,
+                y: l_vals,
+                mode: 'markers',
+                marker: {
+                    size: 15
+                },
+                type: 'scatter',
+                name: k
+            }
+        )
+
+    }
+    // total_val= total_val
+    sliced=total_val.slice(slice)
+    // total_dates= total_dates
+    let mean = sliced.reduce((acc, curr)=>{
+        return acc + curr
+    }, 0) / sliced.length;
+    let mean_range = total_val.map((k)=>{
+        return mean
+    })
+    let s_1=total_val.map((k)=>{
+        return mean-dev(sliced)
+    })
+    let s_2=total_val.map((k)=>{
+        return mean-2*dev(sliced)
+    })
+    let s_3=total_val.map((k)=>{
+        return mean-3*dev(sliced)
+    })
+    let spl1=total_val.map((k)=>{
+        return mean+dev(sliced)
+    })
+    let spl2=total_val.map((k)=>{
+        return mean+2*dev(sliced)
+    })
+    let spl3=total_val.map((k)=>{
+        return mean+3*dev(sliced)
+    })
+    dataList.push(
+        {
+            x: total_dates,
+            y: mean_range,
+            mode: 'lines',
+            line: {
+                color: 'rgb(7, 35, 197)',
+                width: 3
+            },
+            type: 'scatter',
+            name: 'X'
+        },
+        {
+            x: total_dates,
+            y: s_1,
+            mode: 'lines',
+            line: {
+                color: 'rgb(68, 216, 0)',
+                width: 3
+            },
+            type: 'scatter',
+            name: '-S'
+        },
+        {
+            x: total_dates,
+            y: s_2,
+            mode: 'lines',
+            line: {
+                color: 'rgb(227, 212, 6)',
+                width: 3
+            },
+            type: 'scatter',
+            name: '-2S'
+        },
+        {
+            x: total_dates,
+            y: s_3,
+            mode: 'lines',
+            line: {
+                color: 'rgb(227, 35, 6)',
+                width: 3
+            },
+            type: 'scatter',
+            name: '-3S'
+        },
+        {
+            x: total_dates,
+            y: spl1,
+            mode: 'lines',
+            line: {
+                color: 'rgb(68, 216, 0)',
+                width: 3
+            },
+            type: 'scatter',
+            name: '+S'
+        },
+        {
+            x: total_dates,
+            y: spl2,
+            mode: 'lines',
+            line: {
+                color: 'rgb(227, 212, 6)',
+                width: 3
+            },
+            type: 'scatter',
+            name: '+2S'
+        },
+        {
+            x: total_dates,
+            y: spl3,
+            mode: 'lines',
+            line: {
+                color: 'rgb(227, 35, 6)',
+                width: 3
+            },
+            type: 'scatter',
+            name: '+3S'
+        }
+
+
+    )
+    // dataList.push(getControlNumbers(lot, test, date))
+    // test_info= test.length>0?' AT/AgHIV'+test:''
+    layout = {
+        title: document.getElementById("lotname").value+' серия '+lot.replaceAll('/','')+' '
+            +title,
+        legend: {
+            y: 1.0,
+            x: 0.0,
+            traceorder: 'normal',
+            font: {size: 16},
+            orientation: "h"
+
+            // yref: 'paper'
+        },
+        showlegend: false
+    };
+    TESTER = document.getElementById(div_name);
+    Plotly.newPlot( TESTER, dataList ,layout, {
+        margin: { t: 50, l:50}, }, {scrollZoom: true}, {editable: true});
+    // console.log(dataList)
+    // console.log(iteratorTestkey)
+
+}
 function getChartByDateFrom(dateF='', skip=true, lot='', test='', date='', div_name='', slice=0) {
-    getDataLists(dateF, skip)
-    getChartByTestandLot(lot, test, date, div_name, slice)
+    let dF =document.getElementById('dateFrom').value
+    let dT=document.getElementById('dateTo').value
+    dF=(dF!=='')?dF+'T00:00 ':''
+    dT=(dT!=='')?dT+'T00:00':''
+
+    getDataLists(dateF+dF+dT, skip)
+    getChartByTestandLot(lot, test, date!==''?(date+dF+dT):'', div_name, slice)
 }
 function clearLists () {
     dateFromDiv.innerHTML=`<div class="d-flex flex-row">
                         <div style="font-weight: bold; border-bottom:solid darkblue; border-top: solid darkblue; border-left:solid darkblue;  background-color: bisque" >Фильтр</div>
                             <div class="p-2" style="border-bottom:solid darkblue; border-top: solid darkblue; background-color: bisque ">
                         <label for="dateFrom" style="vertical-align: top; float: top; display: block; font-weight: bold" >Дата с:</label>
-                        <input  id="dateFrom" name="date" type="text" list="dateData1" size="10" onchange="getChartByDateFrom('getmeasurelistsByDateFrom/'+document.getElementById('dateFrom').value.replace(' ','T')+' '+
-                            document.getElementById('dateTo').value.replace(' ','T'), true, '','','/date/'+$( '#dateFrom' ).val().replace(' ','T'), 'tester', document.getElementById('inputSlice').value)">
+                        <input  id="dateFrom" name="date" type="date"  size="10" onchange="getChartByDateFrom('getmeasurelistsByDateFrom/', true, '','','/date/', 'tester', document.getElementById('inputSlice').value)">
                             </div>
                             <div class="p-2"style="border-bottom:solid darkblue; border-top: solid darkblue; background-color: bisque ">
                         <label for="dateTo" style="vertical-align: top; float: top; display: block;font-weight: bold">Дата по:</label>
-                        <input id="dateTo" name="date" type="text" list="dateData1" size="10"
-                               onchange="getChartByDateFrom('getmeasurelistsByDateFrom/'+document.getElementById('dateFrom').value.replace(' ','T')+' '+
-                            document.getElementById('dateTo').value.replace(' ','T'), true, '','','/date/'+$( '#dateFrom' ).val().replace(' ','T')
-                            +' '+$( '#dateTo' ).val().replace(' ','T'), 'tester', document.getElementById('inputSlice').value)">
+                        <input id="dateTo" name="date" type="date"  size="10"
+                               onchange="getChartByDateFrom('getmeasurelistsByDateFrom/', true, '','','/date/', 'tester', document.getElementById('inputSlice').value)">
                             </div>
                         <div class="p-2" style="border-bottom:solid darkblue; border-top: solid darkblue; background-color: bisque ">
                         <label for="lotFrom" style="vertical-align: top; float: top; display: block;font-weight: bold">Контроль:</label>
@@ -318,7 +330,7 @@ function clearLists () {
                         <input id="testFrom" type="text" list="testData" size="10"
                                onchange="getChartByTestandLot('/'+$( '#lotFrom' ).val(),'/'+$( '#testFrom' ).val(),'', 'tester1', document.getElementById('inputSlice1').value)">
                         </div>
-                              <div class="p-2 col-md-5"></div>
+                            <div class="p-2 col-md-5"></div>
                             <div style="font-weight: bold; border-bottom:solid firebrick; border-top: solid firebrick; border-left:solid firebrick; background-color:palegoldenrod">Добавить</div>
                             <div class="p-2" style="border-bottom:solid firebrick; border-top: solid firebrick; background-color:palegoldenrod">
                                 <input type="submit" data-target="#jsModalBox_lot" class="btn btn-primary" data-toggle="modal" name="modalopen" id="modalopen" value="Контроль"
@@ -330,7 +342,7 @@ function clearLists () {
                             </div>
 
                             <div id="addData" class="p-2 col-md-3" style="border-bottom:solid firebrick; border-top: solid firebrick; border-right:solid firebrick; background-color:palegoldenrod">
-                                <button class="btn btn-info" onclick="addData()">Данные</button>
+                                <button class="btn btn-info"  onclick="addData()">Данные</button>
                             </div>
 
                         </div>`

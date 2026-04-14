@@ -26,7 +26,7 @@ public interface UniversalController {
     List<Analysis> getGormonu(@PathVariable("code") String code, @PathVariable String done) throws SQLException;
 
     @GetMapping("/run")
-    void exportResult() throws InterruptedException;
+    void exportResult() throws InterruptedException, IOException;
 
     @GetMapping("/chekGormonu")
     List<Analysis> checkGormonu() throws SQLException;

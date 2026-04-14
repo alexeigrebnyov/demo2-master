@@ -1,23 +1,22 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.dto.HBsAgMeasureDTO;
-import com.example.demo.model.dto.MeasureDTO;
 import com.example.demo.model.json.CriteriaData;
 import com.example.demo.model.qc.hbs.HBsAgLot;
 import com.example.demo.model.qc.hbs.HBsAgMeasure;
 import com.example.demo.model.qc.hbs.HBsAgTest;
-import com.example.demo.model.qc.hcv.Lot;
-import com.example.demo.model.qc.hcv.Measure;
-import com.example.demo.model.qc.hcv.Test;
-import com.example.demo.model.qc.syph.SyphMeasure;
+import com.example.demo.model.real.*;
 import com.example.demo.service.*;
-import com.example.demo.utils.InputUtils;
 import com.example.demo.utils.MappingUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -31,12 +30,15 @@ public class HBsQCController {
   private HBsAgLotService lotService;
   private HBsAgTestService testService;
   private HBsAgMeasureService measureService;
+  private QCServiceAgregator agregator;
+
 
     @Autowired
-    public HBsQCController(HBsAgLotService lotService, HBsAgTestService testService, HBsAgMeasureService measureService) {
+    public HBsQCController(HBsAgLotService lotService, HBsAgTestService testService, HBsAgMeasureService measureService, QCServiceAgregator agregator) {
         this.lotService = lotService;
         this.testService = testService;
         this.measureService = measureService;
+        this.agregator = agregator;
     }
     @GetMapping("/getLotinuse")
     public HBsAgLot getByInUse() {
@@ -279,12 +281,14 @@ public class HBsQCController {
     }
 
     @GetMapping("/saveLoadedMeasures")
-    public void saveLoadedMeasures() {
-        File folderPSAt = new File("\\\\192.168.7.100\\ifa\\ВЛК\\HBsAg");
-        File[] listOfFilesPSAt = folderPSAt.listFiles();
-        for (int i = 0; i < (listOfFilesPSAt != null ? listOfFilesPSAt.length : 0); i++) {
-            if (listOfFilesPSAt[i].isFile()) {
-                Map<String, LocalDateTime> map = InputUtils.analiz(folderPSAt + "\\" + listOfFilesPSAt[i].getName());
+    public void saveLoadedMeasures() throws IOException {
+
+        agregator.realRParse();
+//        File folderPSAt = new File("\\\\192.168.7.100\\ifa\\ВЛК\\HBsAg");
+//        File[] listOfFilesPSAt = folderPSAt.listFiles();
+//        for (int i = 0; i < (listOfFilesPSAt != null ? listOfFilesPSAt.length : 0); i++) {
+//            if (listOfFilesPSAt[i].isFile()) {
+//                Map<String, LocalDateTime> map = InputUtils.analiz(folderPSAt + "\\" + listOfFilesPSAt[i].getName());
 //                for (String val:map.keySet()) {
 //                    HBsAgMeasure m = new HBsAgMeasure();
 //                    m.setMeasure_date(map.get(val));
@@ -292,28 +296,29 @@ public class HBsQCController {
 //                    m.setMeasure_type("HBsAg");
 //                    saveTest(m);
 //                }
-                map.entrySet().stream()
-                        .sorted(Map.Entry.comparingByValue())
-                        .forEach(mp-> {
-                            HBsAgMeasure m = new HBsAgMeasure();
-                            m.setMeasure_date(mp.getValue());
-                            m.setMeasure_val(mp.getKey());
-                            m.setMeasure_type("HBsAg");
-                            saveTest(m);
-                        });
+//                map.entrySet().stream()
+//                        .sorted(Map.Entry.comparingByValue())
+//                        .forEach(mp-> {
+
+//                            HBsAgMeasure m = new HBsAgMeasure();
+//                            m.setMeasure_date(mp.getValue());
+//                            m.setMeasure_val(mp.getKey());
+//                            m.setMeasure_type("HBsAg");
+//                            saveTest(m);
+//                        });
 
                 /*Переносим файл в другую папку*/
-                File filePSAt = new File(folderPSAt + "\\" + listOfFilesPSAt[i].getName());
-                // Destination directory
-                File dirPSAt = new File("\\\\192.168.7.100\\ifa\\Backup\\ВЛК\\HBsAg");
-                // Move file to new directory
-                boolean success = filePSAt.renameTo(new File(dirPSAt, filePSAt.getName()
-                        .replaceAll(".txt","_")+LocalDate.now()+".txt"));
-                if (!success) {
-                    System.out.print("not good");
-                }
-            }
-        }
+//                File filePSAt = new File(folderPSAt + "\\" + listOfFilesPSAt[i].getName());
+//                // Destination directory
+//                File dirPSAt = new File("\\\\192.168.7.100\\ifa\\Backup\\ВЛК\\HBsAg");
+//                // Move file to new directory
+//                boolean success = filePSAt.renameTo(new File(dirPSAt, filePSAt.getName()
+//                        .replaceAll(".txt","_")+LocalDate.now()+".txt"));
+//                if (!success) {
+//                    System.out.print("not good");
+//                }
+//            }
+//        }
     }
 
     @GetMapping("/writeTests")
@@ -394,6 +399,9 @@ public class HBsQCController {
 
         return measureService.findByMeasure_date();
     }
+
+
+
 
 
 

@@ -6,7 +6,7 @@ function getByDate() {
     let hivAbdt =''
     let hivAgdt =''
     let sdt =''
-    let varlist = [dt,cdt,hivAbdt,hivAgdt,sdt]
+    // let varlist = [dt,cdt,hivAbdt,hivAgdt,sdt]
     let urlist = ['/hbsqc', '/qc', '/hivabqc', '/hivagqc', '/syphqc']
     let namelist = ['HBsAg ', 'anti-HCV ', 'HIV-Ab ', 'HIV-Ag ', 'Syph ']
     let nt=new Date().toLocaleString().split(',')[0]

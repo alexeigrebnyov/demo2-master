@@ -40,7 +40,7 @@
                         <div style="font-weight: bold; border-bottom:solid darkblue; border-top: solid darkblue; border-left:solid darkblue;  background-color: bisque" >Фильтр</div>
                             <div class="p-2" style="border-bottom:solid darkblue; border-top: solid darkblue; background-color: bisque ">
                         <label for="dateFrom" style="vertical-align: top; float: top; display: block; font-weight: bold" >Дата с:</label>
-                        <input  id="dateFrom" name="date" type="text" list="dateData1" size="10" onchange="getChartByDateFrom('getmeasurelistsByDateFrom/'+document.getElementById('dateFrom').value.replace(' ','T')+' '+
+                        <input  id="dateFrom" name="date" type="text" list="dateData1" size="10"  onchange="getChartByDateFrom('getmeasurelistsByDateFrom/'+document.getElementById('dateFrom').value.replace(' ','T')+' '+
                             document.getElementById('dateTo').value.replace(' ','T'), true, '','','/date/'+$( '#dateFrom' ).val().replace(' ','T'), 'tester', document.getElementById('inputSlice').value)">
                             </div>
                             <div class="p-2"style="border-bottom:solid darkblue; border-top: solid darkblue; background-color: bisque ">
